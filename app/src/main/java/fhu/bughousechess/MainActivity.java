@@ -1394,11 +1394,11 @@ public class MainActivity extends AppCompatActivity
         clean(board, positions);
         castleCheck(board, positions);
         kingStillStanding(board, positions);
-        if (whiteInCheck(positions))
+        if (whiteInCheck(board, positions))
         {
             setWhiteCheckConditions(board, positions);
         }
-        if (blackInCheck(positions))
+        if (blackInCheck(board, positions))
         {
             setBlackCheckConditions(board, positions);
         }
@@ -1793,7 +1793,7 @@ public class MainActivity extends AppCompatActivity
             {
                 if (whiteTurn1 == 1)
                 {
-                    if (blackInCheck(positions))
+                    if (blackInCheck(board,positions))
                     {
                         positions[x][y] = old;
                         return;
@@ -1801,7 +1801,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 if (whiteTurn1 == 2)
                 {
-                    if (whiteInCheck(positions))
+                    if (whiteInCheck(board, positions))
                     {
                         positions[x][y] = old;
                         return;
@@ -1812,7 +1812,7 @@ public class MainActivity extends AppCompatActivity
             {
                 if (whiteTurn2 == 1)
                 {
-                    if (blackInCheck(positions))
+                    if (blackInCheck(board, positions))
                     {
                         positions[x][y] = old;
                         return;
@@ -1820,7 +1820,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 if (whiteTurn2 == 2)
                 {
-                    if (whiteInCheck(positions))
+                    if (whiteInCheck(board, positions))
                     {
                         positions[x][y] = old;
                         return;
@@ -1838,7 +1838,7 @@ public class MainActivity extends AppCompatActivity
             {
                 if (whiteTurn1 == 1)
                 {
-                    if (whiteInCheck(positions))
+                    if (whiteInCheck(board, positions))
                     {
                         positions[x][y] = old;
                         return;
@@ -1846,7 +1846,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 if (whiteTurn1 == 2)
                 {
-                    if (blackInCheck(positions))
+                    if (blackInCheck(board, positions))
                     {
                         positions[x][y] = old;
                         return;
@@ -1857,7 +1857,7 @@ public class MainActivity extends AppCompatActivity
             {
                 if (whiteTurn2 == 1)
                 {
-                    if (whiteInCheck(positions))
+                    if (whiteInCheck(board, positions))
                     {
                         positions[x][y] = old;
                         return;
@@ -1865,7 +1865,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 if (whiteTurn2 == 2)
                 {
-                    if (blackInCheck(positions))
+                    if (blackInCheck(board, positions))
                     {
                         positions[x][y] = old;
                         return;
@@ -2107,108 +2107,10 @@ public class MainActivity extends AppCompatActivity
             if (m.type.equals("whiteQueenCastle")) whiteQueenCastle(m.board, m.positions, m.x, m.y, m.x1, m.y1);
             if (m.type.equals("blackKingCastle")) blackKingCastle(m.board, m.positions, m.x, m.y, m.x1, m.y1);
             if (m.type.equals("blackQueenCastle")) blackQueenCastle(m.board, m.positions, m.x, m.y, m.x1, m.y1);
+            if (m.type.equals("whiteEnP")) whiteEnP(m.board, m.positions, m.x, m.x1);
+            if (m.type.equals("blackEnP")) blackEnP(m.board, m.positions, m.x, m.x1);
 
         }
-//        boolean inbetween = false;
-//        for (int i = y + 1; i < 8; i++)
-//        {
-//            for (int j = y + 1; j < i; j++)
-//            {
-//                if (!positions[x][j].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[x][i].substring(1, 2).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, x, i);
-//                }
-//            }
-//            if (positions[x][i].substring(0, 1).equals("B"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, x, i);
-//                }
-//            }
-//        }
-//        inbetween = false;
-//        for (int i = y - 1; i > -1; i--)
-//        {
-//            for (int j = y - 1; j > i; j--)
-//            {
-//                if (!positions[x][j].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[x][i].substring(1, 2).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, x, i);
-//                }
-//            }
-//            if (positions[x][i].substring(0, 1).equals("B"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, x, i);
-//                }
-//            }
-//        }
-//        inbetween = false;
-//        for (int i = x + 1; i < 8; i++)
-//        {
-//            for (int j = x + 1; j < i; j++)
-//            {
-//                if (!positions[j][y].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[i][y].substring(1, 2).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, i, y);
-//                }
-//            }
-//            if (positions[i][y].substring(0, 1).equals("B"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, i, y);
-//                }
-//            }
-//        }
-//        inbetween = false;
-//        for (int i = x - 1; i > -1; i--)
-//        {
-//            for (int j = x - 1; j > i; j--)
-//            {
-//                if (!positions[j][y].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[i][y].substring(1, 2).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, i, y);
-//                }
-//            }
-//            if (positions[i][y].substring(0, 1).equals("B"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, i, y);
-//                }
-//            }
-//        }
     }
 
 
@@ -3961,7 +3863,7 @@ public class MainActivity extends AppCompatActivity
 
                 if (whiteTurn1 == 1)
                 {
-                    if (whiteInCheck(positions))
+                    if (whiteInCheck(board, positions))
                     {
                         positions[x][y] = positions[x1][y1];
                         positions[x1][y1] = old;
@@ -3970,7 +3872,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 if (whiteTurn1 == 2)
                 {
-                    if (blackInCheck(positions))
+                    if (blackInCheck(board, positions))
                     {
                         positions[x][y] = positions[x1][y1];
                         positions[x1][y1] = old;
@@ -3982,7 +3884,7 @@ public class MainActivity extends AppCompatActivity
             {
                 if (whiteTurn2 == 1)
                 {
-                    if (whiteInCheck(positions))
+                    if (whiteInCheck(board ,positions))
                     {
                         positions[x][y] = positions[x1][y1];
                         positions[x1][y1] = old;
@@ -3991,7 +3893,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 if (whiteTurn2 == 2)
                 {
-                    if (blackInCheck(positions))
+                    if (blackInCheck(board, positions))
                     {
                         positions[x][y] = positions[x1][y1];
                         positions[x1][y1] = old;
@@ -4249,7 +4151,7 @@ public class MainActivity extends AppCompatActivity
             {
                 if (whiteTurn1 == 1)
                 {
-                    if (whiteInCheck(positions))
+                    if (whiteInCheck(board, positions))
                     {
                         positions[x][y] = positions[x1][y1];
                         positions[x1][y1] = old;
@@ -4259,7 +4161,7 @@ public class MainActivity extends AppCompatActivity
                 if (whiteTurn1 == 2)
                 {
 
-                    if (blackInCheck(positions))
+                    if (blackInCheck(board, positions))
                     {
 
                         positions[x][y] = positions[x1][y1];
@@ -4272,7 +4174,7 @@ public class MainActivity extends AppCompatActivity
             {
                 if (whiteTurn2 == 1)
                 {
-                    if (whiteInCheck(positions))
+                    if (whiteInCheck(board, positions))
                     {
                         positions[x][y] = positions[x1][y1];
                         positions[x1][y1] = old;
@@ -4281,7 +4183,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 if (whiteTurn2 == 2)
                 {
-                    if (blackInCheck(positions))
+                    if (blackInCheck(board, positions))
                     {
                         positions[x][y] = positions[x1][y1];
                         positions[x1][y1] = old;
@@ -4544,7 +4446,7 @@ public class MainActivity extends AppCompatActivity
             positions[5][0] = new Rook("white");
             positions[6][0] = new King("white");
             positions[7][0] = new Empty();
-            if (whiteInCheck(positions))
+            if (whiteInCheck(board, positions))
             {
                 positions[4][0] = new King("white");
                 positions[4][0].backgroundColor = "Y";
@@ -4694,7 +4596,7 @@ public class MainActivity extends AppCompatActivity
             positions[2][0] = new King("white");
             positions[3][0] = new Rook("white");
             positions[4][0] = new Empty();
-            if (whiteInCheck(positions))
+            if (whiteInCheck(board, positions))
             {
                 positions[0][0] = new Rook("white");
                 positions[2][0] = new Empty();
@@ -4843,7 +4745,7 @@ public class MainActivity extends AppCompatActivity
             positions[5][7] = new Rook("black");
             positions[6][7] = new King("black");
             positions[7][7] = new Empty();
-            if (blackInCheck(positions))
+            if (blackInCheck(board, positions))
             {
                 positions[4][7] = new King("black");
                 positions[4][7].backgroundColor = "Y";
@@ -4992,7 +4894,7 @@ public class MainActivity extends AppCompatActivity
             positions[2][7] = new King("black");
             positions[3][7] = new Rook("black");
             positions[4][7] = new Empty();
-            if (blackInCheck(positions))
+            if (blackInCheck(board, positions))
             {
                 positions[0][7] = new Rook("black");
                 positions[2][7] = new Empty();
@@ -5146,7 +5048,7 @@ public class MainActivity extends AppCompatActivity
             {
                 if (whiteTurn1 == 1)
                 {
-                    if (whiteInCheck(positions))
+                    if (whiteInCheck(board, positions))
                     {
                         positions[x][y] = positions[x1][y1];
                         positions[x1][y1] = old;
@@ -5157,7 +5059,7 @@ public class MainActivity extends AppCompatActivity
                 if (whiteTurn1 == 2)
                 {
 
-                    if (blackInCheck(positions))
+                    if (blackInCheck(board, positions))
                     {
 
                         positions[x][y] = positions[x1][y1];
@@ -5171,7 +5073,7 @@ public class MainActivity extends AppCompatActivity
             {
                 if (whiteTurn2 == 1)
                 {
-                    if (whiteInCheck(positions))
+                    if (whiteInCheck(board, positions))
                     {
                         positions[x][y] = positions[x1][y1];
                         positions[x1][y1] = old;
@@ -5181,7 +5083,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 if (whiteTurn2 == 2)
                 {
-                    if (blackInCheck(positions))
+                    if (blackInCheck(board, positions))
                     {
                         positions[x][y] = positions[x1][y1];
                         positions[x1][y1] = old;
@@ -5218,13 +5120,99 @@ public class MainActivity extends AppCompatActivity
         board[x1][y].setBackgroundColor(Color.RED);
         positions[x1][y].backgroundColor ="R";
 
-        board[x1][y].setOnClickListener(new View.OnClickListener()
+        //NOT SURE WHY I USED A SET ON CLICK LISTENER HERE
+//        board[x1][y].setOnClickListener(new View.OnClickListener()
+//        {
+//            @Override
+//            public void onClick(View v)
+//            {
+//                whiteEnPShit(board, positions, x, x1);
+//            }
+//        });
+        board[x1][y].setOnTouchListener(new View.OnTouchListener()
         {
             @Override
-            public void onClick(View v)
+            public boolean onTouch(View view, MotionEvent motionEvent)
             {
-                whiteEnPShit(board, positions, x, x1);
+                whiteEnPShit(board, positions,x,x1);
+                return true;
             }
+        });
+        board[x1][y].setOnDragListener(new View.OnDragListener()
+        {
+            @Override
+            public boolean onDrag(View v, DragEvent event)
+            {
+
+                int dragEvent = event.getAction();
+                //TextView dropText = (TextView) v;
+                BitmapDrawable black = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.drawable.black, 10, 10));
+                BitmapDrawable white = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.drawable.white, 10, 10));
+                switch (dragEvent)
+                {
+                    case DragEvent.ACTION_DRAG_ENTERED:
+                        board[x1][y].setBackgroundColor(0xFFFF7F7F);
+                        break;
+
+                    case DragEvent.ACTION_DRAG_EXITED:
+                        int i = x1;
+                        int j = y;
+                        if (i == 0 || i == 2 || i == 4 || i == 6)
+                        {
+                            if (j == 0 || j == 2 || j == 4 || j == 6)
+                            {
+                                board[i][j].setBackground(black);
+                            }
+                            else
+                            {
+                                board[i][j].setBackground(white);
+                            }
+                        }
+                        else
+                        {
+                            if (j == 0 || j == 2 || j == 4 || j == 6)
+                            {
+                                board[i][j].setBackground(white);
+                            }
+                            else
+                            {
+                                board[i][j].setBackground(black);
+                            }
+                        }
+                        break;
+
+                    case DragEvent.ACTION_DROP:
+                        i = x1;
+                        j = y;
+                        if (i == 0 || i == 2 || i == 4 || i == 6)
+                        {
+                            if (j == 0 || j == 2 || j == 4 || j == 6)
+                            {
+                                board[i][j].setBackground(black);
+                            }
+                            else
+                            {
+                                board[i][j].setBackground(white);
+                            }
+                        }
+                        else
+                        {
+                            if (j == 0 || j == 2 || j == 4 || j == 6)
+                            {
+                                board[i][j].setBackground(white);
+                            }
+                            else
+                            {
+                                board[i][j].setBackground(black);
+                            }
+                        }
+                        whiteEnPShit(board, positions, x, x1);
+                        break;
+                }
+
+                return true;
+            }
+
         });
     }
 
@@ -5263,7 +5251,7 @@ public class MainActivity extends AppCompatActivity
             {
                 if (whiteTurn1 == 1)
                 {
-                    if (whiteInCheck(positions))
+                    if (whiteInCheck(board, positions))
                     {
                         positions[x][y] = positions[x1][y1];
                         positions[x1][y1] = old;
@@ -5274,7 +5262,7 @@ public class MainActivity extends AppCompatActivity
                 if (whiteTurn1 == 2)
                 {
 
-                    if (blackInCheck(positions))
+                    if (blackInCheck(board, positions))
                     {
 
                         positions[x][y] = positions[x1][y1];
@@ -5288,7 +5276,7 @@ public class MainActivity extends AppCompatActivity
             {
                 if (whiteTurn2 == 1)
                 {
-                    if (whiteInCheck(positions))
+                    if (whiteInCheck(board, positions))
                     {
                         positions[x][y] = positions[x1][y1];
                         positions[x1][y1] = old;
@@ -5298,7 +5286,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 if (whiteTurn2 == 2)
                 {
-                    if (blackInCheck(positions))
+                    if (blackInCheck(board ,positions))
                     {
                         positions[x][y] = positions[x1][y1];
                         positions[x1][y1] = old;
@@ -5976,13 +5964,13 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private boolean whiteInCheck(Piece[][] positions)
+    private boolean whiteInCheck(ImageView[][] board, Piece[][] positions)
     {
         for (int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)
             {
-                if (positions[i][j].color.equals("white") && positions[i][j].type.equals("king")&& checkCheck(positions, i, j))
+                if (positions[i][j].color.equals("white") && positions[i][j].type.equals("king")&& checkCheck(board, positions, i, j))
                 {
                     return true;
                 }
@@ -5992,13 +5980,13 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private boolean blackInCheck(Piece[][] positions)
+    private boolean blackInCheck(ImageView[][] board, Piece[][] positions)
     {
         for (int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)
             {
-                if (positions[i][j].color.equals("black") && positions[i][j].type.equals("king")&& checkCheck(positions, i, j))
+                if (positions[i][j].color.equals("black") && positions[i][j].type.equals("king")&& checkCheck(board, positions, i, j))
                 {
                     return true;
                 }
@@ -6008,466 +5996,22 @@ public class MainActivity extends AppCompatActivity
         return false;
     }
 
-    public static boolean checkCheck(Piece[][] positions, int x, int y)
+    public static boolean checkCheck(ImageView[][] board, Piece[][] positions, int x, int y)
     {
-//        for (int i = x + 1; i < 8; i++)
-//        {
-//            if (positions[x][y].color.equals("white"))
-//            {
-//                if (positions[i][y].substring(0, 2).equals("BR") || positions[i][y].substring(0, 2).equals("BQ"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (positions[x][y].substring(0, 1).equals("B"))
-//            {
-//                if (positions[i][y].substring(0, 2).equals("WR") || positions[i][y].substring(0, 2).equals("WQ"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (!positions[i][y].substring(0, 1).equals("0"))
-//            {
-//                break;
-//            }
-//        }
-//        for (int i = x - 1; i > -1; i--)
-//        {
-//            if (positions[x][y].substring(0, 1).equals("W"))
-//            {
-//                if (positions[i][y].substring(0, 2).equals("BR") || positions[i][y].substring(0, 2).equals("BQ"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (positions[x][y].substring(0, 1).equals("B"))
-//            {
-//                if (positions[i][y].substring(0, 2).equals("WR") || positions[i][y].substring(0, 2).equals("WQ"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (!positions[i][y].substring(0, 1).equals("0"))
-//            {
-//                break;
-//            }
-//        }
-//        for (int i = y + 1; i < 8; i++)
-//        {
-//            if (positions[x][y].substring(0, 1).equals("W"))
-//            {
-//                if (positions[x][i].substring(0, 2).equals("BR") || positions[x][i].substring(0, 2).equals("BQ"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (positions[x][y].substring(0, 1).equals("B"))
-//            {
-//                if (positions[x][i].substring(0, 2).equals("WR") || positions[x][i].substring(0, 2).equals("WQ"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (!positions[x][i].substring(0, 1).equals("0"))
-//            {
-//                break;
-//            }
-//        }
-//        for (int i = y - 1; i > -1; i--)
-//        {
-//            if (positions[x][y].substring(0, 1).equals("W"))
-//            {
-//                if (positions[x][i].substring(0, 2).equals("BR") || positions[x][i].substring(0, 2).equals("BQ"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (positions[x][y].substring(0, 1).equals("B"))
-//            {
-//                if (positions[x][i].substring(0, 2).equals("WR") || positions[x][i].substring(0, 2).equals("WQ"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (!positions[x][i].substring(0, 1).equals("0"))
-//            {
-//                break;
-//            }
-//        }
-//        int z = x;
-//        if (y > x)
-//        {
-//            z = y;
-//        }
-//        for (int i = 1; i < 8 - z; i++)
-//        {
-//            if (positions[x][y].substring(0, 1).equals("W"))
-//            {
-//                if (positions[x + i][y + i].substring(0, 2).equals("BB") || positions[x + i][y + i].substring(0, 2).equals("BQ"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (positions[x][y].substring(0, 1).equals("B"))
-//            {
-//                if (positions[x + i][y + i].substring(0, 2).equals("WB") || positions[x + i][y + i].substring(0, 2).equals("WQ"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (!positions[x + i][y + i].substring(0, 1).equals("0"))
-//            {
-//                break;
-//            }
-//        }
-//        z = x;
-//        if (y < x)
-//        {
-//            z = y;
-//        }
-//        for (int i = 1; i < z + 1; i++)
-//        {
-//            if (positions[x][y].substring(0, 1).equals("W"))
-//            {
-//                if (positions[x - i][y - i].substring(0, 2).equals("BB") || positions[x - i][y - i].substring(0, 2).equals("BQ"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (positions[x][y].substring(0, 1).equals("B"))
-//            {
-//                if (positions[x - i][y - i].substring(0, 2).equals("WB") || positions[x - i][y - i].substring(0, 2).equals("WQ"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (!positions[x - i][y - i].substring(0, 1).equals("0"))
-//            {
-//                break;
-//            }
-//        }
-//        z = 7 - x;
-//        if (y < 7 - x)
-//        {
-//            z = y;
-//        }
-//        for (int i = 1; i < z + 1; i++)
-//        {
-//            if (positions[x][y].substring(0, 1).equals("W"))
-//            {
-//                if (positions[x + i][y - i].substring(0, 2).equals("BB") || positions[x + i][y - i].substring(0, 2).equals("BQ"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (positions[x][y].substring(0, 1).equals("B"))
-//            {
-//                if (positions[x + i][y - i].substring(0, 2).equals("WB") || positions[x + i][y - i].substring(0, 2).equals("WQ"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (!positions[x + i][y - i].substring(0, 1).equals("0"))
-//            {
-//                break;
-//            }
-//        }
-//        z = 7 - y;
-//        if (x < 7 - y)
-//        {
-//            z = x;
-//        }
-//        for (int i = 1; i < z + 1; i++)
-//        {
-//            if (positions[x][y].substring(0, 1).equals("W"))
-//            {
-//                if (positions[x - i][y + i].substring(0, 2).equals("BB") || positions[x - i][y + i].substring(0, 2).equals("BQ"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (positions[x][y].substring(0, 1).equals("B"))
-//            {
-//                if (positions[x - i][y + i].substring(0, 2).equals("WB") || positions[x - i][y + i].substring(0, 2).equals("WQ"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (!positions[x - i][y + i].substring(0, 1).equals("0"))
-//            {
-//                break;
-//            }
-//        }
-//        if (positions[x][y].substring(0, 1).equals("W"))
-//        {
-//            if (x + 1 < 8 && y + 2 < 8)
-//            {
-//                if (positions[x + 1][y + 2].substring(0, 2).equals("BN"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (x + 2 < 8 && y + 1 < 8)
-//            {
-//                if (positions[x + 2][y + 1].substring(0, 2).equals("BN"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (x - 1 > -1 && y + 2 < 8)
-//            {
-//                if (positions[x - 1][y + 2].substring(0, 2).equals("BN"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (x - 2 > -1 && y + 1 < 8)
-//            {
-//               / if (positions[x - 2][y + 1].substring(0, 2).equals("BN"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (x + 1 < 8 && y - 2 > -1)
-//            {
-//                if (positions[x + 1][y - 2].substring(0, 2).equals("BN"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (x + 2 < 8 && y - 1 > -1)
-//            {
-//                if (positions[x + 2][y - 1].substring(0, 2).equals("BN"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (x - 1 > -1 && y - 2 > -1)
-//            {
-//                if (positions[x - 1][y - 2].substring(0, 2).equals("BN"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (x - 2 > -1 && y - 1 > -1)
-//            {
-//                if (positions[x - 2][y - 1].substring(0, 2).equals("BN"))
-//                {
-//                    return true;
-//                }
-//            }
-//        }
-//        if (positions[x][y].substring(0, 1).equals("B"))
-//        {
-//            if (x + 1 < 8 && y + 2 < 8)
-//            {
-//                if (positions[x + 1][y + 2].substring(0, 2).equals("WN"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (x + 2 < 8 && y + 1 < 8)
-//            {
-//                if (positions[x + 2][y + 1].substring(0, 2).equals("WN"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (x - 1 > -1 && y + 2 < 8)
-//            {
-//                if (positions[x - 1][y + 2].substring(0, 2).equals("WN"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (x - 2 > -1 && y + 1 < 8)
-//            {
-//               / if (positions[x - 2][y + 1].substring(0, 2).equals("WN"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (x + 1 < 8 && y - 2 > -1)
-//            {
-//                if (positions[x + 1][y - 2].substring(0, 2).equals("WN"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (x + 2 < 8 && y - 1 > -1)
-//            {
-//                if (positions[x + 2][y - 1].substring(0, 2).equals("WN"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (x - 1 > -1 && y - 2 > -1)
-//            {
-//                if (positions[x - 1][y - 2].substring(0, 2).equals("WN"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (x - 2 > -1 && y - 1 > -1)
-//            {
-//                if (positions[x - 2][y - 1].substring(0, 2).equals("WN"))
-//                {
-//                    return true;
-//                }
-//            }
-//        }
-//        if (positions[x][y].substring(0, 1).equals("W"))
-//        {
-//            if (x + 1 < 8 && y + 1 < 8)
-//            {
-//                if (positions[x + 1][y + 1].substring(0, 2).equals("BP"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (x - 1 > 0 && y + 1 < 8)
-//            {
-//                if (positions[x - 1][y + 1].substring(0, 2).equals("BP"))
-//                {
-//                    return true;
-//                }
-//            }
-//        }
-//        if (positions[x][y].substring(0, 1).equals("B"))
-//        {
-//            if (x - 1 > 0 && y - 1 > 0)
-//            {
-//                if (positions[x - 1][y - 1].substring(0, 2).equals("WP"))
-//                {///
-//                    return true;
-//                }
-//            }
-//            if (x + 1 < 8 && y - 1 > 0)
-//            {
-//                if (positions[x + 1][y - 1].substring(0, 2).equals("WP"))
-//                {
-//                    return true;
-//                }
-//            }
-//        }
-//        if (positions[x][y].substring(0, 1).equals("B"))
-//        {
-//            if (x + 1 < 8)
-//            {
-//                if (positions[x + 1][y].substring(0, 2).equals("WK"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (x + 1 < 8 && y + 1 < 8)
-//            {
-//                if (positions[x + 1][y + 1].substring(0, 2).equals("WK"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (x + 1 < 8 && y - 1 > -1)
-//            {
-//                if (positions[x + 1][y - 1].substring(0, 2).equals("WK"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (x - 1 > -1)
-//            {
-//                if (positions[x - 1][y].substring(0, 2).equals("WK"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (x - 1 > -1 && y + 1 < 8)
-//            {
-//                if (positions[x - 1][y + 1].substring(0, 2).equals("WK"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (x - 1 > -1 && y - 1 > -1)
-//            {
-//                if (positions[x - 1][y - 1].substring(0, 2).equals("WK"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (y - 1 > -1)
-//            {
-//                if (positions[x][y - 1].substring(0, 2).equals("WK"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (y + 1 < 8)
-//            {
-//                if (positions[x][y + 1].substring(0, 2).equals("WK"))
-//                {
-//                    return true;
-//                }
-//            }
-//        }
-//        if (positions[x][y].substring(0, 1).equals("W"))
-//        {
-//            if (x + 1 < 8)
-//            {
-//                if (positions[x + 1][y].substring(0, 2).equals("BK"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (x + 1 < 8 && y + 1 < 8)
-//            {
-//                if (positions[x + 1][y + 1].substring(0, 2).equals("BK"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (x + 1 < 8 && y - 1 > -1)
-//            {
-//                if (positions[x + 1][y - 1].substring(0, 2).equals("BK"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (x - 1 > -1)
-//            {
-//                if (positions[x - 1][y].substring(0, 2).equals("BK"))
-//                {
-//                    return true;
-//                }
-///            }
-//            if (x - 1 > -1 && y + 1 < 8)
-//            {
-//                if (positions[x - 1][y + 1].substring(0, 2).equals("BK"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (x - 1 > -1 && y - 1 > -1)
-//            {
-//                if (positions[x - 1][y - 1].substring(0, 2).equals("BK"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (y - 1 > -1)
-//            {
-//                if (positions[x][y - 1].substring(0, 2).equals("BK"))
-//                {
-//                    return true;
-//                }
-//            }
-//            if (y + 1 < 8)
-//            {
-//                if (positions[x][y + 1].substring(0, 2).equals("BK"))
-//                {
-//                    return true;
-//                }
-//            }
-//        }
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j =0; j < 8;j++)
+            {
+                if (positions[i][j].isOpposite(positions[x][y]))
+                {
+                    Set<Move> moves = positions[i][j].getMoves(board, positions, i, j);
+                    for (Move m : moves)
+                    {
+                        if (m.type.equals("take") && m.x1 == x && m.y1 == y) return true;
+                    }
+                }
+            }
+        }
         return false;
     }
 
@@ -7213,7 +6757,7 @@ public class MainActivity extends AppCompatActivity
         }
         if (x != -1)
         {
-            if (checkCheck(positions, x, y))
+            if (checkCheck(board, positions, x, y))
             {
                 inCheck[cpu] = true;
             }
@@ -7234,7 +6778,7 @@ public class MainActivity extends AppCompatActivity
             positions[x][y] = new Empty();
         }
 
-        if (whiteInCheck(positions) || blackInCheck(positions))
+        if (whiteInCheck(board, positions) || blackInCheck(board, positions))
         {
             tempRating = tempRating + 40;
         }
@@ -7243,11 +6787,11 @@ public class MainActivity extends AppCompatActivity
             if (positions[x1][y1].type.equals("Q") || positions[x1][y1].type.equals("R")
                     || positions[x1][y1].type.equals("N") || positions[x1][y1].type.equals("B"))
             {
-                if (inCheck[cpu] && !checkCheck(positions, x1, y1))
+                if (inCheck[cpu] && !checkCheck(board, positions, x1, y1))
                 {
                     tempRating = tempRating + 40;
                 }
-                if (checkCheck(positions, x1, y1))
+                if (checkCheck(board, positions, x1, y1))
                 {
                     tempRating = 1;
                 }
@@ -7550,7 +7094,6 @@ public class MainActivity extends AppCompatActivity
             super(v);
 
             int length = ID.length();
-            System.out.println(ID);
             if (ID.substring(length-1, length).equals("1") || ID.substring(length-1, length).equals("3"))
             {
                 if (ID.substring(0, length-1).equals("pawn"))
