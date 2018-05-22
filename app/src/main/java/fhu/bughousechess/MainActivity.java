@@ -33,16 +33,20 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.TimeZone;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
-
 
 
 import android.net.nsd.NsdServiceInfo;
@@ -56,30 +60,30 @@ import static fhu.bughousechess.NsdHelper.SERVICE_TYPE;
 public class MainActivity extends AppCompatActivity
 {
     static ImageView board1[][] = new ImageView[8][8];
-    static String positions1[][] = new String[8][8];
+    static Piece positions1[][] = new Piece[8][8];
     static ImageView board2[][] = new ImageView[8][8];
-    static String positions2[][] = new String[8][8];
+    static Piece positions2[][] = new Piece[8][8];
 
     static ImageView roster1[] = new ImageView[30];
-    static String roster1p[] = new String[30];
+    static Piece roster1p[] = new Piece[30];
     static ImageView roster2[] = new ImageView[30];
-    static String roster2p[] = new String[30];
+    static Piece roster2p[] = new Piece[30];
     static ImageView roster3[] = new ImageView[30];
-    static String roster3p[] = new String[30];
+    static Piece roster3p[] = new Piece[30];
     static ImageView roster4[] = new ImageView[30];
-    static String roster4p[] = new String[30];
+    static Piece roster4p[] = new Piece[30];
 
     int whiteTurn1 = 1;
     int whiteTurn2 = 1;
 
-    boolean whiteCastleQueen1 = true;
-    boolean whiteCastleKing1 = true;
-    boolean blackCastleQueen1 = true;
-    boolean blackCastleKing1 = true;
-    boolean whiteCastleQueen2 = true;
-    boolean whiteCastleKing2 = true;
-    boolean blackCastleQueen2 = true;
-    boolean blackCastleKing2 = true;
+    static boolean whiteCastleQueen1 = true;
+    static boolean whiteCastleKing1 = true;
+    static boolean blackCastleQueen1 = true;
+    static boolean blackCastleKing1 = true;
+    static boolean whiteCastleQueen2 = true;
+    static boolean whiteCastleKing2 = true;
+    static boolean blackCastleQueen2 = true;
+    static boolean blackCastleKing2 = true;
 
 
     static int minute = 5;
@@ -140,6 +144,7 @@ public class MainActivity extends AppCompatActivity
     NsdManager mNsdManager;
 
 
+    Set<Piece> pieces = new HashSet<>();
     // W = White, B = Black, 0 = Not a piece
     // Piece first letter, 0 = Not a piece
     // P = Was a pawn, 0 = Legit
@@ -147,7 +152,8 @@ public class MainActivity extends AppCompatActivity
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -163,7 +169,7 @@ public class MainActivity extends AppCompatActivity
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 
         // This work only for android 4.4+
-        if(currentApiVersion >= Build.VERSION_CODES.KITKAT)
+        if (currentApiVersion >= Build.VERSION_CODES.KITKAT)
         {
 
             getWindow().getDecorView().setSystemUiVisibility(flags);
@@ -173,20 +179,21 @@ public class MainActivity extends AppCompatActivity
             // show up and won't hide
             final View decorView = getWindow().getDecorView();
             decorView.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener()
+            {
+                @Override
+                public void onSystemUiVisibilityChange(int visibility)
+                {
+                    if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0)
                     {
-                        @Override
-                        public void onSystemUiVisibilityChange(int visibility)
-                        {
-                            if((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0)
-                            {
-                                decorView.setSystemUiVisibility(flags);
-                            }
-                        }
-                    });
+                        decorView.setSystemUiVisibility(flags);
+                    }
+                }
+            });
         }
 
 
-        if (!isTaskRoot()) {
+        if (!isTaskRoot())
+        {
             finish();
             return;
         }
@@ -218,7 +225,6 @@ public class MainActivity extends AppCompatActivity
         });
 
         requestNewInterstitial();
-
 
 
         final LinearLayout mainmenu = (LinearLayout) findViewById(R.id.mainmenu);
@@ -303,7 +309,6 @@ public class MainActivity extends AppCompatActivity
         });
 
 
-
         final TextView howToPlay = (TextView) findViewById(R.id.howToPlay);
         howToPlay.setOnClickListener(new View.OnClickListener()
         {
@@ -331,15 +336,11 @@ public class MainActivity extends AppCompatActivity
         });
 
 
-
-
-
-        Typeface custom_font = Typeface.createFromAsset(getAssets(),  "fonts/Montepetrum bold.ttf");
+        Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/Montepetrum bold.ttf");
         play.setTypeface(custom_font);
         mainToOptions.setTypeface(custom_font);
         howToPlay.setTypeface(custom_font);
         connect.setTypeface(custom_font);
-
 
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -407,7 +408,6 @@ public class MainActivity extends AppCompatActivity
                 }
             });
         }
-
 
 
         board1[0][0] = (ImageView) findViewById(R.id.a1_1);
@@ -563,7 +563,8 @@ public class MainActivity extends AppCompatActivity
             {
                 if (i == 0 || i == 2 || i == 4 || i == 6)
                 {
-                    if (j == 0 || j == 2 || j == 4 || j == 6) {
+                    if (j == 0 || j == 2 || j == 4 || j == 6)
+                    {
                         board1[i][j].setBackground(black);
                         board2[i][j].setBackground(black);
                     }
@@ -580,7 +581,8 @@ public class MainActivity extends AppCompatActivity
                         board1[i][j].setBackground(white);
                         board2[i][j].setBackground(white);
                     }
-                    else {
+                    else
+                    {
                         board1[i][j].setBackground(black);
                         board2[i][j].setBackground(black);
                     }
@@ -865,7 +867,6 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-
     private void newGame()
     {
         whiteTurn1 = 3;
@@ -875,8 +876,8 @@ public class MainActivity extends AppCompatActivity
         final Button start = (Button) findViewById(R.id.start);
         start.setText("Start");
         gameState = 0;
-        clean(board1 ,positions1);
-        clean(board2 ,positions2);
+        clean(board1, positions1);
+        clean(board2, positions2);
         setPieces(board1, positions1);
         setPieces(board2, positions2);
         TimeZone tz = TimeZone.getTimeZone("UTC");
@@ -906,7 +907,8 @@ public class MainActivity extends AppCompatActivity
         startActivity(intent);
 
         menu_code = 0;
-        new Thread( new Runnable() {
+        new Thread(new Runnable()
+        {
             @Override
             public void run()
             {
@@ -980,6 +982,7 @@ public class MainActivity extends AppCompatActivity
         {
             boolean gameEnded = false;
             int saved = milliseconds;
+
             public void onTick(long millisUntilFinished)
             {
                 if (!gameEnded)
@@ -999,7 +1002,8 @@ public class MainActivity extends AppCompatActivity
                         {
                             gameEndProcedures(1, 2);
                         }
-                    } else
+                    }
+                    else
                     {
                         timer1.setBackgroundColor(0x00FFFFFF);
                         timer1.setTextColor(0xFF848484);
@@ -1012,6 +1016,7 @@ public class MainActivity extends AppCompatActivity
                     }
                 }
             }
+
             public void onFinish()
             {
                 this.cancel();
@@ -1021,6 +1026,7 @@ public class MainActivity extends AppCompatActivity
         {
             boolean gameEnded = false;
             int saved = milliseconds;
+
             public void onTick(long millisUntilFinished)
             {
                 if (!gameEnded)
@@ -1040,7 +1046,8 @@ public class MainActivity extends AppCompatActivity
                         {
                             gameEndProcedures(0, 2);
                         }
-                    } else
+                    }
+                    else
                     {
                         timer2.setBackgroundColor(0x00FFFFFF);
                         timer2.setTextColor(0xFF848484);
@@ -1053,6 +1060,7 @@ public class MainActivity extends AppCompatActivity
                     }
                 }
             }
+
             public void onFinish()
             {
                 this.cancel();
@@ -1062,6 +1070,7 @@ public class MainActivity extends AppCompatActivity
         {
             boolean gameEnded = false;
             int saved = milliseconds;
+
             public void onTick(long millisUntilFinished)
             {
                 if (!gameEnded)
@@ -1081,7 +1090,8 @@ public class MainActivity extends AppCompatActivity
                         {
                             gameEndProcedures(0, 2);
                         }
-                    } else
+                    }
+                    else
                     {
                         timer4.setBackgroundColor(0x00FFFFFF);
                         timer4.setTextColor(0xFF848484);
@@ -1094,6 +1104,7 @@ public class MainActivity extends AppCompatActivity
                     }
                 }
             }
+
             public void onFinish()
             {
                 this.cancel();
@@ -1103,6 +1114,7 @@ public class MainActivity extends AppCompatActivity
         {
             boolean gameEnded = false;
             int saved = milliseconds;
+
             public void onTick(long millisUntilFinished)
             {
                 if (!gameEnded)
@@ -1122,7 +1134,8 @@ public class MainActivity extends AppCompatActivity
                         {
                             gameEndProcedures(1, 2);
                         }
-                    } else
+                    }
+                    else
                     {
                         timer3.setBackgroundColor(0x00FFFFFF);
                         timer3.setTextColor(0xFF848484);
@@ -1135,6 +1148,7 @@ public class MainActivity extends AppCompatActivity
                     }
                 }
             }
+
             public void onFinish()
             {
                 this.cancel();
@@ -1143,101 +1157,75 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private static void setPieces(ImageView[][] board, String[][] positions)
+    private static void setPieces(ImageView[][] board, Piece[][] positions)
     {
         for (int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)
             {
-                positions[i][j] = "0000";
+                positions[i][j] = new Empty();
             }
         }
         for (int i = 0; i < 8; i++)
         {
-            board[i][1].setImageResource(R.mipmap.pawn);
-            positions[i][1] = "WP00";
-
+            positions[i][1] = new Pawn("white");
         }
         for (int i = 0; i < 8; i++)
         {
-            board[i][6].setImageResource(R.mipmap.bpawn);
-            positions[i][6] = "BP00";
-
+            positions[i][6] = new Pawn("black");
         }
-        board[0][0].setImageResource(R.mipmap.rook);
-        positions[0][0] = "WR00";
-        board[7][0].setImageResource(R.mipmap.rook);
-        positions[7][0] = "WR00";
+        positions[0][0] = new Rook("white");
+        positions[7][0] = new Rook("white");
+        positions[0][7] = new Rook("black");
+        positions[7][7] = new Rook("black");
+        positions[1][0] = new Knight("white");
+        positions[6][0] = new Knight("white");
+        positions[1][7] = new Knight("black");
+        positions[6][7] = new Knight("black");
+        positions[2][0] = new Bishop("white");
+        positions[5][0] = new Bishop("white");
+        positions[2][7] = new Bishop("black");
+        positions[5][7] = new Bishop("black");
+        positions[3][0] = new Queen("white");
+        positions[3][7] = new Queen("black");
+        positions[4][0] = new King("white");
+        positions[4][7] = new King("black");
 
-        board[0][7].setImageResource(R.mipmap.brook);
-        positions[0][7] = "BR00";
-        board[7][7].setImageResource(R.mipmap.brook);
-        positions[7][7] = "BR00";
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
 
-        board[1][0].setImageResource(R.mipmap.knight);
-        positions[1][0] = "WN00";
-        board[6][0].setImageResource(R.mipmap.knight);
-        positions[6][0] = "WN00";
+                board[i][j].setImageResource(positions[i][j].getResID());
 
-        board[1][7].setImageResource(R.mipmap.bknight);
-        positions[1][7] = "BN00";
-        board[6][7].setImageResource(R.mipmap.bknight);
-        positions[6][7] = "BN00";
-
-        board[2][0].setImageResource(R.mipmap.bishop);
-        positions[2][0] = "WB00";
-        board[5][0].setImageResource(R.mipmap.bishop);
-        positions[5][0] = "WB00";
-
-        board[2][7].setImageResource(R.mipmap.bbishop);
-        positions[2][7] = "BB00";
-        board[5][7].setImageResource(R.mipmap.bbishop);
-        positions[5][7] = "BB00";
-
-        board[3][0].setImageResource(R.mipmap.queen);
-        positions[3][0] = "WQ00";
-
-        board[3][7].setImageResource(R.mipmap.bqueen);
-        positions[3][7] = "BQ00";
-
-
-        board[4][0].setImageResource(R.mipmap.king);
-        positions[4][0] = "WK00";
-
-        board[4][7].setImageResource(R.mipmap.bking);
-        positions[4][7] = "BK00";
-
+            }
+        }
         for (int i = 0; i < 2; i++)
         {
             for (int j = 0; j < 8; j++)
             {
                 board1[j][i].setRotation(90);
-                board1[7-j][7-i].setRotation(270);
+                board1[7 - j][7 - i].setRotation(270);
                 board2[j][i].setRotation(270);
-                board2[7-j][7-i].setRotation(90);
+                board2[7 - j][7 - i].setRotation(90);
             }
         }
-        for (int i = 0; i < 8; i++)
-        {
-            for (int j = 2; j < 6; j++)
-            {
-                board[i][j].setImageResource(android.R.color.transparent);
-            }
-        }
+
         for (int i = 0; i < 30; i++)
         {
-            roster1p[i] = "0000";
-            roster1[i].setImageResource(android.R.color.transparent);
-            roster2p[i] = "0000";
-            roster2[i].setImageResource(android.R.color.transparent);
-            roster3p[i] = "0000";
-            roster3[i].setImageResource(android.R.color.transparent);
-            roster4p[i] = "0000";
-            roster4[i].setImageResource(android.R.color.transparent);
+            roster1p[i] = new Empty();
+            roster1[i].setImageResource(roster1p[i].getResID());
+            roster2p[i] = new Empty();
+            roster2[i].setImageResource(roster2p[i].getResID());
+            roster3p[i] = new Empty();
+            roster3[i].setImageResource(roster3p[i].getResID());
+            roster4p[i] = new Empty();
+            roster4[i].setImageResource(roster4p[i].getResID());
         }
 
     }
-    private void clean(ImageView[][] board, String[][] positions)
+
+    private void clean(ImageView[][] board, Piece[][] positions)
     {
         BitmapDrawable black = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.drawable.black, 10, 10));
         BitmapDrawable white = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.drawable.white, 10, 10));
@@ -1253,73 +1241,89 @@ public class MainActivity extends AppCompatActivity
                         return false;
                     }
                 });
-                if (positions[i][j].substring(3, 4).equals("D"))
+                if (positions[i][j].backgroundColor.equals("D"))
                 {
                     board[i][j].setImageResource(android.R.color.transparent);
-                    positions[i][j] = positions[i][j].substring(0, 3) + "0";
-;               }
-                if (positions[i][j].substring(3, 4).equals("Y"))
+                    positions[i][j].backgroundColor = "0";
+                }
+                if (positions[i][j].backgroundColor.equals("Y"))
                 {
                     if (i == 0 || i == 2 || i == 4 || i == 6)
                     {
-                        if (j == 0 || j == 2 || j == 4 || j == 6) {
+                        if (j == 0 || j == 2 || j == 4 || j == 6)
+                        {
                             board[i][j].setBackground(black);
-                        } else {
+                        }
+                        else
+                        {
                             board[i][j].setBackground(white);
                         }
                     }
                     else
                     {
-                        if (j == 0 || j == 2 || j == 4 || j == 6) {
+                        if (j == 0 || j == 2 || j == 4 || j == 6)
+                        {
                             board[i][j].setBackground(white);
-                        } else {
+                        }
+                        else
+                        {
                             board[i][j].setBackground(black);
                         }
                     }
-                    positions[i][j] = positions[i][j].substring(0, 3) + "0";
+                    positions[i][j].backgroundColor = "0";
 
                 }
-                if (positions[i][j].substring(3, 4).equals("R"))
+                if (positions[i][j].backgroundColor.equals("R"))
                 {
                     if (i == 0 || i == 2 || i == 4 || i == 6)
                     {
                         if (j == 0 || j == 2 || j == 4 || j == 6)
                         {
                             board[i][j].setBackground(black);
-                        } else {
+                        }
+                        else
+                        {
                             board[i][j].setBackground(white);
                         }
                     }
                     else
                     {
-                        if (j == 0 || j == 2 || j == 4 || j == 6) {
+                        if (j == 0 || j == 2 || j == 4 || j == 6)
+                        {
                             board[i][j].setBackground(white);
-                        } else {
+                        }
+                        else
+                        {
                             board[i][j].setBackground(black);
                         }
                     }
-                    positions[i][j] = positions[i][j].substring(0, 3) + "0";
+                    positions[i][j].backgroundColor = "0";
                 }
-                if (positions[i][j].substring(3, 4).equals("B"))
+                if (positions[i][j].backgroundColor.equals("B"))
                 {
                     if (i == 0 || i == 2 || i == 4 || i == 6)
                     {
                         if (j == 0 || j == 2 || j == 4 || j == 6)
                         {
                             board[i][j].setBackground(black);
-                        } else {
+                        }
+                        else
+                        {
                             board[i][j].setBackground(white);
                         }
                     }
                     else
                     {
-                        if (j == 0 || j == 2 || j == 4 || j == 6) {
+                        if (j == 0 || j == 2 || j == 4 || j == 6)
+                        {
                             board[i][j].setBackground(white);
-                        } else {
+                        }
+                        else
+                        {
                             board[i][j].setBackground(black);
                         }
                     }
-                    positions[i][j] = positions[i][j].substring(0, 3) + "0";
+                    positions[i][j].backgroundColor = "0";
                 }
             }
         }
@@ -1329,46 +1333,63 @@ public class MainActivity extends AppCompatActivity
         {
             if (board(board, positions) == 1)
             {
-                if (roster1p[i].substring(3, 4).equals("Y")) {
-                    if (i % 2 == 0) {
+                if (roster1p[i].backgroundColor.equals("Y"))
+                {
+                    if (i % 2 == 0)
+                    {
                         roster1[i].setBackgroundColor(light);
-                    } else {
+                    }
+                    else
+                    {
                         roster1[i].setBackgroundColor(dark);
                     }
-                    roster1p[i] = roster1p[i].substring(0, 3) + "0";
+                    roster1p[i].backgroundColor = "0";
                 }
-                if (roster2p[i].substring(3, 4).equals("Y")) {
-                    if (i % 2 == 0) {
+                if (roster2p[i].backgroundColor.equals("Y"))
+                {
+                    if (i % 2 == 0)
+                    {
                         roster2[i].setBackgroundColor(light);
-                    } else {
+                    }
+                    else
+                    {
                         roster2[i].setBackgroundColor(dark);
                     }
-                    roster2p[i] = roster2p[i].substring(0, 3) + "0";
+                    roster2p[i].backgroundColor = "0";
                 }
             }
             else
             {
-                if (roster3p[i].substring(3, 4).equals("Y")) {
-                    if (i % 2 == 0) {
+                if (roster3p[i].backgroundColor.equals("Y"))
+                {
+                    if (i % 2 == 0)
+                    {
                         roster3[i].setBackgroundColor(light);
-                    } else {
+                    }
+                    else
+                    {
                         roster3[i].setBackgroundColor(dark);
                     }
-                    roster3p[i] = roster3p[i].substring(0, 3) + "0";
+                    roster3p[i].backgroundColor = "0";
                 }
-                if (roster4p[i].substring(3, 4).equals("Y")) {
-                    if (i % 2 == 0) {
+                if (roster4p[i].backgroundColor.equals("Y"))
+                {
+                    if (i % 2 == 0)
+                    {
                         roster4[i].setBackgroundColor(light);
-                    } else {
+                    }
+                    else
+                    {
                         roster4[i].setBackgroundColor(dark);
                     }
-                    roster4p[i] = roster4p[i].substring(0, 3) + "0";
+                    roster4p[i].backgroundColor = "0";
                 }
             }
         }
 
     }
-    private void setActions(final ImageView[][] board, final String[][] positions)
+
+    private void setActions(final ImageView[][] board, final Piece[][] positions)
     {
         clean(board, positions);
         castleCheck(board, positions);
@@ -1393,145 +1414,165 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public boolean onTouch(View view, MotionEvent motionEvent)
                     {
-
                         String ID = "00";
                         if (board(board, positions) == 1)
                         {
                             if (whiteTurn1 == 1 && position1)
                             {
-                                if (positions[x][y].substring(0, 2).equals("WP"))
+                                if (positions[x][y].color.equals("white"))
                                 {
-                                    setPawn(board, positions, x, y);
-                                    ID = "P1";
+                                    setPiece(board, positions, x, y);
+                                    ID = positions[x][y].type + "1";
                                 }
-                                if (positions[x][y].substring(0, 2).equals("WR"))
-                                {
-                                    setRook(board, positions, x, y);
-                                    ID = "R1";
-                                }
-                                if (positions[x][y].substring(0, 2).equals("WN"))
-                                {
-                                    setKnight(board, positions, x, y);
-                                    ID = "N1";
-                                }
-                                if (positions[x][y].substring(0, 2).equals("WB"))
-                                {
-                                    setBishop(board, positions, x, y);
-                                    ID = "B1";
-                                }
-                                if (positions[x][y].substring(0, 2).equals("WQ"))
-                                {
-                                    setQueen(board, positions, x, y);
-                                    ID = "Q1";
-                                }
-                                if (positions[x][y].substring(0, 2).equals("WK"))
-                                {
-                                    setKing(board, positions, x, y);
-                                    ID = "K1";
-                                }
-
+//                                if (positions[x][y].substring(0, 2).equals("WP"))
+//                                {
+//                                    setPawn(board, positions, x, y);
+//                                    ID = "P1";
+//                                }
+//                                if (positions[x][y].substring(0, 2).equals("WR"))
+//                                {
+//                                    setRook(board, positions, x, y);
+//                                    ID = "R1";
+//                                }
+//                                if (positions[x][y].substring(0, 2).equals("WN"))
+//                                {
+//                                    setKnight(board, positions, x, y);
+//                                    ID = "N1";
+//                                }
+//                                if (positions[x][y].substring(0, 2).equals("WB"))
+//                                {
+//                                    setBishop(board, positions, x, y);
+//                                    ID = "B1";
+//                                }
+//                                if (positions[x][y].substring(0, 2).equals("WQ"))
+//                                {
+//                                    setQueen(board, positions, x, y);
+//                                    ID = "Q1";
+//                                }
+//                                if (positions[x][y].substring(0, 2).equals("WK"))
+//                                {
+//                                    setKing(board, positions, x, y);
+//                                    ID = "K1";
+//                                }
+//
                             }
                             if (whiteTurn1 == 2 && position2)
                             {
-                                if (positions[x][y].substring(0, 2).equals("BP"))
+                                if (positions[x][y].color.equals("black"))
                                 {
-                                    setBPawn(board, positions, x, y);
-                                    ID = "P2";
+                                    setPiece(board, positions, x, y);
+                                    ID = positions[x][y].type + "2";
                                 }
-                                if (positions[x][y].substring(0, 2).equals("BR"))
-                                {
-                                    setBRook(board, positions, x, y);
-                                    ID = "R2";
-                                }
-                                if (positions[x][y].substring(0, 2).equals("BN"))
-                                {
-                                    setBKnight(board, positions, x, y);
-                                    ID = "N2";
-                                }
-                                if (positions[x][y].substring(0, 2).equals("BB"))
-                                {
-                                    setBBishop(board, positions, x, y);
-                                    ID = "B2";
-                                }
-                                if (positions[x][y].substring(0, 2).equals("BQ"))
-                                {
-                                    setBQueen(board, positions, x, y);
-                                    ID = "Q2";
-                                }
-                                if (positions[x][y].substring(0, 2).equals("BK"))
-                                {
-                                    setBKing(board, positions, x, y);
-                                    ID = "K2";
-                                }
+//                                if (positions[x][y].substring(0, 2).equals("BP"))
+//                                {
+//                                    setBPawn(board, positions, x, y);
+//                                    ID = "P2";
+//                                }
+//                                if (positions[x][y].substring(0, 2).equals("BR"))
+//                                {
+//                                    setBRook(board, positions, x, y);
+//                                    ID = "R2";
+//                                }
+//                                if (positions[x][y].substring(0, 2).equals("BN"))
+//                                {
+//                                    setBKnight(board, positions, x, y);
+//                                    ID = "N2";
+//                                }
+//                                if (positions[x][y].substring(0, 2).equals("BB"))
+//                                {
+//                                    setBBishop(board, positions, x, y);
+//                                    ID = "B2";
+//                                }
+//                                if (positions[x][y].substring(0, 2).equals("BQ"))
+//                                {
+//                                    setBQueen(board, positions, x, y);
+//                                    ID = "Q2";
+//                                }
+//                                if (positions[x][y].substring(0, 2).equals("BK"))
+//                                {
+//                                    setBKing(board, positions, x, y);
+//                                    ID = "K2";
+//                                }
                             }
                         }
                         else
                         {
                             if (whiteTurn2 == 1 && position4)
                             {
-                                if (positions[x][y].substring(0, 2).equals("WP"))
+                                if (positions[x][y].color.equals("white"))
                                 {
-                                    setPawn(board, positions, x, y);
-                                    ID = "P3";
+                                    setPiece(board, positions, x, y);
+                                    ID = positions[x][y].type + "3";
                                 }
-                                if (positions[x][y].substring(0, 2).equals("WR"))
-                                {
-                                    setRook(board, positions, x, y);
-                                    ID = "R3";
-                                }
-                                if (positions[x][y].substring(0, 2).equals("WN"))
-                                {
-                                    setKnight(board, positions, x, y);
-                                    ID = "N3";
-                                }
-                                if (positions[x][y].substring(0, 2).equals("WB"))
-                                {
-                                    setBishop(board, positions, x, y);
-                                    ID = "B3";
-                                }
-                                if (positions[x][y].substring(0, 2).equals("WQ"))
-                                {
-                                    setQueen(board, positions, x, y);
-                                    ID = "Q3";
-                                }
-                                if (positions[x][y].substring(0, 2).equals("WK"))
-                                {
-                                    setKing(board, positions, x, y);
-                                    ID = "K3";
-                                }
+//                                if (positions[x][y].substring(0, 2).equals("WP"))
+//                                {
+//                                    setPawn(board, positions, x, y);
+//                                    ID = "P3";
+//                                }
+//                                if (positions[x][y].substring(0, 2).equals("WR"))
+//                                {
+//                                    setRook(board, positions, x, y);
+//                                    ID = "R3";
+//                                }
+//                                if (positions[x][y].substring(0, 2).equals("WN"))
+//                                {
+//                                    setKnight(board, positions, x, y);
+//                                    ID = "N3";
+//                                }
+//                                if (positions[x][y].substring(0, 2).equals("WB"))
+//                                {
+//                                    setBishop(board, positions, x, y);
+//                                    ID = "B3";
+//                                }
+//                                if (positions[x][y].substring(0, 2).equals("WQ"))
+//                                {
+//                                    setQueen(board, positions, x, y);
+//                                    ID = "Q3";
+//                                }
+//                                if (positions[x][y].substring(0, 2).equals("WK"))
+//                                {
+//                                    setKing(board, positions, x, y);
+//                                    ID = "K3";
+//                                }
                             }
                             if (whiteTurn2 == 2 && position3)
                             {
-                                if (positions[x][y].substring(0, 2).equals("BP"))
+                                if (positions[x][y].color.equals("black"))
                                 {
-                                    setBPawn(board, positions, x, y);
-                                    ID = "P4";
+                                    setPiece(board, positions, x, y);
+                                    ID = positions[x][y].type + "4";
                                 }
-                                if (positions[x][y].substring(0, 2).equals("BR"))
-                                {
-                                    setBRook(board, positions, x, y);
-                                    ID = "R4";
-                                }
-                                if (positions[x][y].substring(0, 2).equals("BN"))
-                                {
-                                    setBKnight(board, positions, x, y);
-                                    ID = "N4";
-                                }
-                                if (positions[x][y].substring(0, 2).equals("BB"))
-                                {
-                                    setBBishop(board, positions, x, y);
-                                    ID = "B4";
-                                }
-                                if (positions[x][y].substring(0, 2).equals("BQ"))
-                                {
-                                    setBQueen(board, positions, x, y);
-                                    ID = "Q4";
-                                }
-                                if (positions[x][y].substring(0, 2).equals("BK"))
-                                {
-                                    setBKing(board, positions, x, y);
-                                    ID = "K4";
-                                }
+//                                if (positions[x][y].substring(0, 2).equals("BP"))
+//                                {
+//                                    setBPawn(board, positions, x, y);
+//                                    ID = "P4";
+//                                }
+//                                if (positions[x][y].substring(0, 2).equals("BR"))
+//                                {
+//                                    setBRook(board, positions, x, y);
+//                                    ID = "R4";
+//                                }
+//                                if (positions[x][y].substring(0, 2).equals("BN"))
+//                                {
+//                                    setBKnight(board, positions, x, y);
+//                                    ID = "N4";
+//                                }
+//                                if (positions[x][y].substring(0, 2).equals("BB"))
+//                                {
+//                                    setBBishop(board, positions, x, y);
+//                                    ID = "B4";
+//                                }
+//                                if (positions[x][y].substring(0, 2).equals("BQ"))
+//                                {
+//                                    setBQueen(board, positions, x, y);
+//                                    ID = "Q4";
+//                                }
+//                                if (positions[x][y].substring(0, 2).equals("BK"))
+//                                {
+//                                    setBKing(board, positions, x, y);
+//                                    ID = "K4";
+//                                }
+//                            }
                             }
                         }
 
@@ -1561,10 +1602,10 @@ public class MainActivity extends AppCompatActivity
                 public boolean onTouch(View view, MotionEvent motionEvent)
                 {
                     String ID = "00";
-                    if (whiteTurn1 == 1 && !roster1p[j].substring(1, 2).equals("0") && position1)
+                    if (whiteTurn1 == 1 && !roster1p[j].empty && position1)
                     {
                         setRosterPiece(board1, positions1, roster1, roster1p, j);
-                        ID = roster1p[j].substring(1, 2) + "1";
+                        ID = roster1p[j].type + "1";
                     }
 
                     if (motionEvent.getAction() == MotionEvent.ACTION_MOVE && !ID.equals("00"))
@@ -1583,10 +1624,10 @@ public class MainActivity extends AppCompatActivity
                 public boolean onTouch(View view, MotionEvent motionEvent)
                 {
                     String ID = "00";
-                    if (!roster2p[j].substring(1, 2).equals("0") && whiteTurn1 == 2 && position2)
+                    if (!roster2p[j].empty && whiteTurn1 == 2 && position2)
                     {
                         setRosterPiece(board1, positions1, roster2, roster2p, j);
-                        ID = roster2p[j].substring(1, 2) + "2";
+                        ID = roster2p[j].type + "2";
                     }
                     if (motionEvent.getAction() == MotionEvent.ACTION_MOVE && !ID.equals("00"))
                     {
@@ -1604,10 +1645,10 @@ public class MainActivity extends AppCompatActivity
                 public boolean onTouch(View view, MotionEvent motionEvent)
                 {
                     String ID = "00";
-                    if (whiteTurn2 == 2 && !roster3p[j].substring(1, 2).equals("0") && position3)
+                    if (whiteTurn2 == 2 && !roster3p[j].empty && position3)
                     {
                         setRosterPiece(board2, positions2, roster3, roster3p, j);
-                        ID = roster3p[j].substring(1, 2) + "4";
+                        ID = roster3p[j].type + "4";
                     }
                     if (motionEvent.getAction() == MotionEvent.ACTION_MOVE && !ID.equals("00"))
                     {
@@ -1625,10 +1666,10 @@ public class MainActivity extends AppCompatActivity
                 public boolean onTouch(View view, MotionEvent motionEvent)
                 {
                     String ID = "00";
-                    if (!roster4p[j].substring(1, 2).equals("0") && whiteTurn2 == 1 && position4)
+                    if (!roster4p[j].empty && whiteTurn2 == 1 && position4)
                     {
                         setRosterPiece(board2, positions2, roster4, roster4p, j);
-                        ID = roster4p[j].substring(1, 2) + "3";
+                        ID = roster4p[j].type + "3";
                     }
                     if (motionEvent.getAction() == MotionEvent.ACTION_MOVE && !ID.equals("00"))
                     {
@@ -1643,7 +1684,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void setRosterPiece(ImageView[][] board, String[][] positions, ImageView[] roster, String[] rosterp, int i)
+    private void setRosterPiece(ImageView[][] board, Piece[][] positions, ImageView[] roster, Piece[] rosterp, int i)
     {
         if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
         {
@@ -1660,9 +1701,9 @@ public class MainActivity extends AppCompatActivity
             {
                 for (int y = 0; y < 8; y++)
                 {
-                    if (positions[x][y].substring(1 ,2).equals("0"))
+                    if (positions[x][y].empty)
                     {
-                        moveRoster(board, positions, roster, rosterp, i, x ,y);
+                        moveRoster(board, positions, roster, rosterp, i, x, y);
                     }
                 }
             }
@@ -1676,37 +1717,37 @@ public class MainActivity extends AppCompatActivity
             {
                 for (int y = 0; y < 8; y++)
                 {
-                    if (positions[x][y].substring(1 ,2).equals("0"))
+                    if (positions[x][y].empty)
                     {
-                        moveRoster(board, positions, roster, rosterp, i, x ,y);
+                        moveRoster(board, positions, roster, rosterp, i, x, y);
                     }
                 }
             }
             return;
         }
-        if (rosterp[i].substring(1, 2).equals("P"))
+        if (rosterp[i].type.equals("pawn"))
         {
             for (int x = 0; x < 8; x++)
             {
                 if (firstrank)
                 {
-                    if (rosterp[i].substring(0,1).equals("W"))
+                    if (rosterp[i].color.equals("white"))
                     {
                         for (int y = 0; y < 7; y++)
                         {
-                            if (positions[x][y].substring(1, 2).equals("0"))
+                            if (positions[x][y].empty)
                             {
-                                moveRoster(board, positions, roster, rosterp, i, x ,y);
+                                moveRoster(board, positions, roster, rosterp, i, x, y);
                             }
                         }
                     }
-                    if (rosterp[i].substring(0,1).equals("B"))
+                    if (rosterp[i].color.equals("black"))
                     {
                         for (int y = 1; y < 8; y++)
                         {
-                            if (positions[x][y].substring(1, 2).equals("0"))
+                            if (positions[x][y].empty)
                             {
-                                moveRoster(board, positions, roster, rosterp, i, x ,y);
+                                moveRoster(board, positions, roster, rosterp, i, x, y);
                             }
                         }
                     }
@@ -1716,9 +1757,9 @@ public class MainActivity extends AppCompatActivity
                 {
                     for (int y = 1; y < 7; y++)
                     {
-                        if (positions[x][y].substring(1, 2).equals("0"))
+                        if (positions[x][y].empty)
                         {
-                            moveRoster(board, positions, roster, rosterp, i, x ,y);
+                            moveRoster(board, positions, roster, rosterp, i, x, y);
                         }
                     }
                 }
@@ -1731,7 +1772,7 @@ public class MainActivity extends AppCompatActivity
             {
                 for (int y = 0; y < 8; y++)
                 {
-                    if (positions[x][y].substring(1 ,2).equals("0"))
+                    if (positions[x][y].empty)
                     {
                         moveRoster(board, positions, roster, rosterp, i, x, y);
                     }
@@ -1741,11 +1782,11 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void moveRoster(final ImageView[][] board, final String[][] positions, final ImageView[] roster, final String[] rosterp, final int i, final int x, final int y)
+    private void moveRoster(final ImageView[][] board, final Piece[][] positions, final ImageView[] roster, final Piece[] rosterp, final int i, final int x, final int y)
     {
         if (!placing)
         {
-            String old = positions[x][y];
+            Piece old = positions[x][y];
             positions[x][y] = rosterp[i];
 
             if (board(board, positions) == 1)
@@ -1758,7 +1799,8 @@ public class MainActivity extends AppCompatActivity
                         return;
                     }
                 }
-                if (whiteTurn1 == 2) {
+                if (whiteTurn1 == 2)
+                {
                     if (whiteInCheck(positions))
                     {
                         positions[x][y] = old;
@@ -1776,7 +1818,8 @@ public class MainActivity extends AppCompatActivity
                         return;
                     }
                 }
-                if (whiteTurn2 == 2) {
+                if (whiteTurn2 == 2)
+                {
                     if (whiteInCheck(positions))
                     {
                         positions[x][y] = old;
@@ -1788,32 +1831,42 @@ public class MainActivity extends AppCompatActivity
         }
         if (checking || searchingForCheckmate1 || searchingForCheckmate2)
         {
-            String old = positions[x][y];
+            Piece old = positions[x][y];
             positions[x][y] = rosterp[i];
 
-            if (board(board, positions) == 1) {
-                if (whiteTurn1 == 1) {
-                    if (whiteInCheck(positions)) {
+            if (board(board, positions) == 1)
+            {
+                if (whiteTurn1 == 1)
+                {
+                    if (whiteInCheck(positions))
+                    {
                         positions[x][y] = old;
                         return;
                     }
                 }
-                if (whiteTurn1 == 2) {
-                    if (blackInCheck(positions)) {
+                if (whiteTurn1 == 2)
+                {
+                    if (blackInCheck(positions))
+                    {
                         positions[x][y] = old;
                         return;
                     }
                 }
             }
-            else {
-                if (whiteTurn2 == 1) {
-                    if (whiteInCheck(positions)) {
+            else
+            {
+                if (whiteTurn2 == 1)
+                {
+                    if (whiteInCheck(positions))
+                    {
                         positions[x][y] = old;
                         return;
                     }
                 }
-                if (whiteTurn2 == 2) {
-                    if (blackInCheck(positions)) {
+                if (whiteTurn2 == 2)
+                {
+                    if (blackInCheck(positions))
+                    {
                         positions[x][y] = old;
                         return;
                     }
@@ -1858,12 +1911,12 @@ public class MainActivity extends AppCompatActivity
 
 
         roster[i].setBackgroundColor(Color.YELLOW);
-        if (!rosterp[i].substring(3, 4).equals("Y"))
+        if (!rosterp[i].backgroundColor.equals("Y"))
         {
-            rosterp[i] = rosterp[i].substring(0, 3) + "Y";
+            rosterp[i].backgroundColor =("Y");
         }
         board[x][y].setImageResource(R.mipmap.dot);
-        positions[x][y] = positions[x][y].substring(0, 3) + "D";
+        positions[x][y].backgroundColor =("D");
 
 
         board[x][y].setOnTouchListener(new View.OnTouchListener()
@@ -1899,16 +1952,19 @@ public class MainActivity extends AppCompatActivity
                             if (j == 0 || j == 2 || j == 4 || j == 6)
                             {
                                 board[p][j].setBackground(black);
-                            } else
+                            }
+                            else
                             {
                                 board[p][j].setBackground(white);
                             }
-                        } else
+                        }
+                        else
                         {
                             if (j == 0 || j == 2 || j == 4 || j == 6)
                             {
                                 board[p][j].setBackground(white);
-                            } else
+                            }
+                            else
                             {
                                 board[p][j].setBackground(black);
                             }
@@ -1923,16 +1979,19 @@ public class MainActivity extends AppCompatActivity
                             if (j == 0 || j == 2 || j == 4 || j == 6)
                             {
                                 board[p][j].setBackground(black);
-                            } else
+                            }
+                            else
                             {
                                 board[p][j].setBackground(white);
                             }
-                        } else
+                        }
+                        else
                         {
                             if (j == 0 || j == 2 || j == 4 || j == 6)
                             {
                                 board[p][j].setBackground(white);
-                            } else
+                            }
+                            else
                             {
                                 board[p][j].setBackground(black);
                             }
@@ -1947,9 +2006,9 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    private void rosterShit(ImageView[][] board, String[][] positions, ImageView[] roster, String[] rosterp, int i, int x, int y)
+    private void rosterShit(ImageView[][] board, Piece[][] positions, ImageView[] roster, Piece[] rosterp, int i, int x, int y)
     {
-        if (rosterp[i].substring(1,2).equals("0"))
+        if (rosterp[i].empty)
         {
             whiteTurn1 = 3;
             whiteTurn2 = 3;
@@ -1959,7 +2018,7 @@ public class MainActivity extends AppCompatActivity
         clean(board, positions);
         if (board(board, positions) == 1)
         {
-            if (rosterp[i].substring(0, 1).equals("W"))
+            if (rosterp[i].equals("white"))
             {
                 if (gameState == 2)
                 {
@@ -1986,7 +2045,7 @@ public class MainActivity extends AppCompatActivity
         }
         else
         {
-            if (rosterp[i].substring(0, 1).equals("W"))
+            if (rosterp[i].color.equals("white"))
             {
                 if (gameState == 2)
                 {
@@ -2012,10 +2071,8 @@ public class MainActivity extends AppCompatActivity
         }
 
 
-
-
         positions[x][y] = rosterp[i];
-        rosterp[i] = "0000";
+        rosterp[i] = new Empty();
         updateImage(board, positions, x, y);
 
         board[x][y].setRotation(roster[i].getRotation());
@@ -2026,7 +2083,7 @@ public class MainActivity extends AppCompatActivity
         setActions(board, positions);
     }
 
-    private void setPawn(ImageView[][] board, String[][] positions, int x, int y)
+    private void setPiece(ImageView[][] board, Piece[][] positions, int x, int y)
     {
         if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
         {
@@ -2037,1634 +2094,1844 @@ public class MainActivity extends AppCompatActivity
             setActions(board, positions);
         }
 
-        if (y < 7) {
-            if (positions[x][y + 1].substring(1, 2).equals("0"))
-            {
-                move(board, positions, x, y, x, y + 1);
-                if (y == 1) {
-                    if (positions[x][y + 2].substring(1, 2).equals("0"))
-                    {
-                        move(board, positions, x, y, x, y + 2);
-                    }
-                }
-            }
-        }
-        if (x < 7 && y < 7)
+        Set<Move> moves = positions[x][y].getMoves(board, positions, x, y);
+        for (Move m : moves)
         {
-            if (positions[x + 1][y + 1].substring(0, 1).equals("B"))
+            if (m.x == m.x1 && m.y == m.y1)
             {
-                take(board, positions, x, y, x + 1, y + 1);
+                System.out.println("awadaf");
             }
-            if (y == 4  && positions[x + 1][y].substring(0,2).equals("BP"))
-            {
-                if (board(board, positions) == 1)
-                {
-                    if (enP[x+1][1].substring(0, 1).equals("1") && enP[x+1][1].substring(1, enP[x+1][1].length()).equals(Integer.toString(board1Turn)))
-                    {
-                        whiteEnP(board, positions, x, x + 1);
-                    }
-                }
-                if (board(board, positions) == 2)
-                {
-                    if (enP[x+1][3].substring(0, 1).equals("1") && enP[x+1][3].substring(1, enP[x+1][3].length()).equals(Integer.toString(board2Turn)))
-                    {
-                        whiteEnP(board, positions, x, x + 1);
-                    }
-                }
-            }
-        }
-        if (x > 0 && y < 7)
-        {
-            if (positions[x - 1][y + 1].substring(0, 1).equals("B"))
-            {
-                take(board, positions, x, y, x - 1, y + 1);
-            }
-            if (y == 4  && positions[x - 1][y].substring(0,2).equals("BP"))
-            {
-                if (board(board, positions) == 1)
-                {
-                    if (enP[x-1][1].substring(0, 1).equals("1") && enP[x-1][1].substring(1, enP[x-1][1].length()).equals(Integer.toString(board1Turn)))
-                    {
-                        whiteEnP(board, positions, x, x - 1);
-                    }
-                }
-                if (board(board, positions) == 2)
-                {
-                    if (enP[x-1][3].substring(0, 1).equals("1") && enP[x-1][3].substring(1, enP[x-1][3].length()).equals(Integer.toString(board2Turn)))
-                    {
-                        whiteEnP(board, positions, x, x - 1);
-                    }
-                }
-            }
-        }
+            if (m.type.equals("move")) move(m.board, m.positions, m.x, m.y, m.x1, m.y1);
+            if (m.type.equals("take")) take(m.board, m.positions, m.x, m.y, m.x1, m.y1);
+            if (m.type.equals("whiteKingCastle")) whiteKingCastle(m.board, m.positions, m.x, m.y, m.x1, m.y1);
+            if (m.type.equals("whiteQueenCastle")) whiteQueenCastle(m.board, m.positions, m.x, m.y, m.x1, m.y1);
+            if (m.type.equals("blackKingCastle")) blackKingCastle(m.board, m.positions, m.x, m.y, m.x1, m.y1);
+            if (m.type.equals("blackQueenCastle")) blackQueenCastle(m.board, m.positions, m.x, m.y, m.x1, m.y1);
 
-    }
-    private void setRook(ImageView[][] board, String[][] positions, int x, int y)
-    {
-        if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
-        {
-            setActions(board, positions);
         }
-        if (board(board, positions) == 2 && !searchingForCheckmate2 && !CPUsearch[2] && !CPUsearch[3])
-        {
-            setActions(board, positions);
-        }
-
-        boolean inbetween = false;
-        for (int i = y + 1; i < 8; i++)
-        {
-            for (int j = y + 1; j < i; j++)
-            {
-                if (!positions[x][j].substring(0, 1).equals("0"))
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[x][i].substring(1, 2).equals("0"))
-            {
-                if (!inbetween) {
-                    move(board, positions, x, y, x, i);
-                }
-            }
-            if (positions[x][i].substring(0, 1).equals("B"))
-            {
-                if (!inbetween)
-                {
-                    take(board, positions, x, y, x, i);
-                }
-            }
-        }
-        inbetween = false;
-        for (int i = y - 1; i > -1; i--)
-        {
-            for (int j = y - 1; j > i; j--)
-            {
-                if (!positions[x][j].substring(0, 1).equals("0"))
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[x][i].substring(1, 2).equals("0"))
-            {
-                if (!inbetween) {
-                    move(board, positions, x, y, x, i);
-                }
-            }
-            if (positions[x][i].substring(0, 1).equals("B"))
-            {
-                if (!inbetween)
-                {
-                    take(board, positions, x, y, x, i);
-                }
-            }
-        }
-        inbetween = false;
-        for (int i = x + 1; i < 8; i++)
-        {
-            for (int j = x + 1; j < i; j++)
-            {
-                if (!positions[j][y].substring(0, 1).equals("0"))
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[i][y].substring(1, 2).equals("0"))
-            {
-                if (!inbetween) {
-                    move(board, positions, x, y, i, y);
-                }
-            }
-            if (positions[i][y].substring(0, 1).equals("B"))
-            {
-                if (!inbetween)
-                {
-                    take(board, positions, x, y, i, y);
-                }
-            }
-        }
-        inbetween = false;
-        for (int i = x - 1; i > -1; i--)
-        {
-            for (int j = x - 1; j > i; j--)
-            {
-                if (!positions[j][y].substring(0, 1).equals("0"))
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[i][y].substring(1, 2).equals("0"))
-            {
-                if (!inbetween) {
-                    move(board, positions, x, y, i, y);
-                }
-            }
-            if (positions[i][y].substring(0, 1).equals("B"))
-            {
-                if (!inbetween)
-                {
-                    take(board, positions, x, y, i, y);
-                }
-            }
-        }
-    }
-    private void setKnight(ImageView[][] board, String[][] positions, int x, int y)
-    {
-        if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
-        {
-            setActions(board, positions);
-        }
-        if (board(board, positions) == 2 && !searchingForCheckmate2 && !CPUsearch[2] && !CPUsearch[3])
-        {
-            setActions(board, positions);
-        }
-
-        if (x + 1 < 8 && y + 2 < 8)
-        {
-            if (!positions[x + 1][y + 2].substring(0, 1).equals("W"))
-            {
-                if (positions[x + 1][y + 2].substring(0, 1).equals("B"))
-                {
-                    take(board, positions, x, y, x + 1, y + 2);
-                }
-                else
-                {
-                    move(board, positions, x, y, x + 1, y + 2);
-                }
-            }
-        }
-        if (x + 2 < 8 && y + 1 < 8)
-        {
-            if (!positions[x + 2][y + 1].substring(0, 1).equals("W"))
-            {
-                if (positions[x + 2][y + 1].substring(0, 1).equals("B"))
-                {
-                    take(board, positions, x, y, x + 2, y + 1);
-                }
-                else
-                {
-                    move(board, positions, x, y, x + 2, y + 1);
-                }
-            }
-        }
-        if (x - 1 > -1 && y + 2 < 8)
-        {
-            if (!positions[x - 1][y + 2].substring(0, 1).equals("W"))
-            {
-                if (positions[x - 1][y + 2].substring(0, 1).equals("B"))
-                {
-                    take(board, positions, x, y, x - 1, y + 2);
-                } else {
-                    move(board, positions, x, y, x - 1, y + 2);
-                }
-            }
-        }
-        if (x - 2 > -1 && y + 1 < 8)
-        {
-            if (!positions[x - 2][y + 1].substring(0, 1).equals("W"))
-            {
-                if (positions[x - 2][y + 1].substring(0, 1).equals("B"))
-                {
-                    take(board, positions, x, y, x - 2, y + 1);
-                } else {
-                    move(board, positions, x, y, x - 2, y + 1);
-                }
-            }
-        }
-        if (x + 1 < 8 && y - 2 > -1)
-        {
-            if (!positions[x + 1][y - 2].substring(0, 1).equals("W"))
-            {
-                if (positions[x + 1][y - 2].substring(0, 1).equals("B"))
-                {
-                    take(board, positions, x, y, x + 1, y - 2);
-                } else {
-                    move(board, positions, x, y, x + 1, y - 2);
-                }
-            }
-        }
-        if (x + 2 < 8 && y - 1 > -1)
-        {
-            if (!positions[x + 2][y - 1].substring(0, 1).equals("W"))
-            {
-                if (positions[x + 2][y - 1].substring(0, 1).equals("B"))
-                {
-                    take(board, positions, x, y, x + 2, y - 1);
-                }
-                else
-                {
-                    move(board, positions, x, y, x + 2, y - 1);
-                }
-            }
-        }
-        if (x - 1 > -1 && y - 2 > -1)
-        {
-            if (!positions[x - 1][y - 2].substring(0, 1).equals("W"))
-            {
-                if (positions[x  - 1][y - 2].substring(0, 1).equals("B"))
-                {
-                    take(board, positions, x, y, x - 1, y - 2);
-                } else {
-                    move(board, positions, x, y, x - 1, y - 2);
-                }
-            }
-        }
-        if (x - 2 > -1 && y - 1 > -1)
-        {
-            if (!positions[x - 2][y - 1].substring(0, 1).equals("W"))
-            {
-                if (positions[x - 2][y - 1].substring(0, 1).equals("B"))
-                {
-                    take(board, positions, x, y, x - 2, y - 1);
-                } else {
-                    move(board, positions, x, y, x - 2, y - 1);
-                }
-            }
-        }
-    }
-    private void setBishop(ImageView[][] board, String[][] positions, int x, int y)
-    {
-        if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
-        {
-            setActions(board, positions);
-        }
-        if (board(board, positions) == 2 && !searchingForCheckmate2 && !CPUsearch[2] && !CPUsearch[3])
-        {
-            setActions(board, positions);
-        }
-
-        boolean inbetween = false;
-        int z = x;
-        if (y > x)
-        {
-            z = y;
-        }
-        for (int i = 1; i < 8 - z; i++)
-        {
-            for (int j = 1; j < i; j++)
-            {
-                if (!positions[x + j][y + j].substring(0, 1).equals("0"))
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[x + i][y + i].substring(0, 1).equals("0"))
-            {
-                if (!inbetween) {
-                    move(board, positions, x, y, x + i, y + i);
-                }
-            }
-            if (positions[x + i][y + i].substring(0, 1).equals("B"))
-            {
-                if (!inbetween)
-                {
-                    take(board, positions, x, y, x + i, y + i);
-                }
-            }
-        }
-        inbetween = false;
-        if (x < y)
-        {
-            z = x;
-        }
-        else
-        {
-            z = y;
-        }
-        for (int i = 1; i < z+1; i++)
-        {
-            for (int j = 1; j < i; j++)
-            {
-                if (!positions[x - j][y - j].substring(0, 1).equals("0"))
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[x - i][y - i].substring(0, 1).equals("0"))
-            {
-                if (!inbetween) {
-                    move(board, positions, x, y, x - i, y - i);
-                }
-            }
-            if (positions[x - i][y - i].substring(0, 1).equals("B"))
-            {
-                if (!inbetween)
-                {
-                    take(board, positions, x, y, x - i, y - i);
-                }
-            }
-        }
-        inbetween = false;
-        if (7 - x < y)
-        {
-            z = 7 - x;
-        }
-        else
-        {
-            z = y;
-        }
-        for (int i = 1; i < z+1; i++)
-        {
-            for (int j = 1; j < i; j++)
-            {
-                if (!positions[x + j][y - j].substring(0, 1).equals("0"))
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[x + i][y - i].substring(0, 1).equals("0"))
-            {
-                if (!inbetween) {
-                    move(board, positions, x, y, x + i, y - i);
-                }
-            }
-            if (positions[x + i][y - i].substring(0, 1).equals("B"))
-            {
-                if (!inbetween)
-                {
-                    take(board, positions, x, y, x + i, y - i);
-                }
-            }
-        }
-        inbetween = false;
-        if (7 - y < x)
-        {
-            z = 7 - y;
-        }
-        else
-        {
-            z = x;
-        }
-        for (int i = 1; i < z+1; i++)
-        {
-            for (int j = 1; j < i; j++)
-            {
-                if (!positions[x - j][y + j].substring(0, 1).equals("0"))
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[x - i][y + i].substring(0, 1).equals("0"))
-            {
-                if (!inbetween) {
-                    move(board, positions, x, y, x - i, y + i);
-                }
-            }
-            if (positions[x - i][y + i].substring(0, 1).equals("B"))
-            {
-                if (!inbetween)
-                {
-                    take(board, positions, x, y, x - i, y + i);
-                }
-            }
-        }
-    }
-    private void setQueen(ImageView[][] board, String[][] positions, int x, int y)
-    {
-        if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
-        {
-            setActions(board, positions);
-        }
-        if (board(board, positions) == 2 && !searchingForCheckmate2 && !CPUsearch[2] && !CPUsearch[3])
-        {
-            setActions(board, positions);
-        }
-
-        boolean inbetween = false;
-        for (int i = y + 1; i < 8; i++)
-        {
-            for (int j = y + 1; j < i; j++)
-            {
-                if (!positions[x][j].substring(0, 1).equals("0"))
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[x][i].substring(1, 2).equals("0"))
-            {
-                if (!inbetween) {
-                    move(board, positions, x, y, x, i);
-                }
-            }
-            if (positions[x][i].substring(0, 1).equals("B"))
-            {
-                if (!inbetween)
-                {
-                    take(board, positions, x, y, x, i);
-                }
-            }
-        }
-        inbetween = false;
-        for (int i = y - 1; i > -1; i--)
-        {
-            for (int j = y - 1; j > i; j--)
-            {
-                if (!positions[x][j].substring(0, 1).equals("0"))
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[x][i].substring(1, 2).equals("0"))
-            {
-                if (!inbetween) {
-                    move(board, positions, x, y, x, i);
-                }
-            }
-            if (positions[x][i].substring(0, 1).equals("B"))
-            {
-                if (!inbetween)
-                {
-                    take(board, positions, x, y, x, i);
-                }
-            }
-        }
-        inbetween = false;
-        for (int i = x + 1; i < 8; i++)
-        {
-            for (int j = x + 1; j < i; j++)
-            {
-                if (!positions[j][y].substring(0, 1).equals("0"))
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[i][y].substring(1, 2).equals("0"))
-            {
-                if (!inbetween) {
-                    move(board, positions, x, y, i, y);
-                }
-            }
-            if (positions[i][y].substring(0, 1).equals("B"))
-            {
-                if (!inbetween)
-                {
-                    take(board, positions, x, y, i, y);
-                }
-            }
-        }
-        inbetween = false;
-        for (int i = x - 1; i > -1; i--)
-        {
-            for (int j = x - 1; j > i; j--)
-            {
-                if (!positions[j][y].substring(0, 1).equals("0"))
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[i][y].substring(1, 2).equals("0"))
-            {
-                if (!inbetween) {
-                    move(board, positions, x, y, i, y);
-                }
-            }
-            if (positions[i][y].substring(0, 1).equals("B"))
-            {
-                if (!inbetween)
-                {
-                    take(board, positions, x, y, i, y);
-                }
-            }
-        }
-        inbetween = false;
-        int z = x;
-        if (y > x)
-        {
-            z = y;
-        }
-        for (int i = 1; i < 8 - z; i++)
-        {
-            for (int j = 1; j < i; j++)
-            {
-                if (!positions[x + j][y + j].substring(0, 1).equals("0"))
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[x + i][y + i].substring(0, 1).equals("0"))
-            {
-                if (!inbetween) {
-                    move(board, positions, x, y, x + i, y + i);
-                }
-            }
-            if (positions[x + i][y + i].substring(0, 1).equals("B"))
-            {
-                if (!inbetween)
-                {
-                    take(board, positions, x, y, x + i, y + i);
-                }
-            }
-        }
-        inbetween = false;
-        if (x < y)
-        {
-            z = x;
-        }
-        else
-        {
-            z = y;
-        }
-        for (int i = 1; i < z+1; i++)
-        {
-            for (int j = 1; j < i; j++)
-            {
-                if (!positions[x - j][y - j].substring(0, 1).equals("0"))
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[x - i][y - i].substring(0, 1).equals("0"))
-            {
-                if (!inbetween) {
-                    move(board, positions, x, y, x - i, y - i);
-                }
-            }
-            if (positions[x - i][y - i].substring(0, 1).equals("B"))
-            {
-                if (!inbetween)
-                {
-                    take(board, positions, x, y, x - i, y - i);
-                }
-            }
-        }
-        inbetween = false;
-        if (7 - x < y)
-        {
-            z = 7 - x;
-        }
-        else
-        {
-            z = y;
-        }
-        for (int i = 1; i < z+1; i++)
-        {
-            for (int j = 1; j < i; j++)
-            {
-                if (!positions[x + j][y - j].substring(0, 1).equals("0"))
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[x + i][y - i].substring(0, 1).equals("0"))
-            {
-                if (!inbetween) {
-                    move(board, positions, x, y, x + i, y - i);
-                }
-            }
-            if (positions[x + i][y - i].substring(0, 1).equals("B"))
-            {
-                if (!inbetween)
-                {
-                    take(board, positions, x, y, x + i, y - i);
-                }
-            }
-        }
-        inbetween = false;
-        if (7 - y < x)
-        {
-            z = 7 - y;
-        }
-        else
-        {
-            z = x;
-        }
-        for (int i = 1; i < z+1; i++)
-        {
-            for (int j = 1; j < i; j++)
-            {
-                if (!positions[x - j][y + j].substring(0, 1).equals("0"))
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[x - i][y + i].substring(0, 1).equals("0"))
-            {
-                if (!inbetween) {
-                    move(board, positions, x, y, x - i, y + i);
-                }
-            }
-            if (positions[x - i][y + i].substring(0, 1).equals("B"))
-            {
-                if (!inbetween)
-                {
-                    take(board, positions, x, y, x - i, y + i);
-                }
-            }
-        }
-    }
-    private void setKing(ImageView[][] board, String[][] positions, int x, int y)
-    {
-        if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
-        {
-            setActions(board, positions);
-        }
-        if (board(board, positions) == 2 && !searchingForCheckmate2 && !CPUsearch[2] && !CPUsearch[3])
-        {
-            setActions(board, positions);
-        }
-
-        if (x + 1 < 8)
-        {
-            if (positions[x + 1][y].substring(1, 2).equals("0"))
-            {
-                move(board, positions, x, y, x + 1 ,y);
-                if (positions[6][0].substring(1, 2).equals("0") && positions[4][0].substring(1, 2).equals("K"))
-                {
-                    positions[5][0] = "W" + positions[5][0].substring(1, 4);
-                    positions[6][0] = "W" + positions[6][0].substring(1, 4);
-                    if (board(board, positions) == 1)
-                    {
-
-                        if (whiteCastleKing1 && positions[6][0].substring(1, 2).equals("0") && !checkCheck(positions, 4, 0) && !checkCheck(positions, 5, 0) && !checkCheck(positions, 6, 0))
-                        {
-                            positions[5][0] = "0" + positions[5][0].substring(1, 4);
-                            positions[6][0] = "0" + positions[6][0].substring(1, 4);
-                            whiteKingCastle(board, positions, x, y, 6, 0);
-                        }
-                    }
-                    else
-                    {
-                        if (whiteCastleKing2 && positions[6][0].substring(1, 2).equals("0") && !checkCheck(positions, 4, 0) && !checkCheck(positions, 5, 0) && !checkCheck(positions, 6, 0))
-                        {
-                            positions[5][0] = "0" + positions[5][0].substring(1, 4);
-                            positions[6][0] = "0" + positions[6][0].substring(1, 4);
-                            whiteKingCastle(board, positions, x, y, 6, 0);
-                        }
-                    }
-                    positions[5][0] = "0" + positions[5][0].substring(1, 4);
-                    positions[6][0] = "0" + positions[6][0].substring(1, 4);
-                }
-
-            }
-            if (positions[x + 1][y].substring(0, 1).equals("B"))
-            {
-                take(board, positions, x, y, x + 1, y);
-            }
-            if (y + 1 < 8)
-            {
-                if (positions[x + 1][y+1].substring(1, 2).equals("0"))
-                {
-                    move(board, positions, x, y, x + 1 ,y+1);
-                }
-                if (positions[x + 1][y + 1].substring(0, 1).equals("B"))
-                {
-                    take(board, positions, x, y, x + 1, y+1);
-                }
-            }
-            if (y - 1 > -1)
-            {
-                if (positions[x + 1][y-1].substring(1, 2).equals("0"))
-                {
-                    move(board, positions, x, y, x + 1 ,y-1);
-                }
-                if (positions[x + 1][y - 1].substring(0, 1).equals("B"))
-                {
-                    take(board, positions, x, y, x + 1, y - 1);
-                }
-            }
-        }
-        if (x - 1 > -1)
-        {
-            if (positions[x - 1][y].substring(1, 2).equals("0"))
-            {
-                move(board, positions, x, y, x - 1, y);
-                if (positions[2][0].substring(1, 2).equals("0") && positions[1][0].substring(1, 2).equals("0") && positions[4][0].substring(1, 2).equals("K"))
-                {
-                    positions[1][0] = "W" + positions[1][0].substring(1, 4);
-                    positions[2][0] = "W" + positions[2][0].substring(1, 4);
-                    positions[3][0] = "W" + positions[3][0].substring(1, 4);
-                    if (board(board, positions) == 1)
-                    {
-
-                        if (whiteCastleQueen1 && positions[2][0].substring(1, 2).equals("0") && !checkCheck(positions, 1, 0) && !checkCheck(positions, 2, 0) && !checkCheck(positions, 3, 0) && !checkCheck(positions, 4, 0))
-                        {
-                            positions[1][0] = "0" + positions[1][0].substring(1, 4);
-                            positions[2][0] = "0" + positions[2][0].substring(1, 4);
-                            positions[3][0] = "0" + positions[3][0].substring(1, 4);
-                            whiteQueenCastle(board, positions, x, y, 2, 0);
-                        }
-                    }
-                    else
-                    {
-                        if (whiteCastleQueen2 && positions[2][0].substring(1, 2).equals("0") && !checkCheck(positions, 1, 0) && !checkCheck(positions, 2, 0) && !checkCheck(positions, 3, 0) && !checkCheck(positions, 4, 0))
-                        {
-                            positions[1][0] = "0" + positions[1][0].substring(1, 4);
-                            positions[2][0] = "0" + positions[2][0].substring(1, 4);
-                            positions[3][0] = "0" + positions[3][0].substring(1, 4);
-                            whiteQueenCastle(board, positions, x, y, 2, 0);
-                        }
-                    }
-                    positions[1][0] = "0" + positions[1][0].substring(1, 4);
-                    positions[2][0] = "0" + positions[2][0].substring(1, 4);
-                    positions[3][0] = "0" + positions[3][0].substring(1, 4);
-                }
-
-            }
-            if (positions[x - 1][y].substring(0, 1).equals("B"))
-            {
-                take(board, positions, x, y, x - 1 ,y);
-            }
-            if (y + 1 < 8)
-            {
-                if (positions[x - 1][y + 1].substring(1, 2).equals("0"))
-                {
-                    move(board, positions, x, y, x - 1 ,y+1);
-                }
-                if (positions[x - 1][y + 1].substring(0, 1).equals("B"))
-                {
-                    take(board, positions, x, y, x - 1, y+1);
-                }
-            }
-            if (y - 1 > -1)
-            {
-                if (positions[x - 1][y - 1].substring(1, 2).equals("0"))
-                {
-                    move(board, positions, x, y, x - 1 ,y-1);
-                }
-                if (positions[x - 1][y - 1].substring(0, 1).equals("B"))
-                {
-                    take(board, positions, x, y, x - 1, y - 1);
-                }
-            }
-        }
-        if (y + 1 < 8)
-        {
-            if (positions[x][y+1].substring(1, 2).equals("0"))
-            {
-                move(board, positions, x, y, x, y + 1);
-            }
-            if (positions[x][y + 1].substring(0, 1).equals("B"))
-            {
-                take(board, positions, x, y, x, y+1);
-            }
-        }
-        if (y - 1 > -1)
-        {
-            if (positions[x][y - 1].substring(1, 2).equals("0"))
-            {
-                move(board, positions, x, y, x, y - 1);
-            }
-            if (positions[x][y - 1].substring(0, 1).equals("B"))
-            {
-                take(board, positions, x, y, x, y - 1);
-            }
-        }
+//        boolean inbetween = false;
+//        for (int i = y + 1; i < 8; i++)
+//        {
+//            for (int j = y + 1; j < i; j++)
+//            {
+//                if (!positions[x][j].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[x][i].substring(1, 2).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, x, i);
+//                }
+//            }
+//            if (positions[x][i].substring(0, 1).equals("B"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, x, i);
+//                }
+//            }
+//        }
+//        inbetween = false;
+//        for (int i = y - 1; i > -1; i--)
+//        {
+//            for (int j = y - 1; j > i; j--)
+//            {
+//                if (!positions[x][j].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[x][i].substring(1, 2).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, x, i);
+//                }
+//            }
+//            if (positions[x][i].substring(0, 1).equals("B"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, x, i);
+//                }
+//            }
+//        }
+//        inbetween = false;
+//        for (int i = x + 1; i < 8; i++)
+//        {
+//            for (int j = x + 1; j < i; j++)
+//            {
+//                if (!positions[j][y].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[i][y].substring(1, 2).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, i, y);
+//                }
+//            }
+//            if (positions[i][y].substring(0, 1).equals("B"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, i, y);
+//                }
+//            }
+//        }
+//        inbetween = false;
+//        for (int i = x - 1; i > -1; i--)
+//        {
+//            for (int j = x - 1; j > i; j--)
+//            {
+//                if (!positions[j][y].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[i][y].substring(1, 2).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, i, y);
+//                }
+//            }
+//            if (positions[i][y].substring(0, 1).equals("B"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, i, y);
+//                }
+//            }
+//        }
     }
 
 
-    private void setBPawn(ImageView[][] board, String[][] positions, int x, int y)
-    {
-        if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
-        {
-            setActions(board, positions);
-        }
-        if (board(board, positions) == 2 && !searchingForCheckmate2 && !CPUsearch[2] && !CPUsearch[3])
-        {
-            setActions(board, positions);
-        }
+//    private void setPawn(ImageView[][] board, String[][] positions, int x, int y)
+//    {
+//        if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
+//        {
+//            setActions(board, positions);
+//        }
+//        if (board(board, positions) == 2 && !searchingForCheckmate2 && !CPUsearch[2] && !CPUsearch[3])
+//        {
+//            setActions(board, positions);
+//        }
+//
+//        if (y < 7)
+//        {
+//            if (positions[x][y + 1].substring(1, 2).equals("0"))
+//            {
+//                move(board, positions, x, y, x, y + 1);
+//                if (y == 1)
+//                {
+//                    if (positions[x][y + 2].substring(1, 2).equals("0"))
+//                    {
+//                        move(board, positions, x, y, x, y + 2);
+//                    }
+//                }
+//            }
+//        }
+//        if (x < 7 && y < 7)
+//        {
+//            if (positions[x + 1][y + 1].substring(0, 1).equals("B"))
+//            {
+//                take(board, positions, x, y, x + 1, y + 1);
+//            }
+//            if (y == 4 && positions[x + 1][y].substring(0, 2).equals("BP"))
+//            {
+//                if (board(board, positions) == 1)
+//                {
+//                    if (enP[x + 1][1].substring(0, 1).equals("1") && enP[x + 1][1].substring(1, enP[x + 1][1].length()).equals(Integer.toString(board1Turn)))
+//                    {
+//                        whiteEnP(board, positions, x, x + 1);
+//                    }
+//                }
+//                if (board(board, positions) == 2)
+//                {
+//                    if (enP[x + 1][3].substring(0, 1).equals("1") && enP[x + 1][3].substring(1, enP[x + 1][3].length()).equals(Integer.toString(board2Turn)))
+//                    {
+//                        whiteEnP(board, positions, x, x + 1);
+//                    }
+//                }
+//            }
+//        }
+//        if (x > 0 && y < 7)
+//        {
+//            if (positions[x - 1][y + 1].substring(0, 1).equals("B"))
+//            {
+//                take(board, positions, x, y, x - 1, y + 1);
+//            }
+//            if (y == 4 && positions[x - 1][y].substring(0, 2).equals("BP"))
+//            {
+//                if (board(board, positions) == 1)
+//                {
+//                    if (enP[x - 1][1].substring(0, 1).equals("1") && enP[x - 1][1].substring(1, enP[x - 1][1].length()).equals(Integer.toString(board1Turn)))
+//                    {
+//                        whiteEnP(board, positions, x, x - 1);
+//                    }
+//                }
+//                if (board(board, positions) == 2)
+//                {
+//                    if (enP[x - 1][3].substring(0, 1).equals("1") && enP[x - 1][3].substring(1, enP[x - 1][3].length()).equals(Integer.toString(board2Turn)))
+//                    {
+//                        whiteEnP(board, positions, x, x - 1);
+//                    }
+//                }
+//            }
+//        }
+//
+//    }
+//
+//    private void setRook(ImageView[][] board, String[][] positions, int x, int y)
+//    {
+//        if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
+//        {
+//            setActions(board, positions);
+//        }
+//        if (board(board, positions) == 2 && !searchingForCheckmate2 && !CPUsearch[2] && !CPUsearch[3])
+//        {
+//            setActions(board, positions);
+//        }
+//
+//        boolean inbetween = false;
+//        for (int i = y + 1; i < 8; i++)
+//        {
+//            for (int j = y + 1; j < i; j++)
+//            {
+//                if (!positions[x][j].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[x][i].substring(1, 2).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, x, i);
+//                }
+//            }
+//            if (positions[x][i].substring(0, 1).equals("B"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, x, i);
+//                }
+//            }
+//        }
+//        inbetween = false;
+//        for (int i = y - 1; i > -1; i--)
+//        {
+//            for (int j = y - 1; j > i; j--)
+//            {
+//                if (!positions[x][j].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[x][i].substring(1, 2).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, x, i);
+//                }
+//            }
+//            if (positions[x][i].substring(0, 1).equals("B"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, x, i);
+//                }
+//            }
+//        }
+//        inbetween = false;
+//        for (int i = x + 1; i < 8; i++)
+//        {
+//            for (int j = x + 1; j < i; j++)
+//            {
+//                if (!positions[j][y].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[i][y].substring(1, 2).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, i, y);
+//                }
+//            }
+//            if (positions[i][y].substring(0, 1).equals("B"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, i, y);
+//                }
+//            }
+//        }
+//        inbetween = false;
+//        for (int i = x - 1; i > -1; i--)
+//        {
+//            for (int j = x - 1; j > i; j--)
+//            {
+//                if (!positions[j][y].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[i][y].substring(1, 2).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, i, y);
+//                }
+//            }
+//            if (positions[i][y].substring(0, 1).equals("B"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, i, y);
+//                }
+//            }
+//        }
+//    }
+//
+//    private void setKnight(ImageView[][] board, String[][] positions, int x, int y)
+//    {
+//        if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
+//        {
+//            setActions(board, positions);
+//        }
+//        if (board(board, positions) == 2 && !searchingForCheckmate2 && !CPUsearch[2] && !CPUsearch[3])
+//        {
+//            setActions(board, positions);
+//        }
+//
+//        if (x + 1 < 8 && y + 2 < 8)
+//        {
+//            if (!positions[x + 1][y + 2].substring(0, 1).equals("W"))
+//            {
+//                if (positions[x + 1][y + 2].substring(0, 1).equals("B"))
+//                {
+//                    take(board, positions, x, y, x + 1, y + 2);
+//                }
+//                else
+//                {
+//                    move(board, positions, x, y, x + 1, y + 2);
+//                }
+//            }
+//        }
+//        if (x + 2 < 8 && y + 1 < 8)
+//        {
+//            if (!positions[x + 2][y + 1].substring(0, 1).equals("W"))
+//            {
+//                if (positions[x + 2][y + 1].substring(0, 1).equals("B"))
+//                {
+//                    take(board, positions, x, y, x + 2, y + 1);
+//                }
+//                else
+//                {
+//                    move(board, positions, x, y, x + 2, y + 1);
+//                }
+//            }
+//        }
+//        if (x - 1 > -1 && y + 2 < 8)
+//        {
+//            if (!positions[x - 1][y + 2].substring(0, 1).equals("W"))
+//            {
+//                if (positions[x - 1][y + 2].substring(0, 1).equals("B"))
+//                {
+//                    take(board, positions, x, y, x - 1, y + 2);
+//                }
+//                else
+//                {
+//                    move(board, positions, x, y, x - 1, y + 2);
+//                }
+//            }
+//        }
+//        if (x - 2 > -1 && y + 1 < 8)
+//        {
+//            if (!positions[x - 2][y + 1].substring(0, 1).equals("W"))
+//            {
+//                if (positions[x - 2][y + 1].substring(0, 1).equals("B"))
+//                {
+//                    take(board, positions, x, y, x - 2, y + 1);
+//                }
+//                else
+//                {
+//                    move(board, positions, x, y, x - 2, y + 1);
+//                }
+//            }
+//        }
+//        if (x + 1 < 8 && y - 2 > -1)
+//        {
+//            if (!positions[x + 1][y - 2].substring(0, 1).equals("W"))
+//            {
+//                if (positions[x + 1][y - 2].substring(0, 1).equals("B"))
+//                {
+//                    take(board, positions, x, y, x + 1, y - 2);
+//                }
+//                else
+//                {
+//                    move(board, positions, x, y, x + 1, y - 2);
+//                }
+//            }
+//        }
+//        if (x + 2 < 8 && y - 1 > -1)
+//        {
+//            if (!positions[x + 2][y - 1].substring(0, 1).equals("W"))
+//            {
+//                if (positions[x + 2][y - 1].substring(0, 1).equals("B"))
+//                {
+//                    take(board, positions, x, y, x + 2, y - 1);
+//                }
+//                else
+//                {
+//                    move(board, positions, x, y, x + 2, y - 1);
+//                }
+//            }
+//        }
+//        if (x - 1 > -1 && y - 2 > -1)
+//        {
+//            if (!positions[x - 1][y - 2].substring(0, 1).equals("W"))
+//            {
+//                if (positions[x - 1][y - 2].substring(0, 1).equals("B"))
+//                {
+//                    take(board, positions, x, y, x - 1, y - 2);
+//                }
+//                else
+//                {
+//                    move(board, positions, x, y, x - 1, y - 2);
+//                }
+//            }
+//        }
+//        if (x - 2 > -1 && y - 1 > -1)
+//        {
+//            if (!positions[x - 2][y - 1].substring(0, 1).equals("W"))
+//            {
+//                if (positions[x - 2][y - 1].substring(0, 1).equals("B"))
+//                {
+//                    take(board, positions, x, y, x - 2, y - 1);
+//                }
+//                else
+//                {
+//                    move(board, positions, x, y, x - 2, y - 1);
+//                }
+//            }
+//        }
+//    }
+//
+//    private void setBishop(ImageView[][] board, String[][] positions, int x, int y)
+//    {
+//        if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
+//        {
+//            setActions(board, positions);
+//        }
+//        if (board(board, positions) == 2 && !searchingForCheckmate2 && !CPUsearch[2] && !CPUsearch[3])
+//        {
+//            setActions(board, positions);
+//        }
+//
+//        boolean inbetween = false;
+//        int z = x;
+//        if (y > x)
+//        {
+//            z = y;
+//        }
+//        for (int i = 1; i < 8 - z; i++)
+//        {
+//            for (int j = 1; j < i; j++)
+//            {
+//                if (!positions[x + j][y + j].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[x + i][y + i].substring(0, 1).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, x + i, y + i);
+//                }
+//            }
+//            if (positions[x + i][y + i].substring(0, 1).equals("B"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, x + i, y + i);
+//                }
+//            }
+//        }
+//        inbetween = false;
+//        if (x < y)
+//        {
+//            z = x;
+//        }
+//        else
+//        {
+//            z = y;
+//        }
+//        for (int i = 1; i < z + 1; i++)
+//        {
+//            for (int j = 1; j < i; j++)
+//            {
+//                if (!positions[x - j][y - j].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[x - i][y - i].substring(0, 1).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, x - i, y - i);
+//                }
+//            }
+//            if (positions[x - i][y - i].substring(0, 1).equals("B"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, x - i, y - i);
+//                }
+//            }
+//        }
+//        inbetween = false;
+//        if (7 - x < y)
+//        {
+//            z = 7 - x;
+//        }
+//        else
+//        {
+//            z = y;
+//        }
+//        for (int i = 1; i < z + 1; i++)
+//        {
+//            for (int j = 1; j < i; j++)
+//            {
+//                if (!positions[x + j][y - j].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[x + i][y - i].substring(0, 1).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, x + i, y - i);
+//                }
+//            }
+//            if (positions[x + i][y - i].substring(0, 1).equals("B"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, x + i, y - i);
+//                }
+//            }
+//        }
+//        inbetween = false;
+//        if (7 - y < x)
+//        {
+//            z = 7 - y;
+//        }
+//        else
+//        {
+//            z = x;
+//        }
+//        for (int i = 1; i < z + 1; i++)
+//        {
+//            for (int j = 1; j < i; j++)
+//            {
+//                if (!positions[x - j][y + j].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[x - i][y + i].substring(0, 1).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, x - i, y + i);
+//                }
+//            }
+//            if (positions[x - i][y + i].substring(0, 1).equals("B"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, x - i, y + i);
+//                }
+//            }
+//        }
+//    }
+//
+//    private void setQueen(ImageView[][] board, String[][] positions, int x, int y)
+//    {
+//        if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
+//        {
+//            setActions(board, positions);
+//        }
+//        if (board(board, positions) == 2 && !searchingForCheckmate2 && !CPUsearch[2] && !CPUsearch[3])
+//        {
+//            setActions(board, positions);
+//        }
+//
+//        boolean inbetween = false;
+//        for (int i = y + 1; i < 8; i++)
+//        {
+//            for (int j = y + 1; j < i; j++)
+//            {
+//                if (!positions[x][j].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[x][i].substring(1, 2).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, x, i);
+//                }
+//            }
+//            if (positions[x][i].substring(0, 1).equals("B"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, x, i);
+//                }
+//            }
+//        }
+//        inbetween = false;
+//        for (int i = y - 1; i > -1; i--)
+//        {
+//            for (int j = y - 1; j > i; j--)
+//            {
+//                if (!positions[x][j].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[x][i].substring(1, 2).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, x, i);
+//                }
+//            }
+//            if (positions[x][i].substring(0, 1).equals("B"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, x, i);
+//                }
+//            }
+//        }
+//        inbetween = false;
+//        for (int i = x + 1; i < 8; i++)
+//        {
+//            for (int j = x + 1; j < i; j++)
+//            {
+//                if (!positions[j][y].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[i][y].substring(1, 2).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, i, y);
+//                }
+//            }
+//            if (positions[i][y].substring(0, 1).equals("B"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, i, y);
+//                }
+//            }
+//        }
+//        inbetween = false;
+//        for (int i = x - 1; i > -1; i--)
+//        {
+//            for (int j = x - 1; j > i; j--)
+//            {
+//                if (!positions[j][y].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[i][y].substring(1, 2).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, i, y);
+//                }
+//            }
+//            if (positions[i][y].substring(0, 1).equals("B"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, i, y);
+//                }
+//            }
+//        }
+//        inbetween = false;
+//        int z = x;
+//        if (y > x)
+//        {
+//            z = y;
+//        }
+//        for (int i = 1; i < 8 - z; i++)
+//        {
+//            for (int j = 1; j < i; j++)
+//            {
+//                if (!positions[x + j][y + j].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[x + i][y + i].substring(0, 1).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, x + i, y + i);
+//                }
+//            }
+//            if (positions[x + i][y + i].substring(0, 1).equals("B"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, x + i, y + i);
+//                }
+//            }
+//        }
+//        inbetween = false;
+//        if (x < y)
+//        {
+//            z = x;
+//        }
+//        else
+//        {
+//            z = y;
+//        }
+//        for (int i = 1; i < z + 1; i++)
+//        {
+//            for (int j = 1; j < i; j++)
+//            {
+//                if (!positions[x - j][y - j].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[x - i][y - i].substring(0, 1).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, x - i, y - i);
+//                }
+//            }
+//            if (positions[x - i][y - i].substring(0, 1).equals("B"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, x - i, y - i);
+//                }
+//            }
+//        }
+//        inbetween = false;
+//        if (7 - x < y)
+//        {
+//            z = 7 - x;
+//        }
+//        else
+//        {
+//            z = y;
+//        }
+//        for (int i = 1; i < z + 1; i++)
+//        {
+//            for (int j = 1; j < i; j++)
+//            {
+//                if (!positions[x + j][y - j].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[x + i][y - i].substring(0, 1).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, x + i, y - i);
+//                }
+//            }
+//            if (positions[x + i][y - i].substring(0, 1).equals("B"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, x + i, y - i);
+//                }
+//            }
+//        }
+//        inbetween = false;
+//        if (7 - y < x)
+//        {
+//            z = 7 - y;
+//        }
+//        else
+//        {
+//            z = x;
+//        }
+//        for (int i = 1; i < z + 1; i++)
+//        {
+//            for (int j = 1; j < i; j++)
+//            {
+//                if (!positions[x - j][y + j].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[x - i][y + i].substring(0, 1).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, x - i, y + i);
+//                }
+//            }
+//            if (positions[x - i][y + i].substring(0, 1).equals("B"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, x - i, y + i);
+//                }
+//            }
+//        }
+//    }
+//
+//    private void setKing(ImageView[][] board, String[][] positions, int x, int y)
+//    {
+//        if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
+//        {
+//            setActions(board, positions);
+//        }
+//        if (board(board, positions) == 2 && !searchingForCheckmate2 && !CPUsearch[2] && !CPUsearch[3])
+//        {
+//            setActions(board, positions);
+//        }
+//
+//        if (x + 1 < 8)
+//        {
+//            if (positions[x + 1][y].substring(1, 2).equals("0"))
+//            {
+//                move(board, positions, x, y, x + 1, y);
+//                if (positions[6][0].substring(1, 2).equals("0") && positions[4][0].substring(1, 2).equals("K"))
+//                {
+//                    positions[5][0] = "W" + positions[5][0].substring(1, 4);
+//                    positions[6][0] = "W" + positions[6][0].substring(1, 4);
+//                    if (board(board, positions) == 1)
+//                    {
+//
+//                        if (whiteCastleKing1 && positions[6][0].substring(1, 2).equals("0") && !checkCheck(positions, 4, 0) && !checkCheck(positions, 5, 0) && !checkCheck(positions, 6, 0))
+//                        {
+//                            positions[5][0] = "0" + positions[5][0].substring(1, 4);
+//                            positions[6][0] = "0" + positions[6][0].substring(1, 4);
+//                            whiteKingCastle(board, positions, x, y, 6, 0);
+//                        }
+//                    }
+//                    else
+//                    {
+//                        if (whiteCastleKing2 && positions[6][0].substring(1, 2).equals("0") && !checkCheck(positions, 4, 0) && !checkCheck(positions, 5, 0) && !checkCheck(positions, 6, 0))
+//                        {
+//                            positions[5][0] = "0" + positions[5][0].substring(1, 4);
+//                            positions[6][0] = "0" + positions[6][0].substring(1, 4);
+//                            whiteKingCastle(board, positions, x, y, 6, 0);
+//                        }
+//                    }
+//                    positions[5][0] = "0" + positions[5][0].substring(1, 4);
+//                    positions[6][0] = "0" + positions[6][0].substring(1, 4);
+//                }
+//
+//            }
+//            if (positions[x + 1][y].substring(0, 1).equals("B"))
+//            {
+//                take(board, positions, x, y, x + 1, y);
+//            }
+//            if (y + 1 < 8)
+//            {
+//                if (positions[x + 1][y + 1].substring(1, 2).equals("0"))
+//                {
+//                    move(board, positions, x, y, x + 1, y + 1);
+//                }
+//                if (positions[x + 1][y + 1].substring(0, 1).equals("B"))
+//                {
+//                    take(board, positions, x, y, x + 1, y + 1);
+//                }
+//            }
+//            if (y - 1 > -1)
+//            {
+//                if (positions[x + 1][y - 1].substring(1, 2).equals("0"))
+//                {
+//                    move(board, positions, x, y, x + 1, y - 1);
+//                }
+//                if (positions[x + 1][y - 1].substring(0, 1).equals("B"))
+//                {
+//                    take(board, positions, x, y, x + 1, y - 1);
+//                }
+//            }
+//        }
+//        if (x - 1 > -1)
+//        {
+//            if (positions[x - 1][y].substring(1, 2).equals("0"))
+//            {
+//                move(board, positions, x, y, x - 1, y);
+//                if (positions[2][0].substring(1, 2).equals("0") && positions[1][0].substring(1, 2).equals("0") && positions[4][0].substring(1, 2).equals("K"))
+//                {
+//                    positions[1][0] = "W" + positions[1][0].substring(1, 4);
+//                    positions[2][0] = "W" + positions[2][0].substring(1, 4);
+//                    positions[3][0] = "W" + positions[3][0].substring(1, 4);
+//                    if (board(board, positions) == 1)
+//                    {
+//
+//                        if (whiteCastleQueen1 && positions[2][0].substring(1, 2).equals("0") && !checkCheck(positions, 1, 0) && !checkCheck(positions, 2, 0) && !checkCheck(positions, 3, 0) && !checkCheck(positions, 4, 0))
+//                        {
+//                            positions[1][0] = "0" + positions[1][0].substring(1, 4);
+//                            positions[2][0] = "0" + positions[2][0].substring(1, 4);
+//                            positions[3][0] = "0" + positions[3][0].substring(1, 4);
+//                            whiteQueenCastle(board, positions, x, y, 2, 0);
+//                        }
+//                    }
+//                    else
+//                    {
+//                        if (whiteCastleQueen2 && positions[2][0].substring(1, 2).equals("0") && !checkCheck(positions, 1, 0) && !checkCheck(positions, 2, 0) && !checkCheck(positions, 3, 0) && !checkCheck(positions, 4, 0))
+//                        {
+//                            positions[1][0] = "0" + positions[1][0].substring(1, 4);
+//                            positions[2][0] = "0" + positions[2][0].substring(1, 4);
+//                            positions[3][0] = "0" + positions[3][0].substring(1, 4);
+//                            whiteQueenCastle(board, positions, x, y, 2, 0);
+//                        }
+//                    }
+//                    positions[1][0] = "0" + positions[1][0].substring(1, 4);
+//                    positions[2][0] = "0" + positions[2][0].substring(1, 4);
+//                    positions[3][0] = "0" + positions[3][0].substring(1, 4);
+//                }
+//
+//            }
+//            if (positions[x - 1][y].substring(0, 1).equals("B"))
+//            {
+//                take(board, positions, x, y, x - 1, y);
+//            }
+//            if (y + 1 < 8)
+//            {
+//                if (positions[x - 1][y + 1].substring(1, 2).equals("0"))
+//                {
+//                    move(board, positions, x, y, x - 1, y + 1);
+//                }
+//                if (positions[x - 1][y + 1].substring(0, 1).equals("B"))
+//                {
+//                    take(board, positions, x, y, x - 1, y + 1);
+//                }
+//            }
+//            if (y - 1 > -1)
+//            {
+//                if (positions[x - 1][y - 1].substring(1, 2).equals("0"))
+//                {
+//                    move(board, positions, x, y, x - 1, y - 1);
+//                }
+//                if (positions[x - 1][y - 1].substring(0, 1).equals("B"))
+//                {
+//                    take(board, positions, x, y, x - 1, y - 1);
+//                }
+//            }
+//        }
+//        if (y + 1 < 8)
+//        {
+//            if (positions[x][y + 1].substring(1, 2).equals("0"))
+//            {
+//                move(board, positions, x, y, x, y + 1);
+//            }
+//            if (positions[x][y + 1].substring(0, 1).equals("B"))
+//            {
+//                take(board, positions, x, y, x, y + 1);
+//            }
+//        }
+//        if (y - 1 > -1)
+//        {
+//            if (positions[x][y - 1].substring(1, 2).equals("0"))
+//            {
+//                move(board, positions, x, y, x, y - 1);
+//            }
+//            if (positions[x][y - 1].substring(0, 1).equals("B"))
+//            {
+//                take(board, positions, x, y, x, y - 1);
+//            }
+//        }
+//    }
 
-        if (y > 0) {
-            if (positions[x][y - 1].substring(1, 2).equals("0")) {
-                move(board, positions, x, y, x, y - 1);
-                if (y == 6) {
-                    if (positions[x][y - 2].substring(1, 2).equals("0")) {
-                        move(board, positions, x, y, x, y - 2);
-                    }
-                }
-            }
-        }
-        if (x < 7 && y > 0)
-        {
-            if (positions[x + 1][y - 1].substring(0, 1).equals("W"))
-            {
-                take(board, positions, x, y, x + 1, y - 1);
-            }
-            if (y == 3  && positions[x + 1][y].substring(0,2).equals("WP"))
-            {
-                if (board(board, positions) == 1)
-                {
-                    if (enP[x+1][0].substring(0, 1).equals("1") && enP[x+1][0].substring(1, enP[x+1][0].length()).equals(Integer.toString(board1Turn)))
-                    {
-                        blackEnP(board, positions, x, x + 1);
-                    }
-                }
-                if (board(board, positions) == 2)
-                {
-                    if (enP[x+1][2].substring(0, 1).equals("1") && enP[x+1][2].substring(1, enP[x+1][2].length()).equals(Integer.toString(board2Turn)))
-                    {
-                        blackEnP(board, positions, x, x + 1);
-                    }
-                }
-            }
-        }
-        if (x > 0 && y > 0)
-        {
-            if (positions[x - 1][y - 1].substring(0, 1).equals("W"))
-            {
-                take(board, positions, x, y, x - 1, y - 1);
-            }
-            if (y == 3  && positions[x - 1][y].substring(0,2).equals("WP"))
-            {
-                if (board(board, positions) == 1)
-                {
-                    if (enP[x-1][0].substring(0, 1).equals("1") && enP[x-1][0].substring(1, enP[x-1][0].length()).equals(Integer.toString(board1Turn)))
-                    {
-                        blackEnP(board, positions, x, x - 1);
-                    }
-                }
-                if (board(board, positions) == 2)
-                {
-                    if (enP[x-1][2].substring(0, 1).equals("1") && enP[x-1][2].substring(1, enP[x-1][2].length()).equals(Integer.toString(board2Turn)))
-                    {
-                        blackEnP(board, positions, x, x - 1);
-                    }
-                }
-            }
-        }
-    }
-    private void setBKnight(ImageView[][] board, String[][] positions, int x, int y)
-    {
-        if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
-        {
-            setActions(board, positions);
-        }
-        if (board(board, positions) == 2 && !searchingForCheckmate2 && !CPUsearch[2] && !CPUsearch[3])
-        {
-            setActions(board, positions);
-        }
+//
+//    private void setBPawn(ImageView[][] board, String[][] positions, int x, int y)
+//    {
+//        if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
+//        {
+//            setActions(board, positions);
+//        }
+//        if (board(board, positions) == 2 && !searchingForCheckmate2 && !CPUsearch[2] && !CPUsearch[3])
+//        {
+//            setActions(board, positions);
+//        }
+//
+//        if (y > 0)
+//        {
+//            if (positions[x][y - 1].substring(1, 2).equals("0"))
+//            {
+//                move(board, positions, x, y, x, y - 1);
+//                if (y == 6)
+//                {
+//                    if (positions[x][y - 2].substring(1, 2).equals("0"))
+//                    {
+//                        move(board, positions, x, y, x, y - 2);
+//                    }
+//                }
+//            }
+//        }
+//        if (x < 7 && y > 0)
+//        {
+//            if (positions[x + 1][y - 1].substring(0, 1).equals("W"))
+//            {
+//                take(board, positions, x, y, x + 1, y - 1);
+//            }
+//            if (y == 3 && positions[x + 1][y].substring(0, 2).equals("WP"))
+//            {
+//                if (board(board, positions) == 1)
+//                {
+//                    if (enP[x + 1][0].substring(0, 1).equals("1") && enP[x + 1][0].substring(1, enP[x + 1][0].length()).equals(Integer.toString(board1Turn)))
+//                    {
+//                        blackEnP(board, positions, x, x + 1);
+//                    }
+//                }
+//                if (board(board, positions) == 2)
+//                {
+//                    if (enP[x + 1][2].substring(0, 1).equals("1") && enP[x + 1][2].substring(1, enP[x + 1][2].length()).equals(Integer.toString(board2Turn)))
+//                    {
+//                        blackEnP(board, positions, x, x + 1);
+//                    }
+//                }
+//            }
+//        }
+//        if (x > 0 && y > 0)
+//        {
+//            if (positions[x - 1][y - 1].substring(0, 1).equals("W"))
+//            {
+//                take(board, positions, x, y, x - 1, y - 1);
+//            }
+//            if (y == 3 && positions[x - 1][y].substring(0, 2).equals("WP"))
+//            {
+//                if (board(board, positions) == 1)
+//                {
+//                    if (enP[x - 1][0].substring(0, 1).equals("1") && enP[x - 1][0].substring(1, enP[x - 1][0].length()).equals(Integer.toString(board1Turn)))
+//                    {
+//                        blackEnP(board, positions, x, x - 1);
+//                    }
+//                }
+//                if (board(board, positions) == 2)
+//                {
+//                    if (enP[x - 1][2].substring(0, 1).equals("1") && enP[x - 1][2].substring(1, enP[x - 1][2].length()).equals(Integer.toString(board2Turn)))
+//                    {
+//                        blackEnP(board, positions, x, x - 1);
+//                    }
+//                }
+//            }
+//        }
+//    }
+//
+//    private void setBKnight(ImageView[][] board, String[][] positions, int x, int y)
+//    {
+//        if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
+//        {
+//            setActions(board, positions);
+//        }
+//        if (board(board, positions) == 2 && !searchingForCheckmate2 && !CPUsearch[2] && !CPUsearch[3])
+//        {
+//            setActions(board, positions);
+//        }
+//
+//        if (x + 1 < 8 && y + 2 < 8)
+//        {
+//            if (!positions[x + 1][y + 2].substring(0, 1).equals("B"))
+//            {
+//                if (positions[x + 1][y + 2].substring(0, 1).equals("W"))
+//                {
+//                    take(board, positions, x, y, x + 1, y + 2);
+//                }
+//                else
+//                {
+//                    move(board, positions, x, y, x + 1, y + 2);
+//                }
+//            }
+//        }
+//        if (x + 2 < 8 && y + 1 < 8)
+//        {
+//            if (!positions[x + 2][y + 1].substring(0, 1).equals("B"))
+//            {
+//                if (positions[x + 2][y + 1].substring(0, 1).equals("W"))
+//                {
+//                    take(board, positions, x, y, x + 2, y + 1);
+//                }
+//                else
+//                {
+//                    move(board, positions, x, y, x + 2, y + 1);
+//                }
+//            }
+//        }
+//        if (x - 1 > -1 && y + 2 < 8)
+//        {
+//            if (!positions[x - 1][y + 2].substring(0, 1).equals("B"))
+//            {
+//                if (positions[x - 1][y + 2].substring(0, 1).equals("W"))
+//                {
+//                    take(board, positions, x, y, x - 1, y + 2);
+//                }
+//                else
+//                {
+//                    move(board, positions, x, y, x - 1, y + 2);
+//                }
+//            }
+//        }
+//        if (x - 2 > -1 && y + 1 < 8)
+//        {
+//            if (!positions[x - 2][y + 1].substring(0, 1).equals("B"))
+//            {
+//                if (positions[x - 2][y + 1].substring(0, 1).equals("W"))
+//                {
+//                    take(board, positions, x, y, x - 2, y + 1);
+//                }
+//                else
+//                {
+//                    move(board, positions, x, y, x - 2, y + 1);
+//                }
+//            }
+//        }
+//        if (x + 1 < 8 && y - 2 > -1)
+//        {
+//            if (!positions[x + 1][y - 2].substring(0, 1).equals("B"))
+//            {
+//                if (positions[x + 1][y - 2].substring(0, 1).equals("W"))
+//                {
+//                    take(board, positions, x, y, x + 1, y - 2);
+//                }
+//                else
+//                {
+//                    move(board, positions, x, y, x + 1, y - 2);
+//                }
+//            }
+//        }
+//        if (x + 2 < 8 && y - 1 > -1)
+//        {
+//            if (!positions[x + 2][y - 1].substring(0, 1).equals("B"))
+//            {
+//                if (positions[x + 2][y - 1].substring(0, 1).equals("W"))
+//                {
+//                    take(board, positions, x, y, x + 2, y - 1);
+//                }
+//                else
+//                {
+//                    move(board, positions, x, y, x + 2, y - 1);
+//                }
+//            }
+//        }
+//        if (x - 1 > -1 && y - 2 > -1)
+//        {
+//            if (!positions[x - 1][y - 2].substring(0, 1).equals("B"))
+//            {
+//                if (positions[x - 1][y - 2].substring(0, 1).equals("W"))
+//                {
+//                    take(board, positions, x, y, x - 1, y - 2);
+//                }
+//                else
+//                {
+//                    move(board, positions, x, y, x - 1, y - 2);
+//                }
+//            }
+//        }
+//        if (x - 2 > -1 && y - 1 > -1)
+//        {
+//            if (!positions[x - 2][y - 1].substring(0, 1).equals("B"))
+//            {
+//                if (positions[x - 2][y - 1].substring(0, 1).equals("W"))
+//                {
+//                    take(board, positions, x, y, x - 2, y - 1);
+//                }
+//                else
+//                {
+//                    move(board, positions, x, y, x - 2, y - 1);
+//                }
+//            }
+//        }
+//    }
+//
+//    private void setBRook(ImageView[][] board, String[][] positions, int x, int y)
+//    {
+//        if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
+//        {
+//            setActions(board, positions);
+//        }
+//        if (board(board, positions) == 2 && !searchingForCheckmate2 && !CPUsearch[2] && !CPUsearch[3])
+//        {
+//            setActions(board, positions);
+//        }
+//
+//        boolean inbetween = false;
+//        for (int i = y + 1; i < 8; i++)
+//        {
+//            for (int j = y + 1; j < i; j++)
+//            {
+//                if (!positions[x][j].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[x][i].substring(1, 2).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, x, i);
+//                }
+//            }
+//            if (positions[x][i].substring(0, 1).equals("W"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, x, i);
+//                }
+//            }
+//        }
+//        inbetween = false;
+//        for (int i = y - 1; i > -1; i--)
+//        {
+//            for (int j = y - 1; j > i; j--)
+//            {
+//                if (!positions[x][j].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[x][i].substring(1, 2).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, x, i);
+//                }
+//            }
+//            if (positions[x][i].substring(0, 1).equals("W"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, x, i);
+//                }
+//            }
+//        }
+//        inbetween = false;
+//        for (int i = x + 1; i < 8; i++)
+//        {
+//            for (int j = x + 1; j < i; j++)
+//            {
+//                if (!positions[j][y].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[i][y].substring(1, 2).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, i, y);
+//                }
+//            }
+//            if (positions[i][y].substring(0, 1).equals("W"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, i, y);
+//                }
+//            }
+//        }
+//        inbetween = false;
+//        for (int i = x - 1; i > -1; i--)
+//        {
+//            for (int j = x - 1; j > i; j--)
+//            {
+//                if (!positions[j][y].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[i][y].substring(1, 2).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, i, y);
+//                }
+//            }
+//            if (positions[i][y].substring(0, 1).equals("W"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, i, y);
+//                }
+//            }
+//        }
+//    }
+//
+//    private void setBBishop(ImageView[][] board, String[][] positions, int x, int y)
+//    {
+//        if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
+//        {
+//            setActions(board, positions);
+//        }
+//        if (board(board, positions) == 2 && !searchingForCheckmate2 && !CPUsearch[2] && !CPUsearch[3])
+//        {
+//            setActions(board, positions);
+//        }
+//
+//        boolean inbetween = false;
+//        int z = x;
+//        if (y > x)
+//        {
+//            z = y;
+//        }
+//        for (int i = 1; i < 8 - z; i++)
+//        {
+//            for (int j = 1; j < i; j++)
+//            {
+//                if (!positions[x + j][y + j].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[x + i][y + i].substring(0, 1).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, x + i, y + i);
+//                }
+//            }
+//            if (positions[x + i][y + i].substring(0, 1).equals("W"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, x + i, y + i);
+//                }
+//            }
+//        }
+//        inbetween = false;
+//        if (x < y)
+//        {
+//            z = x;
+//        }
+//        else
+//        {
+//            z = y;
+//        }
+//        for (int i = 1; i < z + 1; i++)
+//        {
+//            for (int j = 1; j < i; j++)
+//            {
+//                if (!positions[x - j][y - j].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[x - i][y - i].substring(0, 1).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, x - i, y - i);
+//                }
+//            }
+//            if (positions[x - i][y - i].substring(0, 1).equals("W"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, x - i, y - i);
+//                }
+//            }
+//        }
+//        inbetween = false;
+//        if (7 - x < y)
+//        {
+//            z = 7 - x;
+//        }
+//        else
+//        {
+//            z = y;
+//        }
+//        for (int i = 1; i < z + 1; i++)
+//        {
+//            for (int j = 1; j < i; j++)
+//            {
+//                if (!positions[x + j][y - j].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[x + i][y - i].substring(0, 1).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, x + i, y - i);
+//                }
+//            }
+//            if (positions[x + i][y - i].substring(0, 1).equals("W"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, x + i, y - i);
+//                }
+//            }
+//        }
+//        inbetween = false;
+//        if (7 - y < x)
+//        {
+//            z = 7 - y;
+//        }
+//        else
+//        {
+//            z = x;
+//        }
+//        for (int i = 1; i < z + 1; i++)
+//        {
+//            for (int j = 1; j < i; j++)
+//            {
+//                if (!positions[x - j][y + j].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[x - i][y + i].substring(0, 1).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, x - i, y + i);
+//                }
+//            }
+//            if (positions[x - i][y + i].substring(0, 1).equals("W"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, x - i, y + i);
+//                }
+//            }
+//        }
+//    }
+//
+//    private void setBQueen(ImageView[][] board, String[][] positions, int x, int y)
+//    {
+//        if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
+//        {
+//            setActions(board, positions);
+//        }
+//        if (board(board, positions) == 2 && !searchingForCheckmate2 && !CPUsearch[2] && !CPUsearch[3])
+//        {
+//            setActions(board, positions);
+//        }
+//
+//        boolean inbetween = false;
+//        for (int i = y + 1; i < 8; i++)
+//        {
+//            for (int j = y + 1; j < i; j++)
+//            {
+//                if (!positions[x][j].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[x][i].substring(1, 2).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, x, i);
+//                }
+//            }
+//            if (positions[x][i].substring(0, 1).equals("W"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, x, i);
+//                }
+//            }
+//        }
+//        inbetween = false;
+//        for (int i = y - 1; i > -1; i--)
+//        {
+//            for (int j = y - 1; j > i; j--)
+//            {
+//                if (!positions[x][j].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[x][i].substring(1, 2).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, x, i);
+//                }
+//            }
+//            if (positions[x][i].substring(0, 1).equals("W"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, x, i);
+//                }
+//            }
+//        }
+//        inbetween = false;
+//        for (int i = x + 1; i < 8; i++)
+//        {
+//            for (int j = x + 1; j < i; j++)
+//            {
+//                if (!positions[j][y].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[i][y].substring(1, 2).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, i, y);
+//                }
+//            }
+//            if (positions[i][y].substring(0, 1).equals("W"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, i, y);
+//                }
+//            }
+//        }
+//        inbetween = false;
+//        for (int i = x - 1; i > -1; i--)
+//        {
+//            for (int j = x - 1; j > i; j--)
+//            {
+//                if (!positions[j][y].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[i][y].substring(1, 2).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, i, y);
+//                }
+//            }
+//            if (positions[i][y].substring(0, 1).equals("W"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, i, y);
+//                }
+//            }
+//        }
+//        inbetween = false;
+//        int z = x;
+//        if (y > x)
+//        {
+//            z = y;
+//        }
+//        for (int i = 1; i < 8 - z; i++)
+//        {
+//            for (int j = 1; j < i; j++)
+//            {
+//                if (!positions[x + j][y + j].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[x + i][y + i].substring(0, 1).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, x + i, y + i);
+//                }
+//            }
+//            if (positions[x + i][y + i].substring(0, 1).equals("W"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, x + i, y + i);
+//                }
+//            }
+//        }
+//        inbetween = false;
+//        if (x < y)
+//        {
+//            z = x;
+//        }
+//        else
+//        {
+//            z = y;
+//        }
+//        for (int i = 1; i < z + 1; i++)
+//        {
+//            for (int j = 1; j < i; j++)
+//            {
+//                if (!positions[x - j][y - j].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[x - i][y - i].substring(0, 1).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, x - i, y - i);
+//                }
+//            }
+//            if (positions[x - i][y - i].substring(0, 1).equals("W"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, x - i, y - i);
+//                }
+//            }
+//        }
+//        inbetween = false;
+//        if (7 - x < y)
+//        {
+//            z = 7 - x;
+//        }
+//        else
+//        {
+//            z = y;
+//        }
+//        for (int i = 1; i < z + 1; i++)
+//        {
+//            for (int j = 1; j < i; j++)
+//            {
+//                if (!positions[x + j][y - j].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[x + i][y - i].substring(0, 1).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, x + i, y - i);
+//                }
+//            }
+//            if (positions[x + i][y - i].substring(0, 1).equals("W"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, x + i, y - i);
+//                }
+//            }
+//        }
+//        inbetween = false;
+//        if (7 - y < x)
+//        {
+//            z = 7 - y;
+//        }
+//        else
+//        {
+//            z = x;
+//        }
+//        for (int i = 1; i < z + 1; i++)
+//        {
+//            for (int j = 1; j < i; j++)
+//            {
+//                if (!positions[x - j][y + j].substring(0, 1).equals("0"))
+//                {
+//                    inbetween = true;
+//                }
+//            }
+//            if (positions[x - i][y + i].substring(0, 1).equals("0"))
+//            {
+//                if (!inbetween)
+//                {
+//                    move(board, positions, x, y, x - i, y + i);
+//                }
+//            }
+//            if (positions[x - i][y + i].substring(0, 1).equals("W"))
+//            {
+//                if (!inbetween)
+//                {
+//                    take(board, positions, x, y, x - i, y + i);
+//                }
+//            }
+//        }
+//    }
+//
+//    private void setBKing(ImageView[][] board, String[][] positions, int x, int y)
+//    {
+//        if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
+//        {
+//            setActions(board, positions);
+//        }
+//        if (board(board, positions) == 2 && !searchingForCheckmate2 && !CPUsearch[2] && !CPUsearch[3])
+//        {
+//            setActions(board, positions);
+//        }
+//
+//        if (x + 1 < 8)
+//        {
+//            if (positions[x + 1][y].substring(1, 2).equals("0"))
+//            {
+//                move(board, positions, x, y, x + 1, y);
+//                if (positions[6][7].substring(1, 2).equals("0") && positions[4][7].substring(1, 2).equals("K"))
+//                {
+//                    positions[5][7] = "B" + positions[5][7].substring(1, 4);
+//                    positions[6][7] = "B" + positions[6][7].substring(1, 4);
+//                    if (board(board, positions) == 1)
+//                    {
+//                        if (blackCastleKing1 && positions[6][7].substring(1, 2).equals("0") && !checkCheck(positions, 4, 7) && !checkCheck(positions, 5, 7) && !checkCheck(positions, 6, 7))
+//                        {
+//                            positions[5][7] = "0" + positions[5][7].substring(1, 4);
+//                            positions[6][7] = "0" + positions[6][7].substring(1, 4);
+//                            blackKingCastle(board, positions, x, y, 6, 7);
+//                        }
+//                    }
+//                    else
+//                    {
+//                        if (blackCastleKing2 && positions[6][7].substring(1, 2).equals("0") && !checkCheck(positions, 4, 7) && !checkCheck(positions, 5, 7) && !checkCheck(positions, 6, 7))
+//                        {
+//                            positions[5][7] = "0" + positions[5][7].substring(1, 4);
+//                            positions[6][7] = "0" + positions[6][7].substring(1, 4);
+//                            blackKingCastle(board, positions, x, y, 6, 7);
+//                        }
+//                    }
+//                    positions[5][7] = "0" + positions[5][7].substring(1, 4);
+//                    positions[6][7] = "0" + positions[6][7].substring(1, 4);
+//                }
+//            }
+//            if (positions[x + 1][y].substring(0, 1).equals("W"))
+//            {
+//                take(board, positions, x, y, x + 1, y);
+//            }
+//            if (y + 1 < 8)
+//            {
+//                if (positions[x + 1][y + 1].substring(1, 2).equals("0"))
+//                {
+//                    move(board, positions, x, y, x + 1, y + 1);
+//                }
+//                if (positions[x + 1][y + 1].substring(0, 1).equals("W"))
+//                {
+//                    take(board, positions, x, y, x + 1, y + 1);
+//                }
+//            }
+//            if (y - 1 > -1)
+//            {
+//                if (positions[x + 1][y - 1].substring(1, 2).equals("0"))
+//                {
+//                    move(board, positions, x, y, x + 1, y - 1);
+//                }
+//                if (positions[x + 1][y - 1].substring(0, 1).equals("W"))
+//                {
+//                    take(board, positions, x, y, x + 1, y - 1);
+//                }
+//            }
+//        }
+//        if (x - 1 > -1)
+//        {
+//            if (positions[x - 1][y].substring(1, 2).equals("0"))
+//            {
+//                move(board, positions, x, y, x - 1, y);
+//                if (positions[2][7].substring(1, 2).equals("0") && positions[1][7].substring(1, 2).equals("0") && positions[4][7].substring(1, 2).equals("K"))
+//                {
+//                    positions[1][7] = "B" + positions[1][7].substring(1, 4);
+//                    positions[2][7] = "B" + positions[2][7].substring(1, 4);
+//                    positions[3][7] = "B" + positions[3][7].substring(1, 4);
+//                    if (board(board, positions) == 1)
+//                    {
+//
+//                        if (blackCastleQueen1 && positions[2][7].substring(1, 2).equals("0") && !checkCheck(positions, 1, 7) && !checkCheck(positions, 2, 7) && !checkCheck(positions, 3, 7) && !checkCheck(positions, 4, 7))
+//                        {
+//                            positions[1][7] = "0" + positions[1][7].substring(1, 4);
+//                            positions[2][7] = "0" + positions[2][7].substring(1, 4);
+//                            positions[3][7] = "0" + positions[3][7].substring(1, 4);
+//                            blackQueenCastle(board, positions, x, y, 2, 7);
+//                        }
+//                    }
+//                    else
+//                    {
+//                        if (blackCastleQueen2 && positions[2][7].substring(1, 2).equals("0") && !checkCheck(positions, 1, 7) && !checkCheck(positions, 2, 7) && !checkCheck(positions, 3, 7) && !checkCheck(positions, 4, 7))
+//                        {
+//                            positions[1][7] = "0" + positions[1][7].substring(1, 4);
+//                            positions[2][7] = "0" + positions[2][7].substring(1, 4);
+//                            positions[3][7] = "0" + positions[3][7].substring(1, 4);
+//                            blackQueenCastle(board, positions, x, y, 2, 7);
+//                        }
+//                    }
+//                    positions[1][7] = "0" + positions[1][7].substring(1, 4);
+//                    positions[2][7] = "0" + positions[2][7].substring(1, 4);
+//                    positions[3][7] = "0" + positions[3][7].substring(1, 4);
+//                }
+//
+//            }
+//            if (positions[x - 1][y].substring(0, 1).equals("W"))
+//            {
+//                take(board, positions, x, y, x - 1, y);
+//            }
+//            if (y + 1 < 8)
+//            {
+//                if (positions[x - 1][y + 1].substring(1, 2).equals("0"))
+//                {
+//                    move(board, positions, x, y, x - 1, y + 1);
+//                }
+//                if (positions[x - 1][y + 1].substring(0, 1).equals("W"))
+//                {
+//                    take(board, positions, x, y, x - 1, y + 1);
+//                }
+//            }
+//            if (y - 1 > -1)
+//            {
+//                if (positions[x - 1][y - 1].substring(1, 2).equals("0"))
+//                {
+//                    move(board, positions, x, y, x - 1, y - 1);
+//                }
+//                if (positions[x - 1][y - 1].substring(0, 1).equals("W"))
+//                {
+//                    take(board, positions, x, y, x - 1, y - 1);
+//                }
+//            }
+//        }
+//        if (y + 1 < 8)
+//        {
+//            if (positions[x][y + 1].substring(1, 2).equals("0"))
+//            {
+//                move(board, positions, x, y, x, y + 1);
+//            }
+//            if (positions[x][y + 1].substring(0, 1).equals("W"))
+//            {
+//                take(board, positions, x, y, x, y + 1);
+//            }
+//        }
+//        if (y - 1 > -1)
+//        {
+//            if (positions[x][y - 1].substring(1, 2).equals("0"))
+//            {
+//                move(board, positions, x, y, x, y - 1);
+//            }
+//            if (positions[x][y - 1].substring(0, 1).equals("W"))
+//            {
+//                take(board, positions, x, y, x, y - 1);
+//            }
+//        }
+//    }
 
-        if (x + 1 < 8 && y + 2 < 8)
-        {
-            if (!positions[x + 1][y + 2].substring(0, 1).equals("B")) {
-                if (positions[x + 1][y + 2].substring(0, 1).equals("W")) {
-                    take(board, positions, x, y, x + 1, y + 2);
-                }
-                else
-                {
-                    move(board, positions, x, y, x + 1, y + 2);
-                }
-            }
-        }
-        if (x + 2 < 8 && y + 1 < 8)
-        {
-            if (!positions[x + 2][y + 1].substring(0, 1).equals("B")) {
-                if (positions[x + 2][y + 1].substring(0, 1).equals("W"))
-                {
-                    take(board, positions, x, y, x + 2, y + 1);
-                }
-                else
-                {
-                    move(board, positions, x, y, x + 2, y + 1);
-                }
-            }
-        }
-        if (x - 1 > -1 && y + 2 < 8)
-        {
-            if (!positions[x - 1][y + 2].substring(0, 1).equals("B")) {
-                if (positions[x - 1][y + 2].substring(0, 1).equals("W")) {
-                    take(board, positions, x, y, x - 1, y + 2);
-                } else {
-                    move(board, positions, x, y, x - 1, y + 2);
-                }
-            }
-        }
-        if (x - 2 > -1 && y + 1 < 8)
-        {
-            if (!positions[x - 2][y + 1].substring(0, 1).equals("B")) {
-                if (positions[x - 2][y + 1].substring(0, 1).equals("W")) {
-                    take(board, positions, x, y, x - 2, y + 1);
-                } else {
-                    move(board, positions, x, y, x - 2, y + 1);
-                }
-            }
-        }
-        if (x + 1 < 8 && y - 2 > -1)
-        {
-            if (!positions[x + 1][y - 2].substring(0, 1).equals("B")) {
-                if (positions[x + 1][y - 2].substring(0, 1).equals("W")) {
-                    take(board, positions, x, y, x + 1, y - 2);
-                } else {
-                    move(board, positions, x, y, x + 1, y - 2);
-                }
-            }
-        }
-        if (x + 2 < 8 && y - 1 > -1)
-        {
-            if (!positions[x + 2][y - 1].substring(0, 1).equals("B")) {
-                if (positions[x + 2][y - 1].substring(0, 1).equals("W")) {
-                    take(board, positions, x, y, x + 2, y - 1);
-                }
-                else
-                {
-                    move(board, positions, x, y, x + 2, y - 1);
-                }
-            }
-        }
-        if (x - 1 > -1 && y - 2 > -1)
-        {
-            if (!positions[x - 1][y - 2].substring(0, 1).equals("B")) {
-                if (positions[x  - 1][y - 2].substring(0, 1).equals("W"))
-                {
-                    take(board, positions, x, y, x - 1, y - 2);
-                } else {
-                    move(board, positions, x, y, x - 1, y - 2);
-                }
-            }
-        }
-        if (x - 2 > -1 && y - 1 > -1)
-        {
-            if (!positions[x - 2][y - 1].substring(0, 1).equals("B")) {
-                if (positions[x - 2][y - 1].substring(0, 1).equals("W")) {
-                    take(board, positions, x, y, x - 2, y - 1);
-                } else {
-                    move(board, positions, x, y, x - 2, y - 1);
-                }
-            }
-        }
-    }
-    private void setBRook(ImageView[][] board, String[][] positions, int x, int y)
-    {
-        if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
-        {
-            setActions(board, positions);
-        }
-        if (board(board, positions) == 2 && !searchingForCheckmate2 && !CPUsearch[2] && !CPUsearch[3])
-        {
-            setActions(board, positions);
-        }
 
-        boolean inbetween = false;
-        for (int i = y + 1; i < 8; i++)
-        {
-            for (int j = y + 1; j < i; j++)
-            {
-                if (!positions[x][j].substring(0, 1).equals("0"))
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[x][i].substring(1, 2).equals("0"))
-            {
-                if (!inbetween) {
-                    move(board, positions, x, y, x, i);
-                }
-            }
-            if (positions[x][i].substring(0, 1).equals("W"))
-            {
-                if (!inbetween)
-                {
-                    take(board, positions, x, y, x, i);
-                }
-            }
-        }
-        inbetween = false;
-        for (int i = y - 1; i > -1; i--)
-        {
-            for (int j = y - 1; j > i; j--)
-            {
-                if (!positions[x][j].substring(0, 1).equals("0"))
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[x][i].substring(1, 2).equals("0"))
-            {
-                if (!inbetween) {
-                    move(board, positions, x, y, x, i);
-                }
-            }
-            if (positions[x][i].substring(0, 1).equals("W"))
-            {
-                if (!inbetween)
-                {
-                    take(board, positions, x, y, x, i);
-                }
-            }
-        }
-        inbetween = false;
-        for (int i = x + 1; i < 8; i++)
-        {
-            for (int j = x + 1; j < i; j++)
-            {
-                if (!positions[j][y].substring(0, 1).equals("0"))
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[i][y].substring(1, 2).equals("0"))
-            {
-                if (!inbetween) {
-                    move(board, positions, x, y, i, y);
-                }
-            }
-            if (positions[i][y].substring(0, 1).equals("W"))
-            {
-                if (!inbetween)
-                {
-                    take(board, positions, x, y, i, y);
-                }
-            }
-        }
-        inbetween = false;
-        for (int i = x - 1; i > -1; i--)
-        {
-            for (int j = x - 1; j > i; j--)
-            {
-                if (!positions[j][y].substring(0, 1).equals("0"))
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[i][y].substring(1, 2).equals("0"))
-            {
-                if (!inbetween) {
-                    move(board, positions, x, y, i, y);
-                }
-            }
-            if (positions[i][y].substring(0, 1).equals("W"))
-            {
-                if (!inbetween)
-                {
-                    take(board, positions, x, y, i, y);
-                }
-            }
-        }
-    }
-    private void setBBishop(ImageView[][] board, String[][] positions, int x, int y)
-    {
-        if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
-        {
-            setActions(board, positions);
-        }
-        if (board(board, positions) == 2 && !searchingForCheckmate2 && !CPUsearch[2] && !CPUsearch[3])
-        {
-            setActions(board, positions);
-        }
-
-        boolean inbetween = false;
-        int z = x;
-        if (y > x)
-        {
-            z = y;
-        }
-        for (int i = 1; i < 8 - z; i++)
-        {
-            for (int j = 1; j < i; j++)
-            {
-                if (!positions[x + j][y + j].substring(0, 1).equals("0"))
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[x + i][y + i].substring(0, 1).equals("0"))
-            {
-                if (!inbetween) {
-                    move(board, positions, x, y, x + i, y + i);
-                }
-            }
-            if (positions[x + i][y + i].substring(0, 1).equals("W"))
-            {
-                if (!inbetween)
-                {
-                    take(board, positions, x, y, x + i, y + i);
-                }
-            }
-        }
-        inbetween = false;
-        if (x < y)
-        {
-            z = x;
-        }
-        else
-        {
-            z = y;
-        }
-        for (int i = 1; i < z+1; i++)
-        {
-            for (int j = 1; j < i; j++)
-            {
-                if (!positions[x - j][y - j].substring(0, 1).equals("0"))
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[x - i][y - i].substring(0, 1).equals("0"))
-            {
-                if (!inbetween) {
-                    move(board, positions, x, y, x - i, y - i);
-                }
-            }
-            if (positions[x - i][y - i].substring(0, 1).equals("W"))
-            {
-                if (!inbetween)
-                {
-                    take(board, positions, x, y, x - i, y - i);
-                }
-            }
-        }
-        inbetween = false;
-        if (7 - x < y)
-        {
-            z = 7 - x;
-        }
-        else
-        {
-            z = y;
-        }
-        for (int i = 1; i < z+1; i++)
-        {
-            for (int j = 1; j < i; j++)
-            {
-                if (!positions[x + j][y - j].substring(0, 1).equals("0"))
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[x + i][y - i].substring(0, 1).equals("0"))
-            {
-                if (!inbetween) {
-                    move(board, positions, x, y, x + i, y - i);
-                }
-            }
-            if (positions[x + i][y - i].substring(0, 1).equals("W"))
-            {
-                if (!inbetween)
-                {
-                    take(board, positions, x, y, x + i, y - i);
-                }
-            }
-        }
-        inbetween = false;
-        if (7 - y < x)
-        {
-            z = 7 - y;
-        }
-        else
-        {
-            z = x;
-        }
-        for (int i = 1; i < z+1; i++)
-        {
-            for (int j = 1; j < i; j++)
-            {
-                if (!positions[x - j][y + j].substring(0, 1).equals("0"))
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[x - i][y + i].substring(0, 1).equals("0"))
-            {
-                if (!inbetween) {
-                    move(board, positions, x, y, x - i, y + i);
-                }
-            }
-            if (positions[x - i][y + i].substring(0, 1).equals("W"))
-            {
-                if (!inbetween)
-                {
-                    take(board, positions, x, y, x - i, y + i);
-                }
-            }
-        }
-    }
-    private void setBQueen(ImageView[][] board, String[][] positions, int x, int y)
-    {
-        if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
-        {
-            setActions(board, positions);
-        }
-        if (board(board, positions) == 2 && !searchingForCheckmate2 && !CPUsearch[2] && !CPUsearch[3])
-        {
-            setActions(board, positions);
-        }
-
-        boolean inbetween = false;
-        for (int i = y + 1; i < 8; i++)
-        {
-            for (int j = y + 1; j < i; j++)
-            {
-                if (!positions[x][j].substring(0, 1).equals("0"))
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[x][i].substring(1, 2).equals("0"))
-            {
-                if (!inbetween) {
-                    move(board, positions, x, y, x, i);
-                }
-            }
-            if (positions[x][i].substring(0, 1).equals("W"))
-            {
-                if (!inbetween)
-                {
-                    take(board, positions, x, y, x, i);
-                }
-            }
-        }
-        inbetween = false;
-        for (int i = y - 1; i > -1; i--)
-        {
-            for (int j = y - 1; j > i; j--)
-            {
-                if (!positions[x][j].substring(0, 1).equals("0"))
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[x][i].substring(1, 2).equals("0"))
-            {
-                if (!inbetween) {
-                    move(board, positions, x, y, x, i);
-                }
-            }
-            if (positions[x][i].substring(0, 1).equals("W"))
-            {
-                if (!inbetween)
-                {
-                    take(board, positions, x, y, x, i);
-                }
-            }
-        }
-        inbetween = false;
-        for (int i = x + 1; i < 8; i++)
-        {
-            for (int j = x + 1; j < i; j++)
-            {
-                if (!positions[j][y].substring(0, 1).equals("0"))
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[i][y].substring(1, 2).equals("0"))
-            {
-                if (!inbetween) {
-                    move(board, positions, x, y, i, y);
-                }
-            }
-            if (positions[i][y].substring(0, 1).equals("W"))
-            {
-                if (!inbetween)
-                {
-                    take(board, positions, x, y, i, y);
-                }
-            }
-        }
-        inbetween = false;
-        for (int i = x - 1; i > -1; i--)
-        {
-            for (int j = x - 1; j > i; j--)
-            {
-                if (!positions[j][y].substring(0, 1).equals("0"))
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[i][y].substring(1, 2).equals("0"))
-            {
-                if (!inbetween) {
-                    move(board, positions, x, y, i, y);
-                }
-            }
-            if (positions[i][y].substring(0, 1).equals("W"))
-            {
-                if (!inbetween)
-                {
-                    take(board, positions, x, y, i, y);
-                }
-            }
-        }
-        inbetween = false;
-        int z = x;
-        if (y > x)
-        {
-            z = y;
-        }
-        for (int i = 1; i < 8 - z; i++)
-        {
-            for (int j = 1; j < i; j++)
-            {
-                if (!positions[x + j][y + j].substring(0, 1).equals("0"))
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[x + i][y + i].substring(0, 1).equals("0"))
-            {
-                if (!inbetween) {
-                    move(board, positions, x, y, x + i, y + i);
-                }
-            }
-            if (positions[x + i][y + i].substring(0, 1).equals("W"))
-            {
-                if (!inbetween)
-                {
-                    take(board, positions, x, y, x + i, y + i);
-                }
-            }
-        }
-        inbetween = false;
-        if (x < y)
-        {
-            z = x;
-        }
-        else
-        {
-            z = y;
-        }
-        for (int i = 1; i < z+1; i++)
-        {
-            for (int j = 1; j < i; j++)
-            {
-                if (!positions[x - j][y - j].substring(0, 1).equals("0"))
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[x - i][y - i].substring(0, 1).equals("0"))
-            {
-                if (!inbetween) {
-                    move(board, positions, x, y, x - i, y - i);
-                }
-            }
-            if (positions[x - i][y - i].substring(0, 1).equals("W"))
-            {
-                if (!inbetween)
-                {
-                    take(board, positions, x, y, x - i, y - i);
-                }
-            }
-        }
-        inbetween = false;
-        if (7 - x < y)
-        {
-            z = 7 - x;
-        }
-        else
-        {
-            z = y;
-        }
-        for (int i = 1; i < z+1; i++)
-        {
-            for (int j = 1; j < i; j++)
-            {
-                if (!positions[x + j][y - j].substring(0, 1).equals("0"))
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[x + i][y - i].substring(0, 1).equals("0"))
-            {
-                if (!inbetween) {
-                    move(board, positions, x, y, x + i, y - i);
-                }
-            }
-            if (positions[x + i][y - i].substring(0, 1).equals("W"))
-            {
-                if (!inbetween)
-                {
-                    take(board, positions, x, y, x + i, y - i);
-                }
-            }
-        }
-        inbetween = false;
-        if (7 - y < x)
-        {
-            z = 7 - y;
-        }
-        else
-        {
-            z = x;
-        }
-        for (int i = 1; i < z+1; i++)
-        {
-            for (int j = 1; j < i; j++)
-            {
-                if (!positions[x - j][y + j].substring(0, 1).equals("0"))
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[x - i][y + i].substring(0, 1).equals("0"))
-            {
-                if (!inbetween) {
-                    move(board, positions, x, y, x - i, y + i);
-                }
-            }
-            if (positions[x - i][y + i].substring(0, 1).equals("W"))
-            {
-                if (!inbetween)
-                {
-                    take(board, positions, x, y, x - i, y + i);
-                }
-            }
-        }
-    }
-    private void setBKing(ImageView[][] board, String[][] positions, int x, int y)
-    {
-        if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
-        {
-            setActions(board, positions);
-        }
-        if (board(board, positions) == 2 && !searchingForCheckmate2 && !CPUsearch[2] && !CPUsearch[3])
-        {
-            setActions(board, positions);
-        }
-
-        if (x + 1 < 8)
-        {
-            if (positions[x + 1][y].substring(1 ,2).equals("0"))
-            {
-                move(board, positions, x, y, x + 1 ,y);
-                if (positions[6][7].substring(1, 2).equals("0") && positions[4][7].substring(1, 2).equals("K"))
-                {
-                    positions[5][7] = "B" + positions[5][7].substring(1, 4);
-                    positions[6][7] = "B" + positions[6][7].substring(1, 4);
-                    if (board(board, positions) == 1)
-                    {
-                        if (blackCastleKing1 && positions[6][7].substring(1, 2).equals("0") && !checkCheck(positions, 4, 7) && !checkCheck(positions, 5, 7) && !checkCheck(positions, 6, 7))
-                        {
-                            positions[5][7] = "0" + positions[5][7].substring(1, 4);
-                            positions[6][7] = "0" + positions[6][7].substring(1, 4);
-                            blackKingCastle(board, positions, x, y, 6, 7);
-                        }
-                    }
-                    else
-                    {
-                        if (blackCastleKing2 && positions[6][7].substring(1, 2).equals("0") && !checkCheck(positions, 4, 7) && !checkCheck(positions, 5, 7) && !checkCheck(positions, 6, 7))
-                        {
-                            positions[5][7] = "0" + positions[5][7].substring(1, 4);
-                            positions[6][7] = "0" + positions[6][7].substring(1, 4);
-                            blackKingCastle(board, positions, x, y, 6, 7);
-                        }
-                    }
-                    positions[5][7] = "0" + positions[5][7].substring(1, 4);
-                    positions[6][7] = "0" + positions[6][7].substring(1, 4);
-                }
-            }
-            if (positions[x + 1][y].substring(0, 1).equals("W"))
-            {
-                take(board, positions, x, y, x + 1, y);
-            }
-            if (y + 1 < 8)
-            {
-                if (positions[x + 1][y + 1].substring(1, 2).equals("0"))
-                {
-                    move(board, positions, x, y, x + 1 ,y + 1);
-                }
-                if (positions[x + 1][y + 1].substring(0, 1).equals("W"))
-                {
-                    take(board, positions, x, y, x + 1, y + 1);
-                }
-            }
-            if (y - 1 > -1)
-            {
-                if (positions[x + 1][y-1].substring(1, 2).equals("0"))
-                {
-                    move(board, positions, x, y, x + 1 ,y-1);
-                }
-                if (positions[x + 1][y - 1].substring(0, 1).equals("W"))
-                {
-                    take(board, positions, x, y, x + 1, y - 1);
-                }
-            }
-        }
-        if (x - 1 > -1)
-        {
-            if (positions[x - 1][y].substring(1, 2).equals("0"))
-            {
-                move(board, positions, x, y, x - 1 ,y);
-                if (positions[2][7].substring(1, 2).equals("0") && positions[1][7].substring(1, 2).equals("0") && positions[4][7].substring(1, 2).equals("K"))
-                {
-                    positions[1][7] = "B" + positions[1][7].substring(1, 4);
-                    positions[2][7] = "B" + positions[2][7].substring(1, 4);
-                    positions[3][7] = "B" + positions[3][7].substring(1, 4);
-                    if (board(board, positions) == 1)
-                    {
-
-                        if (blackCastleQueen1 && positions[2][7].substring(1, 2).equals("0") && !checkCheck(positions, 1, 7) && !checkCheck(positions, 2, 7) && !checkCheck(positions, 3, 7) && !checkCheck(positions, 4, 7))
-                        {
-                            positions[1][7] = "0" + positions[1][7].substring(1, 4);
-                            positions[2][7] = "0" + positions[2][7].substring(1, 4);
-                            positions[3][7] = "0" + positions[3][7].substring(1, 4);
-                            blackQueenCastle(board, positions, x, y, 2, 7);
-                        }
-                    }
-                    else
-                    {
-                        if (blackCastleQueen2 && positions[2][7].substring(1, 2).equals("0") && !checkCheck(positions, 1, 7) && !checkCheck(positions, 2, 7) && !checkCheck(positions, 3, 7) && !checkCheck(positions, 4, 7))
-                        {
-                            positions[1][7] = "0" + positions[1][7].substring(1, 4);
-                            positions[2][7] = "0" + positions[2][7].substring(1, 4);
-                            positions[3][7] = "0" + positions[3][7].substring(1, 4);
-                            blackQueenCastle(board, positions, x, y, 2, 7);
-                        }
-                    }
-                    positions[1][7] = "0" + positions[1][7].substring(1, 4);
-                    positions[2][7] = "0" + positions[2][7].substring(1, 4);
-                    positions[3][7] = "0" + positions[3][7].substring(1, 4);
-                }
-
-            }
-            if (positions[x - 1][y].substring(0, 1).equals("W"))
-            {
-                take(board, positions, x, y, x - 1 ,y);
-            }
-            if (y + 1 < 8)
-            {
-                if (positions[x - 1][y + 1].substring(1, 2).equals("0"))
-                {
-                    move(board, positions, x, y, x - 1 ,y+1);
-                }
-                if (positions[x - 1][y + 1].substring(0, 1).equals("W"))
-                {
-                    take(board, positions, x, y, x - 1, y+1);
-                }
-            }
-            if (y - 1 > -1)
-            {
-                if (positions[x - 1][y - 1].substring(1, 2).equals("0"))
-                {
-                    move(board, positions, x, y, x - 1 ,y-1);
-                }
-                if (positions[x - 1][y - 1].substring(0, 1).equals("W"))
-                {
-                    take(board, positions, x, y, x - 1, y - 1);
-                }
-            }
-        }
-        if (y + 1 < 8)
-        {
-            if (positions[x][y+1].substring(1, 2).equals("0"))
-            {
-                move(board, positions, x, y, x ,y+1);
-            }
-            if (positions[x][y + 1].substring(0, 1).equals("W"))
-            {
-                take(board, positions, x, y, x, y+1);
-            }
-        }
-        if (y - 1 > -1)
-        {
-            if (positions[x][y-1].substring(1, 2).equals("0"))
-            {
-                move(board, positions, x, y, x,y-1);
-            }
-            if (positions[x][y - 1].substring(0, 1).equals("W"))
-            {
-                take(board, positions, x, y, x, y-1);
-            }
-        }
-    }
-
-
-
-    private int board(ImageView[][] board, String[][] positions)
+    public static int board(ImageView[][] board, Piece[][] positions)
     {
         for (int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)
             {
-                if (positions[i][j].substring(0, 1).equals("W"))
+                if (positions[i][j].color.equals("white"))
                 {
                     if (board[i][j].getRotation() == 90)
                     {
@@ -3681,14 +3948,14 @@ public class MainActivity extends AppCompatActivity
         return 0;
     }
 
-    private void move(final ImageView[][] board, final String[][] positions, final int x, final int y, final int x1, final int y1)
+    private void move(final ImageView[][] board, final Piece[][] positions, final int x, final int y, final int x1, final int y1)
     {
 
         if (checking || searchingForCheckmate1 || searchingForCheckmate2)
         {
-            String old = positions[x1][y1];
+            Piece old = positions[x1][y1];
             positions[x1][y1] = positions[x][y];
-            positions[x][y] = ("0000");
+            positions[x][y] = new Empty();
             if (board(board, positions) == 1)
             {
 
@@ -3701,23 +3968,31 @@ public class MainActivity extends AppCompatActivity
                         return;
                     }
                 }
-                if (whiteTurn1 == 2) {
-                    if (blackInCheck(positions)) {
+                if (whiteTurn1 == 2)
+                {
+                    if (blackInCheck(positions))
+                    {
                         positions[x][y] = positions[x1][y1];
                         positions[x1][y1] = old;
                         return;
                     }
                 }
-            } else {
-                if (whiteTurn2 == 1) {
-                    if (whiteInCheck(positions)) {
+            }
+            else
+            {
+                if (whiteTurn2 == 1)
+                {
+                    if (whiteInCheck(positions))
+                    {
                         positions[x][y] = positions[x1][y1];
                         positions[x1][y1] = old;
                         return;
                     }
                 }
-                if (whiteTurn2 == 2) {
-                    if (blackInCheck(positions)) {
+                if (whiteTurn2 == 2)
+                {
+                    if (blackInCheck(positions))
+                    {
                         positions[x][y] = positions[x1][y1];
                         positions[x1][y1] = old;
                         return;
@@ -3764,12 +4039,12 @@ public class MainActivity extends AppCompatActivity
 
 
         board[x][y].setBackgroundColor(Color.YELLOW);
-        if (!positions[x][y].substring(3, 4).equals("Y"))
+        if (!positions[x][y].backgroundColor.equals("Y"))
         {
-            positions[x][y] = positions[x][y].substring(0 , 3) + "Y";
+            positions[x][y].backgroundColor = "Y";
         }
         board[x1][y1].setImageResource(R.mipmap.dot);
-        positions[x1][y1] = positions[x1][y1].substring(0, 3) + "D";
+        positions[x1][y1].backgroundColor = "D";
 
         board[x1][y1].setOnTouchListener(new View.OnTouchListener()
         {
@@ -3804,16 +4079,19 @@ public class MainActivity extends AppCompatActivity
                             if (j == 0 || j == 2 || j == 4 || j == 6)
                             {
                                 board[i][j].setBackground(black);
-                            } else
+                            }
+                            else
                             {
                                 board[i][j].setBackground(white);
                             }
-                        } else
+                        }
+                        else
                         {
                             if (j == 0 || j == 2 || j == 4 || j == 6)
                             {
                                 board[i][j].setBackground(white);
-                            } else
+                            }
+                            else
                             {
                                 board[i][j].setBackground(black);
                             }
@@ -3828,16 +4106,19 @@ public class MainActivity extends AppCompatActivity
                             if (j == 0 || j == 2 || j == 4 || j == 6)
                             {
                                 board[i][j].setBackground(black);
-                            } else
+                            }
+                            else
                             {
                                 board[i][j].setBackground(white);
                             }
-                        } else
+                        }
+                        else
                         {
                             if (j == 0 || j == 2 || j == 4 || j == 6)
                             {
                                 board[i][j].setBackground(white);
-                            } else
+                            }
+                            else
                             {
                                 board[i][j].setBackground(black);
                             }
@@ -3853,9 +4134,10 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void changeShit(final ImageView[][] board, final String[][] positions, int x, int y, final int x1, final int y1)
+    private void changeShit(final ImageView[][] board, final Piece[][] positions, int x, int y, final int x1, final int y1)
     {
-        if (positions[x][y].substring(1,2).equals("0"))
+        //?? not sur what this is for, possible a fringe case catcher?
+        if (positions[x][y].empty)
         {
             whiteTurn1 = 3;
             whiteTurn2 = 3;
@@ -3864,7 +4146,7 @@ public class MainActivity extends AppCompatActivity
         }
         clean(board, positions);
         turnChange(board, positions, x, y);
-        if (positions[x][y].substring(0, 2).equals("WP") && y == 1 && y1 == 3)
+        if (positions[x][y].color.equals("white") && positions[x][y].type.equals("pawn") && y == 1 && y1 == 3)
         {
             if (board(board, positions) == 1)
             {
@@ -3875,7 +4157,7 @@ public class MainActivity extends AppCompatActivity
                 enP[x][2] = "1" + Integer.toString(board2Turn);
             }
         }
-        if (positions[x][y].substring(0, 2).equals("BP") && y == 6 && y1 == 4)
+        if (positions[x][y].color.equals("black") && positions[x][y].type.equals("pawn") && y == 6 && y1 == 4)
         {
             if (board(board, positions) == 1)
             {
@@ -3889,7 +4171,7 @@ public class MainActivity extends AppCompatActivity
 
 
         positions[x1][y1] = positions[x][y];
-        positions[x][y] = "0000";
+        positions[x][y] = new Empty();
         updateImage(board, positions, x1, y1);
 
         board[x1][y1].setRotation(board[x][y].getRotation());
@@ -3901,95 +4183,106 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void updateImage(ImageView[][] board, String[][] positions, int x1, int y1)
+    private void updateImage(ImageView[][] board, Piece[][] positions, int x1, int y1)
     {
+        board[x1][y1].setImageResource(positions[x1][y1].getResID());
 
-        if (positions[x1][y1].substring(0, 2).equals("WP"))
-        {
-            board[x1][y1].setImageResource(R.mipmap.pawn);
-        }
-        if (positions[x1][y1].substring(0, 2).equals("WR"))
-        {
-            board[x1][y1].setImageResource(R.mipmap.rook);
-        }
-        if (positions[x1][y1].substring(0, 2).equals("WN"))
-        {
-            board[x1][y1].setImageResource(R.mipmap.knight);
-        }
-        if (positions[x1][y1].substring(0, 2).equals("WB"))
-        {
-            board[x1][y1].setImageResource(R.mipmap.bishop);
-        }
-        if (positions[x1][y1].substring(0, 2).equals("WQ"))
-        {
-            board[x1][y1].setImageResource(R.mipmap.queen);
-        }
-        if (positions[x1][y1].substring(0, 2).equals("WK"))
-        {
-            board[x1][y1].setImageResource(R.mipmap.king);
-        }
-        if (positions[x1][y1].substring(0, 2).equals("BP"))
-        {
-            board[x1][y1].setImageResource(R.mipmap.bpawn);
-        }
-        if (positions[x1][y1].substring(0, 2).equals("BR"))
-        {
-            board[x1][y1].setImageResource(R.mipmap.brook);
-        }
-        if (positions[x1][y1].substring(0, 2).equals("BN"))
-        {
-            board[x1][y1].setImageResource(R.mipmap.bknight);
-        }
-        if (positions[x1][y1].substring(0, 2).equals("BB"))
-        {
-            board[x1][y1].setImageResource(R.mipmap.bbishop);
-        }
-        if (positions[x1][y1].substring(0, 2).equals("BQ"))
-        {
-            board[x1][y1].setImageResource(R.mipmap.bqueen);
-        }
-        if (positions[x1][y1].substring(0, 2).equals("BK"))
-        {
-            board[x1][y1].setImageResource(R.mipmap.bking);
-        }
+//        if (positions[x1][y1].substring(0, 2).equals("WP"))
+//        {
+//            board[x1][y1].setImageResource(R.mipmap.pawn);
+//        }
+//        if (positions[x1][y1].substring(0, 2).equals("WR"))
+//        {
+//            board[x1][y1].setImageResource(R.mipmap.rook);
+//        }
+//        if (positions[x1][y1].substring(0, 2).equals("WN"))
+//        {
+//            board[x1][y1].setImageResource(R.mipmap.knight);
+//        }
+//        if (positions[x1][y1].substring(0, 2).equals("WB"))
+//        {
+//            board[x1][y1].setImageResource(R.mipmap.bishop);
+//        }
+//        if (positions[x1][y1].substring(0, 2).equals("WQ"))
+//        {
+//            board[x1][y1].setImageResource(R.mipmap.queen);
+//        }
+//        if (positions[x1][y1].substring(0, 2).equals("WK"))
+//        {
+//            board[x1][y1].setImageResource(R.mipmap.king);
+//        }
+//        if (positions[x1][y1].substring(0, 2).equals("BP"))
+//        {
+//            board[x1][y1].setImageResource(R.mipmap.bpawn);
+//        }
+//        if (positions[x1][y1].substring(0, 2).equals("BR"))
+//        {
+//            board[x1][y1].setImageResource(R.mipmap.brook);
+//        }
+//        if (positions[x1][y1].substring(0, 2).equals("BN"))
+//        {
+//            board[x1][y1].setImageResource(R.mipmap.bknight);
+//        }
+//        if (positions[x1][y1].substring(0, 2).equals("BB"))
+//        {
+//            board[x1][y1].setImageResource(R.mipmap.bbishop);
+//        }
+//        if (positions[x1][y1].substring(0, 2).equals("BQ"))
+//        {
+//            board[x1][y1].setImageResource(R.mipmap.bqueen);
+//        }
+//        if (positions[x1][y1].substring(0, 2).equals("BK"))
+//        {
+//            board[x1][y1].setImageResource(R.mipmap.bking);
+//        }
     }
 
 
-
-    private void take(final ImageView[][] board, final String[][] positions, final int x, final int y, final int x1, final int y1)
+    private void take(final ImageView[][] board, final Piece[][] positions, final int x, final int y, final int x1, final int y1)
     {
         if (checking || searchingForCheckmate1 || searchingForCheckmate2)
         {
-            String old = positions[x1][y1];
+            Piece old = positions[x1][y1];
             positions[x1][y1] = positions[x][y];
-            positions[x][y] = ("0000");
-            if (board(board, positions) == 1) {
-                if (whiteTurn1 == 1) {
-                    if (whiteInCheck(positions)) {
+            positions[x][y] = new Empty();
+            if (board(board, positions) == 1)
+            {
+                if (whiteTurn1 == 1)
+                {
+                    if (whiteInCheck(positions))
+                    {
                         positions[x][y] = positions[x1][y1];
                         positions[x1][y1] = old;
                         return;
                     }
                 }
-                if (whiteTurn1 == 2) {
+                if (whiteTurn1 == 2)
+                {
 
-                    if (blackInCheck(positions)) {
+                    if (blackInCheck(positions))
+                    {
 
                         positions[x][y] = positions[x1][y1];
                         positions[x1][y1] = old;
                         return;
                     }
                 }
-            } else {
-                if (whiteTurn2 == 1) {
-                    if (whiteInCheck(positions)) {
+            }
+            else
+            {
+                if (whiteTurn2 == 1)
+                {
+                    if (whiteInCheck(positions))
+                    {
                         positions[x][y] = positions[x1][y1];
                         positions[x1][y1] = old;
                         return;
                     }
                 }
-                if (whiteTurn2 == 2) {
-                    if (blackInCheck(positions)) {
+                if (whiteTurn2 == 2)
+                {
+                    if (blackInCheck(positions))
+                    {
                         positions[x][y] = positions[x1][y1];
                         positions[x1][y1] = old;
                         return;
@@ -4038,12 +4331,12 @@ public class MainActivity extends AppCompatActivity
 
 
         board[x][y].setBackgroundColor(Color.YELLOW);
-        if (!positions[x][y].substring(3, 4).equals("Y"))
+        if (!positions[x][y].backgroundColor.equals("Y"))
         {
-            positions[x][y] = positions[x][y].substring(0, 3) + "Y";
+            positions[x][y].backgroundColor =  "Y";
         }
         board[x1][y1].setBackgroundColor(Color.RED);
-        positions[x1][y1] = positions[x1][y1].substring(0, 3) + "R";
+        positions[x1][y1].backgroundColor =  "R";
 
         board[x1][y1].setOnTouchListener(new View.OnTouchListener()
         {
@@ -4084,9 +4377,10 @@ public class MainActivity extends AppCompatActivity
 
         });
     }
-    private void takeShit(final ImageView[][] board, final String[][] positions, int x, int y, final int x1, final int y1)
+
+    private void takeShit(final ImageView[][] board, final Piece[][] positions, int x, int y, final int x1, final int y1)
     {
-        if (positions[x][y].substring(1,2).equals("0"))
+        if (positions[x][y].empty)
         {
             whiteTurn1 = 3;
             whiteTurn2 = 3;
@@ -4097,7 +4391,7 @@ public class MainActivity extends AppCompatActivity
         turnChange(board, positions, x, y);
         addToRoster(board, positions, x1, y1);
         positions[x1][y1] = positions[x][y];
-        positions[x][y] = "0000";
+        positions[x][y] = new Empty();
 
         updateImage(board, positions, x1, y1);
         board[x1][y1].setRotation(board[x][y].getRotation());
@@ -4109,147 +4403,163 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void addToRoster(ImageView[][] board, String[][] positions, int x1, int y1)
+    private void addToRoster(ImageView[][] board, Piece[][] positions, int x1, int y1)
     {
-        if (board (board, positions) == 1)
+        if (board(board, positions) == 1)
         {
-            if (positions[x1][y1].substring(0, 1).equals("W"))
+            if (positions[x1][y1].color.equals("white"))
             {
                 addToRosterShit(board, positions, roster4, roster4p, x1, y1, 270);
             }
-            if (positions[x1][y1].substring(0, 1).equals("B"))
+            if (positions[x1][y1].color.equals("black"))
             {
-                 addToRosterShit(board, positions, roster3, roster3p,  x1, y1, 90);
+                addToRosterShit(board, positions, roster3, roster3p, x1, y1, 90);
             }
         }
         else
         {
-            if (positions[x1][y1].substring(0, 1).equals("W"))
+            if (positions[x1][y1].color.equals("white"))
             {
                 addToRosterShit(board, positions, roster1, roster1p, x1, y1, 90);
             }
-            if (positions[x1][y1].substring(0, 1).equals("B"))
+            if (positions[x1][y1].color.equals("black"))
             {
-                addToRosterShit(board, positions, roster2, roster2p,  x1, y1, 270);
+                addToRosterShit(board, positions, roster2, roster2p, x1, y1, 270);
             }
         }
 
     }
 
-    private void addToRosterShit(final ImageView[][] board, final String[][] positions, ImageView[] roster, String[] rosterp,  int x1, int y1, int rotation)
+    private void addToRosterShit(final ImageView[][] board, final Piece[][] positions, ImageView[] roster, Piece[] rosterp, int x1, int y1, int rotation)
     {
         for (int i = 0; i < 30; i++)
         {
-            if (rosterp[i].equals("0000"))
+            if (rosterp[i].empty)
             {
                 if (reverting)
                 {
-                    if (positions[x1][y1].substring(2, 3).equals("P"))
+                    if (positions[x1][y1].wasPawn)
                     {
-                        if (positions[x1][y1].substring(0, 1).equals("W"))
+                        if (positions[x1][y1].color.equals("white"))
                         {
                             roster[i].setImageResource(R.mipmap.pawn);
                             roster[i].setRotation(rotation);
-                            rosterp[i] = "WP00";
+                            rosterp[i] = new Pawn("white");
                             break;
                         }
-                        if (positions[x1][y1].substring(0, 1).equals("B"))
+                        if (positions[x1][y1].color.equals("black"))
                         {
                             roster[i].setImageResource(R.mipmap.bpawn);
                             roster[i].setRotation(rotation);
-                            rosterp[i] = "BP00";
+                            rosterp[i] = new Pawn("black");
                             break;
                         }
                     }
                 }
-                if (positions[x1][y1].substring(0, 2).equals("WP")) {
-                    roster[i].setImageResource(R.mipmap.pawn);
-                    roster[i].setRotation(rotation);
-                    rosterp[i] = positions[x1][y1];
-                    break;
-                }
-                if (positions[x1][y1].substring(0, 2).equals("WR")) {
-                    roster[i].setImageResource(R.mipmap.rook);
-                    roster[i].setRotation(rotation);
-                    rosterp[i] = positions[x1][y1];
-                    break;
-                }
-                if (positions[x1][y1].substring(0, 2).equals("WN")) {
-                    roster[i].setImageResource(R.mipmap.knight);
-                    roster[i].setRotation(rotation);
-                    rosterp[i] = positions[x1][y1];
-                    break;
-                }
-                if (positions[x1][y1].substring(0, 2).equals("WB")) {
-                    roster[i].setImageResource(R.mipmap.bishop);
-                    roster[i].setRotation(rotation);
-                    rosterp[i] = positions[x1][y1];
-                    break;
-                }
-                if (positions[x1][y1].substring(0, 2).equals("WQ")) {
-                    roster[i].setImageResource(R.mipmap.queen);
-                    roster[i].setRotation(rotation);
-                    rosterp[i] = positions[x1][y1];
-                    break;
-                }
-                if (positions[x1][y1].substring(0, 2).equals("BP")) {
-                    roster[i].setImageResource(R.mipmap.bpawn);
-                    roster[i].setRotation(rotation);
-                    rosterp[i] = positions[x1][y1];
-                    break;
-                }
-                if (positions[x1][y1].substring(0, 2).equals("BR")) {
-                    roster[i].setImageResource(R.mipmap.brook);
-                    roster[i].setRotation(rotation);
-                    rosterp[i] = positions[x1][y1];
-                    break;
-                }
-                if (positions[x1][y1].substring(0, 2).equals("BN")) {
-                    roster[i].setImageResource(R.mipmap.bknight);
-                    roster[i].setRotation(rotation);
-                    rosterp[i] = positions[x1][y1];
-                    break;
-                }
-                if (positions[x1][y1].substring(0, 2).equals("BB")) {
-                    roster[i].setImageResource(R.mipmap.bbishop);
-                    roster[i].setRotation(rotation);
-                    rosterp[i] = positions[x1][y1];
-                    break;
-                }
-                if (positions[x1][y1].substring(0, 2).equals("BQ")) {
-                    roster[i].setImageResource(R.mipmap.bqueen);
-                    roster[i].setRotation(rotation);
-                    rosterp[i] = positions[x1][y1];
-                    break;
-                }
-
+                roster[i].setImageResource(positions[x1][y1].getResID());
+                roster[i].setRotation(rotation);
+                rosterp[i] = positions[x1][y1];
+                break;
+//                if (positions[x1][y1].substring(0, 2).equals("WP"))
+//                {
+//                    roster[i].setImageResource(R.mipmap.pawn);
+//                    roster[i].setRotation(rotation);
+//                    rosterp[i] = positions[x1][y1];
+//                    break;
+//                }
+//                if (positions[x1][y1].substring(0, 2).equals("WR"))
+//                {
+//                    roster[i].setImageResource(R.mipmap.rook);
+//                    roster[i].setRotation(rotation);
+//                    rosterp[i] = positions[x1][y1];
+//                    break;
+//                }
+//                if (positions[x1][y1].substring(0, 2).equals("WN"))
+//                {
+//                    roster[i].setImageResource(R.mipmap.knight);
+//                    roster[i].setRotation(rotation);
+//                    rosterp[i] = positions[x1][y1];
+//                    break;
+//                }
+//                if (positions[x1][y1].substring(0, 2).equals("WB"))
+//                {
+//                    roster[i].setImageResource(R.mipmap.bishop);
+//                    roster[i].setRotation(rotation);
+//                    rosterp[i] = positions[x1][y1];
+//                    break;
+//                }
+//                if (positions[x1][y1].substring(0, 2).equals("WQ"))
+//                {
+//                    roster[i].setImageResource(R.mipmap.queen);
+//                    roster[i].setRotation(rotation);
+//                    rosterp[i] = positions[x1][y1];
+//                    break;
+//                }
+//                if (positions[x1][y1].substring(0, 2).equals("BP"))
+//                {
+//                    roster[i].setImageResource(R.mipmap.bpawn);
+//                    roster[i].setRotation(rotation);
+//                    rosterp[i] = positions[x1][y1];
+//                    break;
+//                }
+//                if (positions[x1][y1].substring(0, 2).equals("BR"))
+//                {
+//                    roster[i].setImageResource(R.mipmap.brook);
+//                    roster[i].setRotation(rotation);
+//                    rosterp[i] = positions[x1][y1];
+//                    break;
+//                }
+//                if (positions[x1][y1].substring(0, 2).equals("BN"))
+//                {
+//                    roster[i].setImageResource(R.mipmap.bknight);
+//                    roster[i].setRotation(rotation);
+//                    rosterp[i] = positions[x1][y1];
+//                    break;
+//                }
+//                if (positions[x1][y1].substring(0, 2).equals("BB"))
+//                {
+//                    roster[i].setImageResource(R.mipmap.bbishop);
+//                    roster[i].setRotation(rotation);
+//                    rosterp[i] = positions[x1][y1];
+//                    break;
+//                }
+//                if (positions[x1][y1].substring(0, 2).equals("BQ"))
+//                {
+//                    roster[i].setImageResource(R.mipmap.bqueen);
+//                    roster[i].setRotation(rotation);
+//                    rosterp[i] = positions[x1][y1];
+//                    break;
+//                }
+//
             }
 
         }
     }
 
-
-    private void whiteKingCastle(final ImageView[][] board, final String[][] positions, final int x, final int y, final int x1, final int y1)
+    private void whiteKingCastle(final ImageView[][] board, final Piece[][] positions, final int x, final int y, final int x1, final int y1)
     {
         if (checking)
         {
-
-
-            positions[4][0] = "0000";
-            positions[5][0] = "WR00";
-            positions[6][0] = "WK00";
-            positions[7][0] = "0000";
-            if (whiteInCheck(positions)) {
-                positions[4][0] = "WK0Y";
-                positions[5][0] = "000D";
-                positions[6][0] = "0000";
-                positions[7][0] = "WR00";
+            positions[4][0] = new Empty();
+            positions[5][0] = new Rook("white");
+            positions[6][0] = new King("white");
+            positions[7][0] = new Empty();
+            if (whiteInCheck(positions))
+            {
+                positions[4][0] = new King("white");
+                positions[4][0].backgroundColor = "Y";
+                positions[5][0] = new Empty();
+                positions[5][0].backgroundColor = "D";
+                positions[6][0] = new Empty();
+                positions[7][0] = new Rook("white");
                 return;
             }
-            positions[4][0] = "WK0Y";
-            positions[5][0] = "000D";
-            positions[6][0] = "0000";
-            positions[7][0] = "WR00";
+            positions[4][0] = new King("white");
+            positions[4][0].backgroundColor = "Y";
+            positions[5][0] = new Empty();
+            positions[5][0].backgroundColor = "D";
+            positions[6][0] = new Empty();
+            positions[7][0] = new Rook("white");
 
         }
 
@@ -4260,11 +4570,12 @@ public class MainActivity extends AppCompatActivity
         }
 
         board[x][y].setBackgroundColor(Color.YELLOW);
-        if (!positions[x][y].substring(3, 4).equals("Y")) {
-            positions[x][y] = positions[x][y].substring(0, 3) + "Y";
+        if (!positions[x][y].backgroundColor.equals("Y"))
+        {
+            positions[x][y].backgroundColor = "Y";
         }
         board[x1][y1].setImageResource(R.mipmap.dot);
-        positions[x1][y1] = positions[x1][y1].substring(0, 3) + "D";
+        positions[x1][y1].backgroundColor = "D";
 
 
         board[x1][y1].setOnTouchListener(new View.OnTouchListener()
@@ -4300,16 +4611,19 @@ public class MainActivity extends AppCompatActivity
                             if (j == 0 || j == 2 || j == 4 || j == 6)
                             {
                                 board[i][j].setBackground(black);
-                            } else
+                            }
+                            else
                             {
                                 board[i][j].setBackground(white);
                             }
-                        } else
+                        }
+                        else
                         {
                             if (j == 0 || j == 2 || j == 4 || j == 6)
                             {
                                 board[i][j].setBackground(white);
-                            } else
+                            }
+                            else
                             {
                                 board[i][j].setBackground(black);
                             }
@@ -4324,16 +4638,19 @@ public class MainActivity extends AppCompatActivity
                             if (j == 0 || j == 2 || j == 4 || j == 6)
                             {
                                 board[i][j].setBackground(black);
-                            } else
+                            }
+                            else
                             {
                                 board[i][j].setBackground(white);
                             }
-                        } else
+                        }
+                        else
                         {
                             if (j == 0 || j == 2 || j == 4 || j == 6)
                             {
                                 board[i][j].setBackground(white);
-                            } else
+                            }
+                            else
                             {
                                 board[i][j].setBackground(black);
                             }
@@ -4348,14 +4665,15 @@ public class MainActivity extends AppCompatActivity
         });
 
     }
-    private void whiteKingCastleShit(final ImageView[][] board, final String[][] positions, int x, int y, final int x1, final int y1)
+
+    private void whiteKingCastleShit(final ImageView[][] board, final Piece[][] positions, int x, int y, final int x1, final int y1)
     {
         clean(board, positions);
         turnChange(board, positions, x, y);
         positions[x1][y1] = positions[x][y];
-        positions[x][y] = "0000";
-        positions[7][0] = "0000";
-        positions[5][0] = "WR00";
+        positions[x][y] = new Empty();
+        positions[7][0] = new Empty();
+        positions[5][0] = new Rook("white");
         board[x1][y1].setImageResource(R.mipmap.king);
         board[5][0].setImageResource(R.mipmap.rook);
         board[x1][y1].setRotation(board[x][y].getRotation());
@@ -4367,24 +4685,31 @@ public class MainActivity extends AppCompatActivity
         setActions(board, positions);
 
     }
-    private void whiteQueenCastle(final ImageView[][] board, final String[][] positions, final int x, final int y, final int x1, final int y1)
+
+    private void whiteQueenCastle(final ImageView[][] board, final Piece[][] positions, final int x, final int y, final int x1, final int y1)
     {
-        if (checking) {
-            positions[0][0] = "0000";
-            positions[2][0] = "WK00";
-            positions[3][0] = "WR00";
-            positions[4][0] = "0000";
-            if (whiteInCheck(positions)) {
-                positions[0][0] = "WR00";
-                positions[2][0] = "0000";
-                positions[3][0] = "000D";
-                positions[4][0] = "WK0Y";
+        if (checking)
+        {
+            positions[0][0] = new Empty();
+            positions[2][0] = new King("white");
+            positions[3][0] = new Rook("white");
+            positions[4][0] = new Empty();
+            if (whiteInCheck(positions))
+            {
+                positions[0][0] = new Rook("white");
+                positions[2][0] = new Empty();
+                positions[3][0] = new Empty();
+                positions[3][0].backgroundColor = "D";
+                positions[4][0] = new King("white");
+                positions[4][0].backgroundColor = "Y";
                 return;
             }
-            positions[0][0] = "WR00";
-            positions[2][0] = "0000";
-            positions[3][0] = "000D";
-            positions[4][0] = "WK0Y";
+            positions[0][0] = new Rook("white");
+            positions[2][0] = new Empty();
+            positions[3][0] = new Empty();
+            positions[3][0].backgroundColor = "D";
+            positions[4][0] = new King("white");
+            positions[4][0].backgroundColor = "Y";
 
         }
 
@@ -4395,13 +4720,12 @@ public class MainActivity extends AppCompatActivity
         }
 
         board[x][y].setBackgroundColor(Color.YELLOW);
-        if (!positions[x][y].substring(3, 4).equals("Y"))
+        if (!positions[x][y].backgroundColor.equals("Y"))
         {
-            positions[x][y] = positions[x][y].substring(0, 3) + "Y";
+            positions[x][y].backgroundColor = "Y";
         }
         board[x1][y1].setImageResource(R.mipmap.dot);
-        positions[x1][y1] = positions[x1][y1].substring(0, 3) + "D";
-
+        positions[x1][y1].backgroundColor = "D";
 
 
         board[x1][y1].setOnTouchListener(new View.OnTouchListener()
@@ -4437,16 +4761,19 @@ public class MainActivity extends AppCompatActivity
                             if (j == 0 || j == 2 || j == 4 || j == 6)
                             {
                                 board[i][j].setBackground(black);
-                            } else
+                            }
+                            else
                             {
                                 board[i][j].setBackground(white);
                             }
-                        } else
+                        }
+                        else
                         {
                             if (j == 0 || j == 2 || j == 4 || j == 6)
                             {
                                 board[i][j].setBackground(white);
-                            } else
+                            }
+                            else
                             {
                                 board[i][j].setBackground(black);
                             }
@@ -4461,16 +4788,19 @@ public class MainActivity extends AppCompatActivity
                             if (j == 0 || j == 2 || j == 4 || j == 6)
                             {
                                 board[i][j].setBackground(black);
-                            } else
+                            }
+                            else
                             {
                                 board[i][j].setBackground(white);
                             }
-                        } else
+                        }
+                        else
                         {
                             if (j == 0 || j == 2 || j == 4 || j == 6)
                             {
                                 board[i][j].setBackground(white);
-                            } else
+                            }
+                            else
                             {
                                 board[i][j].setBackground(black);
                             }
@@ -4484,14 +4814,15 @@ public class MainActivity extends AppCompatActivity
 
         });
     }
-    private void whiteQueenCastleShit(final ImageView[][] board, final String[][] positions, int x, int y, final int x1, final int y1)
+
+    private void whiteQueenCastleShit(final ImageView[][] board, final Piece[][] positions, int x, int y, final int x1, final int y1)
     {
         clean(board, positions);
         turnChange(board, positions, x, y);
         positions[x1][y1] = positions[x][y];
-        positions[x][y] = "0000";
-        positions[0][0] = "0000";
-        positions[3][0] = "WR00";
+        positions[x][y] = new Empty();
+        positions[0][0] = new Empty();
+        positions[3][0] = new Rook("white");
         board[x1][y1].setImageResource(R.mipmap.king);
         board[3][0].setImageResource(R.mipmap.rook);
         board[x1][y1].setRotation(board[x][y].getRotation());
@@ -4503,25 +4834,31 @@ public class MainActivity extends AppCompatActivity
         setActions(board, positions);
 
     }
-    private void blackKingCastle(final ImageView[][] board, final String[][] positions, final int x, final int y, final int x1, final int y1)
+
+    private void blackKingCastle(final ImageView[][] board, final Piece[][] positions, final int x, final int y, final int x1, final int y1)
     {
         if (checking)
         {
-            positions[4][7] = "0000";
-            positions[5][7] = "BR00";
-            positions[6][7] = "BK00";
-            positions[7][7] = "0000";
-            if (blackInCheck(positions)) {
-                positions[4][7] = "BK0Y";
-                positions[5][7] = "000D";
-                positions[6][7] = "0000";
-                positions[7][7] = "BR00";
+            positions[4][7] = new Empty();
+            positions[5][7] = new Rook("black");
+            positions[6][7] = new King("black");
+            positions[7][7] = new Empty();
+            if (blackInCheck(positions))
+            {
+                positions[4][7] = new King("black");
+                positions[4][7].backgroundColor = "Y";
+                positions[5][7] = new Empty();
+                positions[5][7].backgroundColor = "D";
+                positions[6][7] = new Empty();
+                positions[7][7] = new Rook("black");
                 return;
             }
-            positions[4][7] = "BK0Y";
-            positions[5][7] = "000D";
-            positions[6][7] = "0000";
-            positions[7][7] = "BR00";
+            positions[4][7] = new King("black");
+            positions[4][7].backgroundColor = "Y";
+            positions[5][7] = new Empty();
+            positions[5][7].backgroundColor = "D";
+            positions[6][7] = new Empty();
+            positions[7][7] = new Rook("black");
         }
 
         if (CPUsearch[0] || CPUsearch[1] || CPUsearch[2] || CPUsearch[3])
@@ -4531,13 +4868,12 @@ public class MainActivity extends AppCompatActivity
         }
 
         board[x][y].setBackgroundColor(Color.YELLOW);
-        if (!positions[x][y].substring(3, 4).equals("Y"))
+        if (!positions[x][y].backgroundColor.equals("Y"))
         {
-            positions[x][y] = positions[x][y].substring(0, 3) + "Y";
+            positions[x][y].backgroundColor = "Y";
         }
         board[x1][y1].setImageResource(R.mipmap.dot);
-        positions[x1][y1] = positions[x1][y1].substring(0, 3) + "D";
-
+        positions[x1][y1].backgroundColor =  "D";
 
 
         board[x1][y1].setOnTouchListener(new View.OnTouchListener()
@@ -4573,16 +4909,19 @@ public class MainActivity extends AppCompatActivity
                             if (j == 0 || j == 2 || j == 4 || j == 6)
                             {
                                 board[i][j].setBackground(black);
-                            } else
+                            }
+                            else
                             {
                                 board[i][j].setBackground(white);
                             }
-                        } else
+                        }
+                        else
                         {
                             if (j == 0 || j == 2 || j == 4 || j == 6)
                             {
                                 board[i][j].setBackground(white);
-                            } else
+                            }
+                            else
                             {
                                 board[i][j].setBackground(black);
                             }
@@ -4597,16 +4936,19 @@ public class MainActivity extends AppCompatActivity
                             if (j == 0 || j == 2 || j == 4 || j == 6)
                             {
                                 board[i][j].setBackground(black);
-                            } else
+                            }
+                            else
                             {
                                 board[i][j].setBackground(white);
                             }
-                        } else
+                        }
+                        else
                         {
                             if (j == 0 || j == 2 || j == 4 || j == 6)
                             {
                                 board[i][j].setBackground(white);
-                            } else
+                            }
+                            else
                             {
                                 board[i][j].setBackground(black);
                             }
@@ -4621,14 +4963,15 @@ public class MainActivity extends AppCompatActivity
         });
 
     }
-    private void blackKingCastleShit(final ImageView[][] board, final String[][] positions, int x, int y, final int x1, final int y1)
+
+    private void blackKingCastleShit(final ImageView[][] board, final Piece[][] positions, int x, int y, final int x1, final int y1)
     {
         clean(board, positions);
         turnChange(board, positions, x, y);
         positions[x1][y1] = positions[x][y];
-        positions[x][y] = "0000";
-        positions[7][7] = "0000";
-        positions[5][7] = "BR00";
+        positions[x][y] = new Empty();
+        positions[7][7] = new Empty();
+        positions[5][7] = new Rook("black");
         board[x1][y1].setImageResource(R.mipmap.bking);
         board[5][7].setImageResource(R.mipmap.brook);
         board[x1][y1].setRotation(board[x][y].getRotation());
@@ -4640,24 +4983,31 @@ public class MainActivity extends AppCompatActivity
         setActions(board, positions);
 
     }
-    private void blackQueenCastle(final ImageView[][] board, final String[][] positions, final int x, final int y, final int x1, final int y1)
+
+    private void blackQueenCastle(final ImageView[][] board, final Piece[][] positions, final int x, final int y, final int x1, final int y1)
     {
-        if (checking) {
-            positions[0][7] = "0000";
-            positions[2][7] = "BK00";
-            positions[3][7] = "BR00";
-            positions[4][7] = "0000";
-            if (blackInCheck(positions)) {
-                positions[0][7] = "BR00";
-                positions[2][7] = "0000";
-                positions[3][7] = "000D";
-                positions[4][7] = "BK0Y";
+        if (checking)
+        {
+            positions[0][7] = new Empty();
+            positions[2][7] = new King("black");
+            positions[3][7] = new Rook("black");
+            positions[4][7] = new Empty();
+            if (blackInCheck(positions))
+            {
+                positions[0][7] = new Rook("black");
+                positions[2][7] = new Empty();
+                positions[3][7] = new Empty();
+                positions[3][7].backgroundColor = "D";
+                positions[4][7] = new King("black");
+                positions[4][7].backgroundColor = "Y";
                 return;
             }
-            positions[0][7] = "BR00";
-            positions[2][7] = "0000";
-            positions[3][7] = "000D";
-            positions[4][7] = "BK0Y";
+            positions[0][7] = new Rook("black");
+            positions[2][7] = new Empty();
+            positions[3][7] = new Empty();
+            positions[3][7].backgroundColor = "D";
+            positions[4][7] = new King("black");
+            positions[4][7].backgroundColor = "Y";
         }
 
         if (CPUsearch[0] || CPUsearch[1] || CPUsearch[2] || CPUsearch[3])
@@ -4667,12 +5017,12 @@ public class MainActivity extends AppCompatActivity
         }
 
         board[x][y].setBackgroundColor(Color.YELLOW);
-        if (!positions[x][y].substring(3, 4).equals("Y"))
+        if (!positions[x][y].backgroundColor.equals("Y"))
         {
-            positions[x][y] = positions[x][y].substring(0, 3) + "Y";
+            positions[x][y].backgroundColor ="Y";
         }
         board[x1][y1].setImageResource(R.mipmap.dot);
-        positions[x1][y1] = positions[x1][y1].substring(0, 3) + "D";
+        positions[x1][y1].backgroundColor = "D";
 
 
         board[x1][y1].setOnTouchListener(new View.OnTouchListener()
@@ -4708,16 +5058,19 @@ public class MainActivity extends AppCompatActivity
                             if (j == 0 || j == 2 || j == 4 || j == 6)
                             {
                                 board[i][j].setBackground(black);
-                            } else
+                            }
+                            else
                             {
                                 board[i][j].setBackground(white);
                             }
-                        } else
+                        }
+                        else
                         {
                             if (j == 0 || j == 2 || j == 4 || j == 6)
                             {
                                 board[i][j].setBackground(white);
-                            } else
+                            }
+                            else
                             {
                                 board[i][j].setBackground(black);
                             }
@@ -4732,16 +5085,19 @@ public class MainActivity extends AppCompatActivity
                             if (j == 0 || j == 2 || j == 4 || j == 6)
                             {
                                 board[i][j].setBackground(black);
-                            } else
+                            }
+                            else
                             {
                                 board[i][j].setBackground(white);
                             }
-                        } else
+                        }
+                        else
                         {
                             if (j == 0 || j == 2 || j == 4 || j == 6)
                             {
                                 board[i][j].setBackground(white);
-                            } else
+                            }
+                            else
                             {
                                 board[i][j].setBackground(black);
                             }
@@ -4755,14 +5111,15 @@ public class MainActivity extends AppCompatActivity
 
         });
     }
-    private void blackQueenCastleShit(final ImageView[][] board, final String[][] positions, int x, int y, final int x1, final int y1)
+
+    private void blackQueenCastleShit(final ImageView[][] board, final Piece[][] positions, int x, int y, final int x1, final int y1)
     {
         clean(board, positions);
         turnChange(board, positions, x, y);
         positions[x1][y1] = positions[x][y];
-        positions[x][y] = "0000";
-        positions[0][7] = "0000";
-        positions[3][7] = "BR00";
+        positions[x][y] = new Empty();
+        positions[0][7] = new Empty();
+        positions[3][7] = new Rook("black");
         board[x1][y1].setImageResource(R.mipmap.bking);
         board[3][7].setImageResource(R.mipmap.brook);
         board[x1][y1].setRotation(board[x][y].getRotation());
@@ -4775,56 +5132,67 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void whiteEnP(final ImageView[][] board, final String[][] positions, final int x, final int x1)
+    private void whiteEnP(final ImageView[][] board, final Piece[][] positions, final int x, final int x1)
     {
         final int y = 4;
         final int y1 = 5;
         if (checking || searchingForCheckmate1 || searchingForCheckmate2)
         {
-            String old = positions[x1][y1];
+            Piece old = positions[x1][y1];
             positions[x1][y1] = positions[x][y];
-            positions[x][y] = ("0000");
-            positions[x1][y] = ("0000");
-            if (board(board, positions) == 1) {
-                if (whiteTurn1 == 1) {
-                    if (whiteInCheck(positions)) {
+            positions[x][y] = new Empty();
+            positions[x1][y] = new Empty();
+            if (board(board, positions) == 1)
+            {
+                if (whiteTurn1 == 1)
+                {
+                    if (whiteInCheck(positions))
+                    {
                         positions[x][y] = positions[x1][y1];
                         positions[x1][y1] = old;
-                        positions[x1][y] = ("BP00");
+                        positions[x1][y] = new Pawn("black");
                         return;
                     }
                 }
-                if (whiteTurn1 == 2) {
+                if (whiteTurn1 == 2)
+                {
 
-                    if (blackInCheck(positions)) {
+                    if (blackInCheck(positions))
+                    {
 
                         positions[x][y] = positions[x1][y1];
                         positions[x1][y1] = old;
-                        positions[x1][y] = ("BP00");
+                        positions[x1][y] = new Pawn("black");
                         return;
                     }
                 }
-            } else {
-                if (whiteTurn2 == 1) {
-                    if (whiteInCheck(positions)) {
+            }
+            else
+            {
+                if (whiteTurn2 == 1)
+                {
+                    if (whiteInCheck(positions))
+                    {
                         positions[x][y] = positions[x1][y1];
                         positions[x1][y1] = old;
-                        positions[x1][y] = ("BP00");
+                        positions[x1][y] = new Pawn("black");
                         return;
                     }
                 }
-                if (whiteTurn2 == 2) {
-                    if (blackInCheck(positions)) {
+                if (whiteTurn2 == 2)
+                {
+                    if (blackInCheck(positions))
+                    {
                         positions[x][y] = positions[x1][y1];
                         positions[x1][y1] = old;
-                        positions[x1][y] = ("BP00");
+                        positions[x1][y] = new Pawn("black");
                         return;
                     }
                 }
             }
             positions[x][y] = positions[x1][y1];
             positions[x1][y1] = old;
-            positions[x1][y] = ("BP00");
+            positions[x1][y] = new Pawn("black");
         }
         if (searchingForCheckmate1)
         {
@@ -4843,12 +5211,12 @@ public class MainActivity extends AppCompatActivity
         }
 
         board[x][y].setBackgroundColor(Color.YELLOW);
-        if (!positions[x][y].substring(3, 4).equals("Y"))
+        if (!positions[x][y].backgroundColor.equals("Y"))
         {
-            positions[x][y] = positions[x][y].substring(0, 3) + "Y";
+            positions[x][y].backgroundColor = "Y";
         }
         board[x1][y].setBackgroundColor(Color.RED);
-        positions[x1][y] = positions[x1][y].substring(0, 3) + "R";
+        positions[x1][y].backgroundColor ="R";
 
         board[x1][y].setOnClickListener(new View.OnClickListener()
         {
@@ -4859,7 +5227,8 @@ public class MainActivity extends AppCompatActivity
             }
         });
     }
-    private void whiteEnPShit(final ImageView[][] board, final String[][] positions, final int x, final int x1)
+
+    private void whiteEnPShit(final ImageView[][] board, final Piece[][] positions, final int x, final int x1)
     {
         int y = 4;
         int y1 = 5;
@@ -4867,69 +5236,80 @@ public class MainActivity extends AppCompatActivity
         turnChange(board, positions, x, y);
         addToRoster(board, positions, x1, y);
         positions[x1][y1] = positions[x][y];
-        positions[x][y] = "0000";
+        positions[x][y] = new Empty();
 
         updateImage(board, positions, x1, y1);
         board[x1][y1].setRotation(board[x][y].getRotation());
         board[x][y].setRotation(0);
         board[x][y].setImageResource(android.R.color.transparent);
-        positions[x1][y] = "0000";
+        positions[x1][y] = new Empty();
         board[x1][y].setRotation(0);
         board[x1][y].setImageResource(android.R.color.transparent);
 
         setActions(board, positions);
     }
 
-    private void blackEnP(final ImageView[][] board, final String[][] positions, final int x, final int x1)
+    private void blackEnP(final ImageView[][] board, final Piece[][] positions, final int x, final int x1)
     {
         final int y = 3;
         final int y1 = 2;
         if (checking || searchingForCheckmate1 || searchingForCheckmate2)
         {
-            String old = positions[x1][y1];
+            Piece old = positions[x1][y1];
             positions[x1][y1] = positions[x][y];
-            positions[x][y] = ("0000");
-            positions[x1][y] = ("0000");
-            if (board(board, positions) == 1) {
-                if (whiteTurn1 == 1) {
-                    if (whiteInCheck(positions)) {
+            positions[x][y] = new Empty();
+            positions[x1][y] = new Empty();
+            if (board(board, positions) == 1)
+            {
+                if (whiteTurn1 == 1)
+                {
+                    if (whiteInCheck(positions))
+                    {
                         positions[x][y] = positions[x1][y1];
                         positions[x1][y1] = old;
-                        positions[x1][y] = ("WP00");
+                        positions[x1][y] = new Pawn("white");
                         return;
                     }
                 }
-                if (whiteTurn1 == 2) {
+                if (whiteTurn1 == 2)
+                {
 
-                    if (blackInCheck(positions)) {
+                    if (blackInCheck(positions))
+                    {
 
                         positions[x][y] = positions[x1][y1];
                         positions[x1][y1] = old;
-                        positions[x1][y] = ("WP00");
+                        positions[x1][y] = new Pawn("white");
                         return;
                     }
                 }
-            } else {
-                if (whiteTurn2 == 1) {
-                    if (whiteInCheck(positions)) {
+            }
+            else
+            {
+                if (whiteTurn2 == 1)
+                {
+                    if (whiteInCheck(positions))
+                    {
                         positions[x][y] = positions[x1][y1];
                         positions[x1][y1] = old;
-                        positions[x1][y] = ("WP00");
+                        positions[x1][y] = new Pawn("white");
                         return;
                     }
                 }
-                if (whiteTurn2 == 2) {
-                    if (blackInCheck(positions)) {
+                if (whiteTurn2 == 2)
+                {
+                    if (blackInCheck(positions))
+                    {
                         positions[x][y] = positions[x1][y1];
                         positions[x1][y1] = old;
-                        positions[x1][y] = ("WP00");
+                        positions[x1][y] = new Pawn("white");
                         return;
                     }
                 }
             }
             positions[x][y] = positions[x1][y1];
             positions[x1][y1] = old;
-            positions[x1][y] = ("WP00");
+            positions[x1][y] = new Pawn("white");
         }
         if (searchingForCheckmate1)
         {
@@ -4949,12 +5329,12 @@ public class MainActivity extends AppCompatActivity
         }
 
         board[x][y].setBackgroundColor(Color.YELLOW);
-        if (!positions[x][y].substring(3, 4).equals("Y"))
+        if (!positions[x][y].backgroundColor.equals("Y"))
         {
-            positions[x][y] = positions[x][y].substring(0, 3) + "Y";
+            positions[x][y].backgroundColor = "Y";
         }
         board[x1][y].setBackgroundColor(Color.RED);
-        positions[x1][y] = positions[x1][y].substring(0, 3) + "R";
+        positions[x1][y].backgroundColor = "R";
 
         board[x1][y].setOnClickListener(new View.OnClickListener()
         {
@@ -4965,14 +5345,15 @@ public class MainActivity extends AppCompatActivity
             }
         });
     }
-    private void blackEnPShit(final ImageView[][] board, final String[][] positions, final int x, final int x1)
+
+    private void blackEnPShit(final ImageView[][] board, final Piece[][] positions, final int x, final int x1)
     {
         int y = 3;
         int y1 = 2;
         clean(board, positions);
         if (board(board, positions) == 1)
         {
-            if (positions[x][y].substring(0, 1).equals("W"))
+            if (positions[x][y].color.equals("W"))
             {
                 whiteTurn1 = 2;
             }
@@ -4984,7 +5365,7 @@ public class MainActivity extends AppCompatActivity
         }
         else
         {
-            if (positions[x][y].substring(0, 1).equals("W"))
+            if (positions[x][y].color.equals("W"))
             {
                 whiteTurn2 = 2;
             }
@@ -4995,474 +5376,481 @@ public class MainActivity extends AppCompatActivity
         }
         addToRoster(board, positions, x1, y);
         positions[x1][y1] = positions[x][y];
-        positions[x][y] = "0000";
+        positions[x][y] = new Empty();
 
         updateImage(board, positions, x1, y1);
         board[x1][y1].setRotation(board[x][y].getRotation());
         board[x][y].setRotation(0);
         board[x][y].setImageResource(android.R.color.transparent);
-        positions[x1][y] = "0000";
+        positions[x1][y] = new Empty();
         board[x1][y].setRotation(0);
         board[x1][y].setImageResource(android.R.color.transparent);
 
         setActions(board, positions);
     }
 
-    private void castleCheck(ImageView[][] board, String[][] positions)
+    private void castleCheck(ImageView[][] board, Piece[][] positions)
     {
-        if (board(board, positions) == 1)
-        {
-            if (!positions[0][0].substring(0, 2).equals("WR"))
-            {
-                whiteCastleQueen1 = false;
-            }
-            if (!positions[7][0].substring(0, 2).equals("WR"))
-            {
-                whiteCastleKing1 = false;
-            }
-            if (!positions[4][0].substring(0, 2).equals("WK"))
-            {
-                whiteCastleKing1 = false;
-                whiteCastleQueen1 = false;
-            }
-            if (!positions[0][7].substring(0, 2).equals("BR"))
-            {
-                blackCastleQueen1 = false;
-            }
-            if (!positions[7][7].substring(0, 2).equals("BR"))
-            {
-                blackCastleKing1 = false;
-            }
-            if (!positions[4][7].substring(0, 2).equals("BK"))
-            {
-                blackCastleKing1 = false;
-                blackCastleQueen1 = false;
-            }
-        }
-        else
-        {
-            if (!positions[0][0].substring(0, 2).equals("WR"))
-            {
-                whiteCastleQueen2 = false;
-            }
-            if (!positions[7][0].substring(0, 2).equals("WR"))
-            {
-                whiteCastleKing2 = false;
-            }
-            if (!positions[4][0].substring(0, 2).equals("WK"))
-            {
-                whiteCastleKing2 = false;
-                whiteCastleQueen2 = false;
-            }
-            if (!positions[0][7].substring(0, 2).equals("BR"))
-            {
-                blackCastleQueen2 = false;
-            }
-            if (!positions[7][7].substring(0, 2).equals("BR"))
-            {
-                blackCastleKing2 = false;
-            }
-            if (!positions[4][7].substring(0, 2).equals("BK"))
-            {
-                blackCastleKing2 = false;
-                blackCastleQueen2 = false;
-            }
-        }
-    }
-    private void pawnCheck(final ImageView[][] board, final String[][] positions)
-    {
-        final LinearLayout pawnOptions1 = (LinearLayout) findViewById(R.id.pawnOptions1);
-        final LinearLayout pawnOptions2 = (LinearLayout) findViewById(R.id.pawnOptions2);
-        final Button queen1 = (Button) findViewById(R.id.queen1);
-        Button queen2 = (Button) findViewById(R.id.queen2);
-        Button rook1  = (Button) findViewById(R.id.rook1);
-        Button rook2 = (Button) findViewById(R.id.rook2);
-        Button bishop1 = (Button) findViewById(R.id.bishop1);
-        Button bishop2 = (Button) findViewById(R.id.bishop2);
-        Button knight1 = (Button) findViewById(R.id.knight1);
-        Button knight2 = (Button) findViewById(R.id.knight2);
-
-        final ImageView square = (ImageView) findViewById(R.id.a1_1);
-        int width = square.getWidth();
-
-        pawnOptions1.getLayoutParams().width = width * 8;
-        pawnOptions1.getLayoutParams().height = width * 8;
-        pawnOptions2.getLayoutParams().width = width * 8;
-        pawnOptions2.getLayoutParams().height = width * 8;
-
-        if (board(board,positions) == 1 )
-        {
-            if (whiteTurn1 == 2)
-            {
-                for (int i = 0; i < 8; i++)
-                {
-                    final int x = i;
-                    if (positions[i][7].substring(0, 2).equals("WP"))
-                    {
-                        whiteTurn1 = 3;
-                        nuke(board, positions);
-                        pawnOptions1.setVisibility(View.VISIBLE);
-                        pawnOptions1.setRotation(90);
-                        if (gameState == 1)
-                        {
-                            queen1.setOnClickListener(new View.OnClickListener()
-                            {
-                                @Override
-                                public void onClick(View v)
-                                {
-                                    positions[x][7] = "WQP0";
-                                    board[x][7].setImageResource(R.mipmap.queen);
-                                    if (gameState == 1)
-                                    {
-                                        pawnOptions1.setVisibility(View.INVISIBLE);
-                                        whiteTurn1 = 2;
-                                        setActions(board, positions);
-                                    }
-                                }
-                            });
-                            rook1.setOnClickListener(new View.OnClickListener()
-                            {
-                                @Override
-                                public void onClick(View v)
-                                {
-                                    positions[x][7] = "WRP0";
-                                    board[x][7].setImageResource(R.mipmap.rook);
-                                    if (gameState == 1)
-                                    {
-                                        pawnOptions1.setVisibility(View.INVISIBLE);
-                                        whiteTurn1 = 2;
-                                        setActions(board, positions);
-                                    }
-                                }
-                            });
-                            bishop1.setOnClickListener(new View.OnClickListener()
-                            {
-                                @Override
-                                public void onClick(View v)
-                                {
-                                    positions[x][7] = "WBP0";
-                                    board[x][7].setImageResource(R.mipmap.bishop);
-                                    if (gameState == 1)
-                                    {
-                                        pawnOptions1.setVisibility(View.INVISIBLE);
-                                        whiteTurn1 = 2;
-                                        setActions(board, positions);
-                                    }
-                                }
-                            });
-                            knight1.setOnClickListener(new View.OnClickListener()
-                            {
-                                @Override
-                                public void onClick(View v)
-                                {
-                                    positions[x][7] = "WNP0";
-                                    board[x][7].setImageResource(R.mipmap.knight);
-                                    if (gameState == 1)
-                                    {
-                                        pawnOptions1.setVisibility(View.INVISIBLE);
-                                        whiteTurn1 = 2;
-                                        setActions(board, positions);
-                                    }
-
-                                }
-                            });
-                            if (!position1)
-                            {
-                                positions[x][7] = "WQP0";
-                                board[x][7].setImageResource(R.mipmap.queen);
-                                if (gameState == 1)
-                                {
-                                    pawnOptions1.setVisibility(View.INVISIBLE);
-                                    whiteTurn1 = 2;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            if (whiteTurn1 == 1)
-            {
-                for (int i = 0; i < 8; i++)
-                {
-                    final int x = i;
-                    if (positions[i][0].substring(0, 2).equals("BP"))
-                    {
-                        whiteTurn1 = 3;
-                        nuke(board, positions);
-                        pawnOptions1.setVisibility(View.VISIBLE);
-                        pawnOptions1.setRotation(270);
-
-                        queen1.setOnClickListener(new View.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(View v)
-                            {
-                                positions[x][0] = "BQP0";
-                                board[x][0].setImageResource(R.mipmap.bqueen);
-                                if (gameState == 1)
-                                {
-                                    pawnOptions1.setVisibility(View.INVISIBLE);
-                                    whiteTurn1 = 1;
-                                    setActions(board, positions);
-                                }
-                            }
-                        });
-                        rook1.setOnClickListener(new View.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(View v)
-                            {
-                                positions[x][0] = "BRP0";
-                                board[x][0].setImageResource(R.mipmap.brook);
-                                if (gameState == 1)
-                                {
-                                    pawnOptions1.setVisibility(View.INVISIBLE);
-                                    whiteTurn1 = 1;
-                                    setActions(board, positions);
-                                }
-                            }
-                        });
-                        bishop1.setOnClickListener(new View.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(View v)
-                            {
-                                positions[x][0] = "BBP0";
-                                board[x][0].setImageResource(R.mipmap.bbishop);
-                                if (gameState == 1)
-                                {
-                                    pawnOptions1.setVisibility(View.INVISIBLE);
-                                    whiteTurn1 = 1;
-                                    setActions(board, positions);
-                                }
-                            }
-                        });
-                        knight1.setOnClickListener(new View.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(View v)
-                            {
-                                positions[x][0] = "BNP0";
-                                board[x][0].setImageResource(R.mipmap.bknight);
-                                if (gameState == 1)
-                                {
-                                    pawnOptions1.setVisibility(View.INVISIBLE);
-                                    whiteTurn1 = 1;
-                                    setActions(board, positions);
-                                }
-                            }
-                        });
-                        if (!position2)
-                        {
-                            positions[x][0] = "BQP0";
-                            board[x][0].setImageResource(R.mipmap.bqueen);
-                            if (gameState == 1)
-                            {
-                                pawnOptions1.setVisibility(View.INVISIBLE);
-                                whiteTurn1 = 1;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        if (board(board,positions) == 2)
-        {
-            if (whiteTurn2 == 2)
-            {
-                for (int i = 0; i < 8; i++)
-                {
-                    final int x = i;
-                    if (positions[i][7].substring(0, 2).equals("WP"))
-                    {
-                        whiteTurn2 = 3;
-                        nuke(board, positions);
-                        pawnOptions2.setVisibility(View.VISIBLE);
-                        pawnOptions2.setRotation(270);
-                        queen2.setOnClickListener(new View.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(View v)
-                            {
-                                positions[x][7] = "WQP0";
-                                board[x][7].setImageResource(R.mipmap.queen);
-                                if (gameState == 1)
-                                {
-                                    pawnOptions2.setVisibility(View.INVISIBLE);
-                                    whiteTurn2 = 2;
-                                    setActions(board, positions);
-                                }
-                            }
-                        });
-                        rook2.setOnClickListener(new View.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(View v)
-                            {
-                                positions[x][7] = "WRP0";
-                                board[x][7].setImageResource(R.mipmap.rook);
-                                if (gameState == 1)
-                                {
-                                    pawnOptions2.setVisibility(View.INVISIBLE);
-                                    whiteTurn2 = 2;
-                                    setActions(board, positions);
-                                }
-                            }
-                        });
-                        bishop2.setOnClickListener(new View.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(View v)
-                            {
-                                positions[x][7] = "WBP0";
-                                board[x][7].setImageResource(R.mipmap.bishop);
-                                if (gameState == 1)
-                                {
-                                    pawnOptions2.setVisibility(View.INVISIBLE);
-                                    whiteTurn2 = 2;
-                                    setActions(board, positions);
-                                }
-                            }
-                        });
-                        knight2.setOnClickListener(new View.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(View v)
-                            {
-                                positions[x][7] = "WNP0";
-                                board[x][7].setImageResource(R.mipmap.knight);
-                                if (gameState == 1)
-                                {
-                                    pawnOptions2.setVisibility(View.INVISIBLE);
-                                    whiteTurn2 = 2;
-                                    setActions(board, positions);
-                                }
-                            }
-                        });
-                        if (!position4)
-                        {
-                            positions[x][7] = "WQP0";
-                            board[x][7].setImageResource(R.mipmap.queen);
-                            if (gameState == 1)
-                            {
-                                pawnOptions2.setVisibility(View.INVISIBLE);
-                                whiteTurn2 = 2;
-                            }
-                        }
-                    }
-                }
-            }
-            if (whiteTurn2 == 1)
-            {
-                for (int i = 0; i < 8; i++)
-                {
-                    final int x = i;
-                    if (positions[i][0].substring(0, 2).equals("BP"))
-                    {
-                        whiteTurn2 = 3;
-                        nuke(board, positions);
-                        pawnOptions2.setVisibility(View.VISIBLE);
-                        pawnOptions2.setRotation(90);
-                        queen2.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                positions[x][0] = "BQP0";
-                                board[x][0].setImageResource(R.mipmap.bqueen);
-                                if (gameState == 1)
-                                {
-                                    pawnOptions2.setVisibility(View.INVISIBLE);
-                                    whiteTurn2 = 1;
-                                    setActions(board, positions);
-                                }
-                            }
-                        });
-                        rook2.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v)
-                            {
-                                positions[x][0] = "BRP0";
-                                board[x][0].setImageResource(R.mipmap.brook);
-                                if (gameState == 1)
-                                {
-                                    pawnOptions2.setVisibility(View.INVISIBLE);
-                                    whiteTurn2 = 1;
-                                    setActions(board, positions);
-                                }
-                            }
-                        });
-                        bishop2.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                positions[x][0] = "BBP0";
-                                board[x][0].setImageResource(R.mipmap.bbishop);
-                                if (gameState == 1)
-                                {
-                                    pawnOptions2.setVisibility(View.INVISIBLE);
-                                    whiteTurn2 = 1;
-                                    setActions(board, positions);
-                                }
-                            }
-                        });
-                        knight2.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                positions[x][0] = "BNP0";
-                                board[x][0].setImageResource(R.mipmap.bknight);
-                                if (gameState == 1)
-                                {
-                                    pawnOptions2.setVisibility(View.INVISIBLE);
-                                    whiteTurn2 = 1;
-                                    setActions(board, positions);
-                                }
-                            }
-                        });
-                        if (!position3)
-                        {
-                            positions[x][0] = "BQP0";
-                            board[x][0].setImageResource(R.mipmap.bqueen);
-                            if (gameState == 1)
-                            {
-                                pawnOptions2.setVisibility(View.INVISIBLE);
-                                whiteTurn2 = 1;
-                            }
-                        }
-                    }
-                }
-            }
-        }
+//        if (board(board, positions) == 1)
+//        {
+//            if (!positions[0][0].substring(0, 2).equals("WR"))
+//            {
+//                whiteCastleQueen1 = false;
+//            }
+//            if (!positions[7][0].substring(0, 2).equals("WR"))
+//            {
+//                whiteCastleKing1 = false;
+//            }
+//            if (!positions[4][0].substring(0, 2).equals("WK"))
+//            {
+//                whiteCastleKing1 = false;
+//                whiteCastleQueen1 = false;
+//            }
+//            if (!positions[0][7].substring(0, 2).equals("BR"))
+//            {
+//                blackCastleQueen1 = false;
+//            }
+//            if (!positions[7][7].substring(0, 2).equals("BR"))
+//            {
+//                blackCastleKing1 = false;
+//            }
+//            if (!positions[4][7].substring(0, 2).equals("BK"))
+//            {
+//                blackCastleKing1 = false;
+//                blackCastleQueen1 = false;
+//            }
+//        }
+//        else
+//        {
+//            if (!positions[0][0].substring(0, 2).equals("WR"))
+//            {
+//                whiteCastleQueen2 = false;
+//            }
+//            if (!positions[7][0].substring(0, 2).equals("WR"))
+//            {
+//                whiteCastleKing2 = false;
+//            }
+//            if (!positions[4][0].substring(0, 2).equals("WK"))
+//            {
+//                whiteCastleKing2 = false;
+//                whiteCastleQueen2 = false;
+//            }
+//            if (!positions[0][7].substring(0, 2).equals("BR"))
+//            {
+//                blackCastleQueen2 = false;
+//            }
+//            if (!positions[7][7].substring(0, 2).equals("BR"))
+//            {
+//                blackCastleKing2 = false;
+//            }
+//            if (!positions[4][7].substring(0, 2).equals("BK"))
+//            {
+//                blackCastleKing2 = false;
+//                blackCastleQueen2 = false;
+//            }
+//        }
     }
 
-    private void turnChange(final ImageView[][] board, final String[][] positions, final int x, final int y)
+    private void pawnCheck(final ImageView[][] board, final Piece[][] positions)
+    {
+//        final LinearLayout pawnOptions1 = (LinearLayout) findViewById(R.id.pawnOptions1);
+//        final LinearLayout pawnOptions2 = (LinearLayout) findViewById(R.id.pawnOptions2);
+//        final Button queen1 = (Button) findViewById(R.id.queen1);
+//        Button queen2 = (Button) findViewById(R.id.queen2);
+//        Button rook1 = (Button) findViewById(R.id.rook1);
+//        Button rook2 = (Button) findViewById(R.id.rook2);
+//        Button bishop1 = (Button) findViewById(R.id.bishop1);
+//        Button bishop2 = (Button) findViewById(R.id.bishop2);
+//        Button knight1 = (Button) findViewById(R.id.knight1);
+//        Button knight2 = (Button) findViewById(R.id.knight2);
+//
+//        final ImageView square = (ImageView) findViewById(R.id.a1_1);
+//        int width = square.getWidth();
+//
+//        pawnOptions1.getLayoutParams().width = width * 8;
+//        pawnOptions1.getLayoutParams().height = width * 8;
+//        pawnOptions2.getLayoutParams().width = width * 8;
+//        pawnOptions2.getLayoutParams().height = width * 8;
+//
+//        if (board(board, positions) == 1)
+//        {
+//            if (whiteTurn1 == 2)
+//            {
+//                for (int i = 0; i < 8; i++)
+//                {
+//                    final int x = i;
+//                    if (positions[i][7].substring(0, 2).equals("WP"))
+//                    {
+//                        whiteTurn1 = 3;
+//                        nuke(board, positions);
+//                        pawnOptions1.setVisibility(View.VISIBLE);
+//                        pawnOptions1.setRotation(90);
+//                        if (gameState == 1)
+//                        {
+//                            queen1.setOnClickListener(new View.OnClickListener()
+//                            {
+//                                @Override
+//                                public void onClick(View v)
+//                                {
+//                                    positions[x][7] = "WQP0";
+//                                    board[x][7].setImageResource(R.mipmap.queen);
+//                                    if (gameState == 1)
+//                                    {
+//                                        pawnOptions1.setVisibility(View.INVISIBLE);
+//                                        whiteTurn1 = 2;
+//                                        setActions(board, positions);
+//                                    }
+//                                }
+//                            });
+//                            rook1.setOnClickListener(new View.OnClickListener()
+//                            {
+//                                @Override
+//                                public void onClick(View v)
+//                                {
+//                                    positions[x][7] = "WRP0";
+//                                    board[x][7].setImageResource(R.mipmap.rook);
+//                                    if (gameState == 1)
+//                                    {
+//                                        pawnOptions1.setVisibility(View.INVISIBLE);
+//                                        whiteTurn1 = 2;
+//                                        setActions(board, positions);
+//                                    }
+//                                }
+//                            });
+//                            bishop1.setOnClickListener(new View.OnClickListener()
+//                            {
+//                                @Override
+//                                public void onClick(View v)
+//                                {
+//                                    positions[x][7] = "WBP0";
+//                                    board[x][7].setImageResource(R.mipmap.bishop);
+//                                    if (gameState == 1)
+//                                    {
+//                                        pawnOptions1.setVisibility(View.INVISIBLE);
+//                                        whiteTurn1 = 2;
+//                                        setActions(board, positions);
+//                                    }
+//                                }
+//                            });
+//                            knight1.setOnClickListener(new View.OnClickListener()
+//                            {
+//                                @Override
+//                                public void onClick(View v)
+//                                {
+//                                    positions[x][7] = "WNP0";
+//                                    board[x][7].setImageResource(R.mipmap.knight);
+//                                    if (gameState == 1)
+//                                    {
+//                                        pawnOptions1.setVisibility(View.INVISIBLE);
+//                                        whiteTurn1 = 2;
+//                                        setActions(board, positions);
+//                                    }
+//
+//                                }
+//                            });
+//                            if (!position1)
+//                            {
+//                                positions[x][7] = "WQP0";
+//                                board[x][7].setImageResource(R.mipmap.queen);
+//                                if (gameState == 1)
+//                                {
+//                                    pawnOptions1.setVisibility(View.INVISIBLE);
+//                                    whiteTurn1 = 2;
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//            if (whiteTurn1 == 1)
+//            {
+//                for (int i = 0; i < 8; i++)
+//                {
+//                    final int x = i;
+//                    if (positions[i][0].substring(0, 2).equals("BP"))
+//                    {
+//                        whiteTurn1 = 3;
+//                        nuke(board, positions);
+//                        pawnOptions1.setVisibility(View.VISIBLE);
+//                        pawnOptions1.setRotation(270);
+//
+//                        queen1.setOnClickListener(new View.OnClickListener()
+//                        {
+//                            @Override
+//                            public void onClick(View v)
+//                            {
+//                                positions[x][0] = "BQP0";
+//                                board[x][0].setImageResource(R.mipmap.bqueen);
+//                                if (gameState == 1)
+//                                {
+//                                    pawnOptions1.setVisibility(View.INVISIBLE);
+//                                    whiteTurn1 = 1;
+//                                    setActions(board, positions);
+//                                }
+//                            }
+//                        });
+//                        rook1.setOnClickListener(new View.OnClickListener()
+//                        {
+//                            @Override
+//                            public void onClick(View v)
+//                            {
+//                                positions[x][0] = "BRP0";
+//                                board[x][0].setImageResource(R.mipmap.brook);
+//                                if (gameState == 1)
+//                                {
+//                                    pawnOptions1.setVisibility(View.INVISIBLE);
+//                                    whiteTurn1 = 1;
+//                                    setActions(board, positions);
+//                                }
+//                            }
+//                        });
+//                        bishop1.setOnClickListener(new View.OnClickListener()
+//                        {
+//                            @Override
+//                            public void onClick(View v)
+//                            {
+//                                positions[x][0] = "BBP0";
+//                                board[x][0].setImageResource(R.mipmap.bbishop);
+//                                if (gameState == 1)
+//                                {
+//                                    pawnOptions1.setVisibility(View.INVISIBLE);
+//                                    whiteTurn1 = 1;
+//                                    setActions(board, positions);
+//                                }
+//                            }
+//                        });
+//                        knight1.setOnClickListener(new View.OnClickListener()
+//                        {
+//                            @Override
+//                            public void onClick(View v)
+//                            {
+//                                positions[x][0] = "BNP0";
+//                                board[x][0].setImageResource(R.mipmap.bknight);
+//                                if (gameState == 1)
+//                                {
+//                                    pawnOptions1.setVisibility(View.INVISIBLE);
+//                                    whiteTurn1 = 1;
+//                                    setActions(board, positions);
+//                                }
+//                            }
+//                        });
+//                        if (!position2)
+//                        {
+//                            positions[x][0] = "BQP0";
+//                            board[x][0].setImageResource(R.mipmap.bqueen);
+//                            if (gameState == 1)
+//                            {
+//                                pawnOptions1.setVisibility(View.INVISIBLE);
+//                                whiteTurn1 = 1;
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        if (board(board, positions) == 2)
+//        {
+//            if (whiteTurn2 == 2)
+//            {
+//                for (int i = 0; i < 8; i++)
+//                {
+//                    final int x = i;
+//                    if (positions[i][7].substring(0, 2).equals("WP"))
+//                    {
+//                        whiteTurn2 = 3;
+//                        nuke(board, positions);
+//                        pawnOptions2.setVisibility(View.VISIBLE);
+//                        pawnOptions2.setRotation(270);
+//                        queen2.setOnClickListener(new View.OnClickListener()
+//                        {
+//                            @Override
+//                            public void onClick(View v)
+//                            {
+//                                positions[x][7] = "WQP0";
+//                                board[x][7].setImageResource(R.mipmap.queen);
+//                                if (gameState == 1)
+//                                {
+//                                    pawnOptions2.setVisibility(View.INVISIBLE);
+//                                    whiteTurn2 = 2;
+//                                    setActions(board, positions);
+//                                }
+//                            }
+//                        });
+//                        rook2.setOnClickListener(new View.OnClickListener()
+//                        {
+//                            @Override
+//                            public void onClick(View v)
+//                            {
+//                                positions[x][7] = "WRP0";
+//                                board[x][7].setImageResource(R.mipmap.rook);
+//                                if (gameState == 1)
+//                                {
+//                                    pawnOptions2.setVisibility(View.INVISIBLE);
+//                                    whiteTurn2 = 2;
+//                                    setActions(board, positions);
+//                                }
+//                            }
+//                        });
+//                        bishop2.setOnClickListener(new View.OnClickListener()
+//                        {
+//                            @Override
+//                            public void onClick(View v)
+//                            {
+//                                positions[x][7] = "WBP0";
+//                                board[x][7].setImageResource(R.mipmap.bishop);
+//                                if (gameState == 1)
+//                                {
+//                                    pawnOptions2.setVisibility(View.INVISIBLE);
+//                                    whiteTurn2 = 2;
+//                                    setActions(board, positions);
+//                                }
+//                            }
+//                        });
+//                        knight2.setOnClickListener(new View.OnClickListener()
+//                        {
+//                            @Override
+//                            public void onClick(View v)
+//                            {
+//                                positions[x][7] = "WNP0";
+//                                board[x][7].setImageResource(R.mipmap.knight);
+//                                if (gameState == 1)
+//                                {
+//                                    pawnOptions2.setVisibility(View.INVISIBLE);
+//                                    whiteTurn2 = 2;
+//                                    setActions(board, positions);
+//                                }
+//                            }
+//                        });
+//                        if (!position4)
+//                        {
+//                            positions[x][7] = "WQP0";
+//                            board[x][7].setImageResource(R.mipmap.queen);
+//                            if (gameState == 1)
+//                            {
+//                                pawnOptions2.setVisibility(View.INVISIBLE);
+//                                whiteTurn2 = 2;
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//            if (whiteTurn2 == 1)
+//            {
+//                for (int i = 0; i < 8; i++)
+//                {
+//                    final int x = i;
+//                    if (positions[i][0].substring(0, 2).equals("BP"))
+//                    {
+//                        whiteTurn2 = 3;
+//                        nuke(board, positions);
+//                        pawnOptions2.setVisibility(View.VISIBLE);
+//                        pawnOptions2.setRotation(90);
+//                        queen2.setOnClickListener(new View.OnClickListener()
+//                        {
+//                            @Override
+//                            public void onClick(View v)
+//                            {
+//                                positions[x][0] = "BQP0";
+//                                board[x][0].setImageResource(R.mipmap.bqueen);
+//                                if (gameState == 1)
+//                                {
+//                                    pawnOptions2.setVisibility(View.INVISIBLE);
+//                                    whiteTurn2 = 1;
+//                                    setActions(board, positions);
+//                                }
+//                            }
+//                        });
+//                        rook2.setOnClickListener(new View.OnClickListener()
+//                        {
+//                            @Override
+//                            public void onClick(View v)
+//                            {
+//                                positions[x][0] = "BRP0";
+//                                board[x][0].setImageResource(R.mipmap.brook);
+//                                if (gameState == 1)
+//                                {
+//                                    pawnOptions2.setVisibility(View.INVISIBLE);
+//                                    whiteTurn2 = 1;
+//                                    setActions(board, positions);
+//                                }
+//                            }
+//                        });
+//                        bishop2.setOnClickListener(new View.OnClickListener()
+//                        {
+//                            @Override
+//                            public void onClick(View v)
+//                            {
+//                                positions[x][0] = "BBP0";
+//                                board[x][0].setImageResource(R.mipmap.bbishop);
+//                                if (gameState == 1)
+//                                {
+//                                    pawnOptions2.setVisibility(View.INVISIBLE);
+//                                    whiteTurn2 = 1;
+//                                    setActions(board, positions);
+//                                }
+//                            }
+//                        });
+//                        knight2.setOnClickListener(new View.OnClickListener()
+//                        {
+//                            @Override
+//                            public void onClick(View v)
+//                            {
+//                                positions[x][0] = "BNP0";
+//                                board[x][0].setImageResource(R.mipmap.bknight);
+//                                if (gameState == 1)
+//                                {
+//                                    pawnOptions2.setVisibility(View.INVISIBLE);
+//                                    whiteTurn2 = 1;
+//                                    setActions(board, positions);
+//                                }
+//                            }
+//                        });
+//                        if (!position3)
+//                        {
+//                            positions[x][0] = "BQP0";
+//                            board[x][0].setImageResource(R.mipmap.bqueen);
+//                            if (gameState == 1)
+//                            {
+//                                pawnOptions2.setVisibility(View.INVISIBLE);
+//                                whiteTurn2 = 1;
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+    }
+
+    private void turnChange(final ImageView[][] board, final Piece[][] positions, final int x, final int y)
     {
         /**
-        if (gameState == 2)
-        {
-            new Thread(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    while (gameState == 2)
-                    {
-                        try
-                        {
-                            Thread.sleep(1);
-                        }
-                        catch (InterruptedException e)
-                        {
-                            e.printStackTrace();
-                        }
-                    }
+         if (gameState == 2)
+         {
+         new Thread(new Runnable()
+         {
+         @Override public void run()
+         {
+         while (gameState == 2)
+         {
+         try
+         {
+         Thread.sleep(1);
+         }
+         catch (InterruptedException e)
+         {
+         e.printStackTrace();
+         }
+         }
 
 
-                }
-            }).start();
-        }
-        */
+         }
+         }).start();
+         }
+         */
 
         if (board(board, positions) == 1)
         {
-            if (positions[x][y].substring(0, 1).equals("W"))
+            if (positions[x][y].color.equals("white"))
             {
                 if (gameState == 2)
                 {
@@ -5489,7 +5877,7 @@ public class MainActivity extends AppCompatActivity
         }
         else
         {
-            if (positions[x][y].substring(0, 1).equals("W"))
+            if (positions[x][y].color.equals("white"))
             {
                 if (gameState == 2)
                 {
@@ -5516,15 +5904,17 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void nuke(final ImageView[][] board, final String[][] positions)
+    private void nuke(final ImageView[][] board, final Piece[][] positions)
     {
         for (int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)
             {
-                board[i][j].setOnClickListener(new View.OnClickListener() {
+                board[i][j].setOnClickListener(new View.OnClickListener()
+                {
                     @Override
-                    public void onClick(View v) {
+                    public void onClick(View v)
+                    {
 
                     }
                 });
@@ -5542,15 +5932,19 @@ public class MainActivity extends AppCompatActivity
         {
             for (int i = 0; i < 30; i++)
             {
-                roster1[i].setOnClickListener(new View.OnClickListener() {
+                roster1[i].setOnClickListener(new View.OnClickListener()
+                {
                     @Override
-                    public void onClick(View v) {
+                    public void onClick(View v)
+                    {
 
                     }
                 });
-                roster2[i].setOnClickListener(new View.OnClickListener() {
+                roster2[i].setOnClickListener(new View.OnClickListener()
+                {
                     @Override
-                    public void onClick(View v) {
+                    public void onClick(View v)
+                    {
 
                     }
                 });
@@ -5561,30 +5955,34 @@ public class MainActivity extends AppCompatActivity
         {
             for (int i = 0; i < 30; i++)
             {
-            roster3[i].setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+                roster3[i].setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
 
-                }
-            });
-            roster4[i].setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+                    }
+                });
+                roster4[i].setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
 
-                }
-            });
-        }
+                    }
+                });
+            }
 
         }
     }
 
-    private boolean whiteInCheck(String[][] positions)
+    private boolean whiteInCheck(Piece[][] positions)
     {
         for (int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)
             {
-                if (positions[i][j].substring(0, 2).equals("WK") && checkCheck(positions, i, j))
+                if (positions[i][j].color.equals("white") && positions[i][j].type.equals("king")&& checkCheck(positions, i, j))
                 {
                     return true;
                 }
@@ -5593,13 +5991,14 @@ public class MainActivity extends AppCompatActivity
         return false;
 
     }
-    private boolean blackInCheck(String[][] positions)
+
+    private boolean blackInCheck(Piece[][] positions)
     {
         for (int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)
             {
-                if (positions[i][j].substring(0, 2).equals("BK") && checkCheck(positions, i, j))
+                if (positions[i][j].color.equals("black") && positions[i][j].type.equals("king")&& checkCheck(positions, i, j))
                 {
                     return true;
                 }
@@ -5609,1120 +6008,1171 @@ public class MainActivity extends AppCompatActivity
         return false;
     }
 
-    private boolean checkCheck(String[][] positions, int x, int y)
+    public static boolean checkCheck(Piece[][] positions, int x, int y)
     {
-        for (int i = x + 1; i < 8; i++)
-        {
-            if (positions[x][y].substring(0, 1).equals("W"))
-            {
-                if (positions[i][y].substring(0, 2).equals("BR") || positions[i][y].substring(0, 2).equals("BQ"))
-                {
-                    return true;
-                }
-            }
-            if (positions[x][y].substring(0, 1).equals("B"))
-            {
-                if (positions[i][y].substring(0, 2).equals("WR") || positions[i][y].substring(0, 2).equals("WQ"))
-                {
-                    return true;
-                }
-            }
-            if (!positions[i][y].substring(0, 1).equals("0"))
-            {
-                break;
-            }
-        }
-        for (int i = x - 1; i > -1; i--)
-        {
-            if (positions[x][y].substring(0, 1).equals("W"))
-            {
-                if (positions[i][y].substring(0, 2).equals("BR") || positions[i][y].substring(0, 2).equals("BQ"))
-                {
-                    return true;
-                }
-            }
-            if (positions[x][y].substring(0, 1).equals("B"))
-            {
-                if (positions[i][y].substring(0, 2).equals("WR") || positions[i][y].substring(0, 2).equals("WQ"))
-                {
-                    return true;
-                }
-            }
-            if (!positions[i][y].substring(0, 1).equals("0"))
-            {
-                break;
-            }
-        }
-        for (int i = y + 1; i < 8; i++)
-        {
-            if (positions[x][y].substring(0, 1).equals("W"))
-            {
-                if (positions[x][i].substring(0, 2).equals("BR") || positions[x][i].substring(0, 2).equals("BQ"))
-                {
-                    return true;
-                }
-            }
-            if (positions[x][y].substring(0, 1).equals("B"))
-            {
-                if (positions[x][i].substring(0, 2).equals("WR") || positions[x][i].substring(0, 2).equals("WQ"))
-                {
-                    return true;
-                }
-            }
-            if (!positions[x][i].substring(0, 1).equals("0"))
-            {
-                break;
-            }
-        }
-        for (int i = y - 1; i > -1; i--)
-        {
-            if (positions[x][y].substring(0, 1).equals("W"))
-            {
-                if (positions[x][i].substring(0, 2).equals("BR") || positions[x][i].substring(0, 2).equals("BQ"))
-                {
-                    return true;
-                }
-            }
-            if (positions[x][y].substring(0, 1).equals("B"))
-            {
-                if (positions[x][i].substring(0, 2).equals("WR") || positions[x][i].substring(0, 2).equals("WQ"))
-                {
-                    return true;
-                }
-            }
-            if (!positions[x][i].substring(0, 1).equals("0"))
-            {
-                break;
-            }
-        }
-        int z = x;
-        if (y > x)
-        {
-            z = y;
-        }
-        for (int i = 1; i < 8 - z; i++)
-        {
-            if (positions[x][y].substring(0, 1).equals("W"))
-            {
-                if (positions[x + i][y + i].substring(0, 2).equals("BB") || positions[x + i][y + i].substring(0, 2).equals("BQ"))
-                {
-                    return true;
-                }
-            }
-            if (positions[x][y].substring(0, 1).equals("B"))
-            {
-                if (positions[x + i][y + i].substring(0, 2).equals("WB") || positions[x + i][y + i].substring(0, 2).equals("WQ"))
-                {
-                    return true;
-                }
-            }
-            if (!positions[x + i][y + i].substring(0, 1).equals("0"))
-            {
-                break;
-            }
-        }
-        z = x;
-        if (y < x)
-        {
-            z = y;
-        }
-        for (int i = 1; i < z + 1; i++)
-        {
-            if (positions[x][y].substring(0, 1).equals("W"))
-            {
-                if (positions[x - i][y - i].substring(0, 2).equals("BB") || positions[x - i][y - i].substring(0, 2).equals("BQ"))
-                {
-                    return true;
-                }
-            }
-            if (positions[x][y].substring(0, 1).equals("B"))
-            {
-                if (positions[x - i][y - i].substring(0, 2).equals("WB") || positions[x - i][y - i].substring(0, 2).equals("WQ"))
-                {
-                    return true;
-                }
-            }
-            if (!positions[x - i][y - i].substring(0, 1).equals("0"))
-            {
-                break;
-            }
-        }
-        z =  7 - x;
-        if (y < 7 - x)
-        {
-            z = y;
-        }
-        for (int i = 1; i <  z + 1; i++)
-        {
-            if (positions[x][y].substring(0, 1).equals("W"))
-            {
-                if (positions[x + i][y - i].substring(0, 2).equals("BB") || positions[x + i][y - i].substring(0, 2).equals("BQ"))
-                {
-                    return true;
-                }
-            }
-            if (positions[x][y].substring(0, 1).equals("B"))
-            {
-                if (positions[x + i][y - i].substring(0, 2).equals("WB") || positions[x + i][y - i].substring(0, 2).equals("WQ"))
-                {
-                    return true;
-                }
-            }
-            if (!positions[x + i][y - i].substring(0, 1).equals("0"))
-            {
-                break;
-            }
-        }
-        z =  7 - y;
-        if (x < 7 - y)
-        {
-            z = x;
-        }
-        for (int i = 1; i < z + 1; i++)
-        {
-            if (positions[x][y].substring(0, 1).equals("W"))
-            {
-                if (positions[x - i][y + i].substring(0, 2).equals("BB") || positions[x - i][y + i].substring(0, 2).equals("BQ"))
-                {
-                    return true;
-                }
-            }
-            if (positions[x][y].substring(0, 1).equals("B"))
-            {
-                if (positions[x - i][y + i].substring(0, 2).equals("WB") || positions[x - i][y + i].substring(0, 2).equals("WQ"))
-                {
-                    return true;
-                }
-            }
-            if (!positions[x - i][y + i].substring(0, 1).equals("0"))
-            {
-                break;
-            }
-        }
-        if (positions[x][y].substring(0, 1).equals("W"))
-        {
-            if (x + 1 < 8 && y + 2 < 8 )
-            {
-                if (positions[x + 1][y + 2].substring(0, 2).equals("BN"))
-                {
-                    return true;
-                }
-            }
-            if (x + 2 < 8 && y + 1 < 8 )
-            {
-                if (positions[x + 2][y + 1].substring(0, 2).equals("BN"))
-                {
-                    return true;
-                }
-            }
-            if (x - 1 > -1 && y + 2 < 8)
-            {
-                if (positions[x - 1][y + 2].substring(0, 2).equals("BN"))
-                {
-                    return true;
-                }
-            }
-            if (x - 2 > -1 && y + 1 < 8)
-            {
-                if (positions[x - 2][y + 1].substring(0, 2).equals("BN"))
-                {
-                    return true;
-                }
-            }
-            if (x + 1 < 8 && y - 2 > -1)
-            {
-                if (positions[x + 1][y - 2].substring(0, 2).equals("BN"))
-                {
-                    return true;
-                }
-            }
-            if (x + 2 < 8 && y - 1 > -1)
-            {
-                if (positions[x + 2][y - 1].substring(0, 2).equals("BN"))
-                {
-                    return true;
-                }
-            }
-            if (x - 1 > -1 && y - 2 > -1)
-            {
-                if (positions[x - 1][y - 2].substring(0, 2).equals("BN"))
-                {
-                    return true;
-                }
-            }
-            if (x - 2 > -1 && y - 1 > -1)
-            {
-                if (positions[x - 2][y - 1].substring(0, 2).equals("BN"))
-                {
-                    return true;
-                }
-            }
-        }
-        if (positions[x][y].substring(0, 1).equals("B"))
-        {
-            if (x + 1 < 8 && y + 2 < 8 )
-            {
-                if (positions[x + 1][y + 2].substring(0, 2).equals("WN"))
-                {
-                    return true;
-                }
-            }
-            if (x + 2 < 8 && y + 1 < 8 )
-            {
-                if (positions[x + 2][y + 1].substring(0, 2).equals("WN"))
-                {
-                    return true;
-                }
-            }
-            if (x - 1 > -1 && y + 2 < 8)
-            {
-                if (positions[x - 1][y + 2].substring(0, 2).equals("WN"))
-                {
-                    return true;
-                }
-            }
-            if (x - 2 > -1 && y + 1 < 8)
-            {
-                if (positions[x - 2][y + 1].substring(0, 2).equals("WN"))
-                {
-                    return true;
-                }
-            }
-            if (x + 1 < 8 && y - 2 > -1)
-            {
-                if (positions[x + 1][y - 2].substring(0, 2).equals("WN"))
-                {
-                    return true;
-                }
-            }
-            if (x + 2 < 8 && y - 1 > -1)
-            {
-                if (positions[x + 2][y - 1].substring(0, 2).equals("WN"))
-                {
-                    return true;
-                }
-            }
-            if (x - 1 > -1 && y - 2 > -1)
-            {
-                if (positions[x - 1][y - 2].substring(0, 2).equals("WN"))
-                {
-                    return true;
-                }
-            }
-            if (x - 2 > -1 && y - 1 > -1)
-            {
-                if (positions[x - 2][y - 1].substring(0, 2).equals("WN"))
-                {
-                    return true;
-                }
-            }
-        }
-        if (positions[x][y].substring(0, 1).equals("W"))
-        {
-            if (x + 1 < 8 && y + 1 < 8)
-            {
-                if (positions[x + 1][y + 1].substring(0, 2).equals("BP"))
-                {
-                    return true;
-                }
-            }
-            if (x - 1 > 0 && y + 1 < 8)
-            {
-                if (positions[x - 1][y + 1].substring(0, 2).equals("BP"))
-                {
-                    return true;
-                }
-            }
-        }
-        if (positions[x][y].substring(0, 1).equals("B"))
-        {
-            if (x - 1 > 0 && y - 1 > 0)
-            {
-                if (positions[x - 1][y - 1].substring(0, 2).equals("WP"))
-                {
-                    return true;
-                }
-            }
-            if (x + 1 < 8 && y - 1 > 0)
-            {
-                if (positions[x + 1][y - 1].substring(0, 2).equals("WP"))
-                {
-                    return true;
-                }
-            }
-        }
-        if (positions[x][y].substring(0, 1).equals("B"))
-        {
-            if (x + 1 < 8)
-            {
-                if (positions[x + 1][y].substring(0, 2).equals("WK"))
-                {
-                    return true;
-                }
-            }
-            if (x + 1 < 8 && y + 1 < 8)
-            {
-                if (positions[x + 1][y + 1].substring(0, 2).equals("WK"))
-                {
-                    return true;
-                }
-            }
-            if (x + 1 < 8 && y - 1 > -1)
-            {
-                if (positions[x + 1][y - 1].substring(0, 2).equals("WK"))
-                {
-                    return true;
-                }
-            }
-            if (x - 1 > -1)
-            {
-                if (positions[x - 1][y].substring(0, 2).equals("WK"))
-                {
-                    return true;
-                }
-            }
-            if (x - 1 > -1 && y + 1 < 8)
-            {
-                if (positions[x - 1][y + 1].substring(0, 2).equals("WK"))
-                {
-                    return true;
-                }
-            }
-            if (x - 1 > -1 && y - 1 > -1)
-            {
-                if (positions[x - 1][y - 1].substring(0, 2).equals("WK"))
-                {
-                    return true;
-                }
-            }
-            if (y - 1 > -1)
-            {
-                if (positions[x][y - 1].substring(0, 2).equals("WK"))
-                {
-                    return true;
-                }
-            }
-            if (y + 1 < 8)
-            {
-                if (positions[x][y + 1].substring(0, 2).equals("WK"))
-                {
-                    return true;
-                }
-            }
-        }
-        if (positions[x][y].substring(0, 1).equals("W"))
-        {
-            if (x + 1 < 8)
-            {
-                if (positions[x + 1][y].substring(0, 2).equals("BK"))
-                {
-                    return true;
-                }
-            }
-            if (x + 1 < 8 && y + 1 < 8)
-            {
-                if (positions[x + 1][y + 1].substring(0, 2).equals("BK"))
-                {
-                    return true;
-                }
-            }
-            if (x + 1 < 8 && y - 1 > -1)
-            {
-                if (positions[x + 1][y - 1].substring(0, 2).equals("BK"))
-                {
-                    return true;
-                }
-            }
-            if (x - 1 > -1)
-            {
-                if (positions[x - 1][y].substring(0, 2).equals("BK"))
-                {
-                    return true;
-                }
-            }
-            if (x - 1 > -1 && y + 1 < 8)
-            {
-                if (positions[x - 1][y + 1].substring(0, 2).equals("BK"))
-                {
-                    return true;
-                }
-            }
-            if (x - 1 > -1 && y - 1 > -1)
-            {
-                if (positions[x - 1][y - 1].substring(0, 2).equals("BK"))
-                {
-                    return true;
-                }
-            }
-            if (y - 1 > -1)
-            {
-                if (positions[x][y - 1].substring(0, 2).equals("BK"))
-                {
-                    return true;
-                }
-            }
-            if (y + 1 < 8)
-            {
-                if (positions[x][y + 1].substring(0, 2).equals("BK"))
-                {
-                    return true;
-                }
-            }
-        }
+//        for (int i = x + 1; i < 8; i++)
+//        {
+//            if (positions[x][y].color.equals("white"))
+//            {
+//                if (positions[i][y].substring(0, 2).equals("BR") || positions[i][y].substring(0, 2).equals("BQ"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (positions[x][y].substring(0, 1).equals("B"))
+//            {
+//                if (positions[i][y].substring(0, 2).equals("WR") || positions[i][y].substring(0, 2).equals("WQ"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (!positions[i][y].substring(0, 1).equals("0"))
+//            {
+//                break;
+//            }
+//        }
+//        for (int i = x - 1; i > -1; i--)
+//        {
+//            if (positions[x][y].substring(0, 1).equals("W"))
+//            {
+//                if (positions[i][y].substring(0, 2).equals("BR") || positions[i][y].substring(0, 2).equals("BQ"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (positions[x][y].substring(0, 1).equals("B"))
+//            {
+//                if (positions[i][y].substring(0, 2).equals("WR") || positions[i][y].substring(0, 2).equals("WQ"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (!positions[i][y].substring(0, 1).equals("0"))
+//            {
+//                break;
+//            }
+//        }
+//        for (int i = y + 1; i < 8; i++)
+//        {
+//            if (positions[x][y].substring(0, 1).equals("W"))
+//            {
+//                if (positions[x][i].substring(0, 2).equals("BR") || positions[x][i].substring(0, 2).equals("BQ"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (positions[x][y].substring(0, 1).equals("B"))
+//            {
+//                if (positions[x][i].substring(0, 2).equals("WR") || positions[x][i].substring(0, 2).equals("WQ"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (!positions[x][i].substring(0, 1).equals("0"))
+//            {
+//                break;
+//            }
+//        }
+//        for (int i = y - 1; i > -1; i--)
+//        {
+//            if (positions[x][y].substring(0, 1).equals("W"))
+//            {
+//                if (positions[x][i].substring(0, 2).equals("BR") || positions[x][i].substring(0, 2).equals("BQ"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (positions[x][y].substring(0, 1).equals("B"))
+//            {
+//                if (positions[x][i].substring(0, 2).equals("WR") || positions[x][i].substring(0, 2).equals("WQ"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (!positions[x][i].substring(0, 1).equals("0"))
+//            {
+//                break;
+//            }
+//        }
+//        int z = x;
+//        if (y > x)
+//        {
+//            z = y;
+//        }
+//        for (int i = 1; i < 8 - z; i++)
+//        {
+//            if (positions[x][y].substring(0, 1).equals("W"))
+//            {
+//                if (positions[x + i][y + i].substring(0, 2).equals("BB") || positions[x + i][y + i].substring(0, 2).equals("BQ"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (positions[x][y].substring(0, 1).equals("B"))
+//            {
+//                if (positions[x + i][y + i].substring(0, 2).equals("WB") || positions[x + i][y + i].substring(0, 2).equals("WQ"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (!positions[x + i][y + i].substring(0, 1).equals("0"))
+//            {
+//                break;
+//            }
+//        }
+//        z = x;
+//        if (y < x)
+//        {
+//            z = y;
+//        }
+//        for (int i = 1; i < z + 1; i++)
+//        {
+//            if (positions[x][y].substring(0, 1).equals("W"))
+//            {
+//                if (positions[x - i][y - i].substring(0, 2).equals("BB") || positions[x - i][y - i].substring(0, 2).equals("BQ"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (positions[x][y].substring(0, 1).equals("B"))
+//            {
+//                if (positions[x - i][y - i].substring(0, 2).equals("WB") || positions[x - i][y - i].substring(0, 2).equals("WQ"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (!positions[x - i][y - i].substring(0, 1).equals("0"))
+//            {
+//                break;
+//            }
+//        }
+//        z = 7 - x;
+//        if (y < 7 - x)
+//        {
+//            z = y;
+//        }
+//        for (int i = 1; i < z + 1; i++)
+//        {
+//            if (positions[x][y].substring(0, 1).equals("W"))
+//            {
+//                if (positions[x + i][y - i].substring(0, 2).equals("BB") || positions[x + i][y - i].substring(0, 2).equals("BQ"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (positions[x][y].substring(0, 1).equals("B"))
+//            {
+//                if (positions[x + i][y - i].substring(0, 2).equals("WB") || positions[x + i][y - i].substring(0, 2).equals("WQ"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (!positions[x + i][y - i].substring(0, 1).equals("0"))
+//            {
+//                break;
+//            }
+//        }
+//        z = 7 - y;
+//        if (x < 7 - y)
+//        {
+//            z = x;
+//        }
+//        for (int i = 1; i < z + 1; i++)
+//        {
+//            if (positions[x][y].substring(0, 1).equals("W"))
+//            {
+//                if (positions[x - i][y + i].substring(0, 2).equals("BB") || positions[x - i][y + i].substring(0, 2).equals("BQ"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (positions[x][y].substring(0, 1).equals("B"))
+//            {
+//                if (positions[x - i][y + i].substring(0, 2).equals("WB") || positions[x - i][y + i].substring(0, 2).equals("WQ"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (!positions[x - i][y + i].substring(0, 1).equals("0"))
+//            {
+//                break;
+//            }
+//        }
+//        if (positions[x][y].substring(0, 1).equals("W"))
+//        {
+//            if (x + 1 < 8 && y + 2 < 8)
+//            {
+//                if (positions[x + 1][y + 2].substring(0, 2).equals("BN"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (x + 2 < 8 && y + 1 < 8)
+//            {
+//                if (positions[x + 2][y + 1].substring(0, 2).equals("BN"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (x - 1 > -1 && y + 2 < 8)
+//            {
+//                if (positions[x - 1][y + 2].substring(0, 2).equals("BN"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (x - 2 > -1 && y + 1 < 8)
+//            {
+//               / if (positions[x - 2][y + 1].substring(0, 2).equals("BN"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (x + 1 < 8 && y - 2 > -1)
+//            {
+//                if (positions[x + 1][y - 2].substring(0, 2).equals("BN"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (x + 2 < 8 && y - 1 > -1)
+//            {
+//                if (positions[x + 2][y - 1].substring(0, 2).equals("BN"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (x - 1 > -1 && y - 2 > -1)
+//            {
+//                if (positions[x - 1][y - 2].substring(0, 2).equals("BN"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (x - 2 > -1 && y - 1 > -1)
+//            {
+//                if (positions[x - 2][y - 1].substring(0, 2).equals("BN"))
+//                {
+//                    return true;
+//                }
+//            }
+//        }
+//        if (positions[x][y].substring(0, 1).equals("B"))
+//        {
+//            if (x + 1 < 8 && y + 2 < 8)
+//            {
+//                if (positions[x + 1][y + 2].substring(0, 2).equals("WN"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (x + 2 < 8 && y + 1 < 8)
+//            {
+//                if (positions[x + 2][y + 1].substring(0, 2).equals("WN"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (x - 1 > -1 && y + 2 < 8)
+//            {
+//                if (positions[x - 1][y + 2].substring(0, 2).equals("WN"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (x - 2 > -1 && y + 1 < 8)
+//            {
+//               / if (positions[x - 2][y + 1].substring(0, 2).equals("WN"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (x + 1 < 8 && y - 2 > -1)
+//            {
+//                if (positions[x + 1][y - 2].substring(0, 2).equals("WN"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (x + 2 < 8 && y - 1 > -1)
+//            {
+//                if (positions[x + 2][y - 1].substring(0, 2).equals("WN"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (x - 1 > -1 && y - 2 > -1)
+//            {
+//                if (positions[x - 1][y - 2].substring(0, 2).equals("WN"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (x - 2 > -1 && y - 1 > -1)
+//            {
+//                if (positions[x - 2][y - 1].substring(0, 2).equals("WN"))
+//                {
+//                    return true;
+//                }
+//            }
+//        }
+//        if (positions[x][y].substring(0, 1).equals("W"))
+//        {
+//            if (x + 1 < 8 && y + 1 < 8)
+//            {
+//                if (positions[x + 1][y + 1].substring(0, 2).equals("BP"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (x - 1 > 0 && y + 1 < 8)
+//            {
+//                if (positions[x - 1][y + 1].substring(0, 2).equals("BP"))
+//                {
+//                    return true;
+//                }
+//            }
+//        }
+//        if (positions[x][y].substring(0, 1).equals("B"))
+//        {
+//            if (x - 1 > 0 && y - 1 > 0)
+//            {
+//                if (positions[x - 1][y - 1].substring(0, 2).equals("WP"))
+//                {///
+//                    return true;
+//                }
+//            }
+//            if (x + 1 < 8 && y - 1 > 0)
+//            {
+//                if (positions[x + 1][y - 1].substring(0, 2).equals("WP"))
+//                {
+//                    return true;
+//                }
+//            }
+//        }
+//        if (positions[x][y].substring(0, 1).equals("B"))
+//        {
+//            if (x + 1 < 8)
+//            {
+//                if (positions[x + 1][y].substring(0, 2).equals("WK"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (x + 1 < 8 && y + 1 < 8)
+//            {
+//                if (positions[x + 1][y + 1].substring(0, 2).equals("WK"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (x + 1 < 8 && y - 1 > -1)
+//            {
+//                if (positions[x + 1][y - 1].substring(0, 2).equals("WK"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (x - 1 > -1)
+//            {
+//                if (positions[x - 1][y].substring(0, 2).equals("WK"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (x - 1 > -1 && y + 1 < 8)
+//            {
+//                if (positions[x - 1][y + 1].substring(0, 2).equals("WK"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (x - 1 > -1 && y - 1 > -1)
+//            {
+//                if (positions[x - 1][y - 1].substring(0, 2).equals("WK"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (y - 1 > -1)
+//            {
+//                if (positions[x][y - 1].substring(0, 2).equals("WK"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (y + 1 < 8)
+//            {
+//                if (positions[x][y + 1].substring(0, 2).equals("WK"))
+//                {
+//                    return true;
+//                }
+//            }
+//        }
+//        if (positions[x][y].substring(0, 1).equals("W"))
+//        {
+//            if (x + 1 < 8)
+//            {
+//                if (positions[x + 1][y].substring(0, 2).equals("BK"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (x + 1 < 8 && y + 1 < 8)
+//            {
+//                if (positions[x + 1][y + 1].substring(0, 2).equals("BK"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (x + 1 < 8 && y - 1 > -1)
+//            {
+//                if (positions[x + 1][y - 1].substring(0, 2).equals("BK"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (x - 1 > -1)
+//            {
+//                if (positions[x - 1][y].substring(0, 2).equals("BK"))
+//                {
+//                    return true;
+//                }
+///            }
+//            if (x - 1 > -1 && y + 1 < 8)
+//            {
+//                if (positions[x - 1][y + 1].substring(0, 2).equals("BK"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (x - 1 > -1 && y - 1 > -1)
+//            {
+//                if (positions[x - 1][y - 1].substring(0, 2).equals("BK"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (y - 1 > -1)
+//            {
+//                if (positions[x][y - 1].substring(0, 2).equals("BK"))
+//                {
+//                    return true;
+//                }
+//            }
+//            if (y + 1 < 8)
+//            {
+//                if (positions[x][y + 1].substring(0, 2).equals("BK"))
+//                {
+//                    return true;
+//                }
+//            }
+//        }
         return false;
     }
 
-    private void setWhiteCheckConditions(ImageView[][] board, String[][] positions)
+    private void setWhiteCheckConditions(ImageView[][] board, Piece[][] positions)
     {
-        if (checking)
-        {
-            for (int i = 0; i < 8; i++)
-            {
-                for (int j = 0; j < 8; j++)
-                {
-                    if (positions[i][j].substring(0, 2).equals("WK"))
-                    {
-                        board[i][j].setBackgroundColor(Color.BLUE);
-                        positions[i][j] = positions[i][j].substring(0, 3) + ("B");
-                    }
-                }
-            }
-        }
-        if (board(board, positions) == 1 && whiteTurn1 == 1)
-        {
-            searchingForCheckmate1 = true;
-            checkmate1 = true;
-
-                for (int x = 0; x < 8; x++)
-                {
-                    for (int y = 0; y < 8; y++)
-                    {
-                        if (positions[x][y].substring(0, 2).equals("WP")) {
-                            setPawn(board, positions, x, y);
-                        }
-                        if (positions[x][y].substring(0, 2).equals("WR")) {
-                            setRook(board, positions, x, y);
-                        }
-                        if (positions[x][y].substring(0, 2).equals("WN")) {
-                            setKnight(board, positions, x, y);
-                        }
-                        if (positions[x][y].substring(0, 2).equals("WB")) {
-                            setBishop(board, positions, x, y);
-                        }
-                        if (positions[x][y].substring(0, 2).equals("WQ")) {
-                            setQueen(board, positions, x, y);
-                        }
-                        if (positions[x][y].substring(0, 2).equals("WK")) {
-                            setKing(board, positions, x, y);
-                        }
-                    }
-                }
-
-                boolean piecesOnRoster = false;
-                for (int i = 0; i < 30; i++)
-                {
-                    if (!roster1p[i].substring(1, 2).equals("0"))
-                    {
-                        piecesOnRoster = true;
-                        setRosterPiece(board, positions, roster1, roster1p, i);
-                    }
-                }
-                if (!piecesOnRoster)
-                {
-                    roster1p[0] = "WQ00";
-                    setRosterPiece(board, positions, roster1, roster1p, 0);
-                    roster1p[0] = "0000";
-                }
-
-            searchingForCheckmate1 = false;
-            if (checkmate1)
-            {
-                gameEndProcedures(1, 0);
-            }
-        }
-        if (board(board, positions) == 2 && whiteTurn2 == 1)
-        {
-            searchingForCheckmate2 = true;
-            checkmate2 = true;
-
-                for (int x = 0; x < 8; x++)
-                {
-                    for (int y = 0; y < 8; y++)
-                    {
-                        if (positions[x][y].substring(0, 2).equals("WP")) {
-                            setPawn(board, positions, x, y);
-                        }
-                        if (positions[x][y].substring(0, 2).equals("WR")) {
-                            setRook(board, positions, x, y);
-                        }
-                        if (positions[x][y].substring(0, 2).equals("WN")) {
-                            setKnight(board, positions, x, y);
-                        }
-                        if (positions[x][y].substring(0, 2).equals("WB")) {
-                            setBishop(board, positions, x, y);
-                        }
-                        if (positions[x][y].substring(0, 2).equals("WQ")) {
-                            setQueen(board, positions, x, y);
-                        }
-                        if (positions[x][y].substring(0, 2).equals("WK")) {
-                            setKing(board, positions, x, y);
-                        }
-                    }
-                }
-                boolean piecesOnRoster = false;
-                for (int i = 0; i < 30; i++)
-                {
-                    if (!roster4p[i].substring(1, 2).equals("0"))
-                    {
-                        piecesOnRoster = true;
-                        setRosterPiece(board, positions, roster4, roster4p, i);
-                    }
-                }
-                if (!piecesOnRoster)
-                {
-                    roster4p[0] = "WQ00";
-                    setRosterPiece(board, positions, roster4, roster4p, 0);
-                    roster4p[0] = "0000";
-                }
-
-            searchingForCheckmate2 = false;
-            if (checkmate2)
-            {
-                gameEndProcedures(0, 0);
-            }
-        }
+//        if (checking)
+//        {
+//            for (int i = 0; i < 8; i++)
+//            {
+//                for (int j = 0; j < 8; j++)
+//                {
+//                    if (positions[i][j].substring(0, 2).equals("WK"))
+//                    {
+//                        board[i][j].setBackgroundColor(Color.BLUE);
+//                        positions[i][j] = positions[i][j].substring(0, 3) + ("B");
+//                    }
+//                }
+//            }
+//        }
+//        if (board(board, positions) == 1 && whiteTurn1 == 1)
+//        {
+//            searchingForCheckmate1 = true;
+//            checkmate1 = true;
+//
+//            for (int x = 0; x < 8; x++)
+//            {
+//                for (int y = 0; y < 8; y++)
+//                {
+//                    if (positions[x][y].substring(0, 2).equals("WP"))
+//                    {
+//                        setPawn(board, positions, x, y);
+//                    }
+//                    if (positions[x][y].substring(0, 2).equals("WR"))
+//                    {
+//                        setRook(board, positions, x, y);
+//                    }
+//                    if (positions[x][y].substring(0, 2).equals("WN"))
+//                    {
+//                        setKnight(board, positions, x, y);
+//                    }
+//                    if (positions[x][y].substring(0, 2).equals("WB"))
+//                    {
+//                        setBishop(board, positions, x, y);
+//                    }
+//                    if (positions[x][y].substring(0, 2).equals("WQ"))
+//                    {
+//                        setQueen(board, positions, x, y);
+//                    }
+//                    if (positions[x][y].substring(0, 2).equals("WK"))
+//                    {
+//                        setKing(board, positions, x, y);
+//                    }
+//                }
+//            }
+//
+//            boolean piecesOnRoster = false;
+//            for (int i = 0; i < 30; i++)
+//            {
+//                if (!roster1p[i].substring(1, 2).equals("0"))
+//                {
+//                    piecesOnRoster = true;
+//                    setRosterPiece(board, positions, roster1, roster1p, i);
+//                }
+//            }
+//            if (!piecesOnRoster)
+//            {
+//                roster1p[0] = "WQ00";
+//                setRosterPiece(board, positions, roster1, roster1p, 0);
+//                roster1p[0] = "0000";
+//            }
+//
+//            searchingForCheckmate1 = false;
+//            if (checkmate1)
+//            {
+//                gameEndProcedures(1, 0);
+//            }
+//        }
+//        if (board(board, positions) == 2 && whiteTurn2 == 1)
+//        {
+//            searchingForCheckmate2 = true;
+//            checkmate2 = true;
+//
+//            for (int x = 0; x < 8; x++)
+//            {
+//                for (int y = 0; y < 8; y++)
+//                {
+//                    if (positions[x][y].substring(0, 2).equals("WP"))
+//                    {
+//                        setPawn(board, positions, x, y);
+//                    }
+//                    if (positions[x][y].substring(0, 2).equals("WR"))
+//                    {
+//                        setRook(board, positions, x, y);
+//                    }
+//                    if (positions[x][y].substring(0, 2).equals("WN"))
+//                    {
+//                        setKnight(board, positions, x, y);
+//                    }
+//                    if (positions[x][y].substring(0, 2).equals("WB"))
+//                    {
+//                        setBishop(board, positions, x, y);
+//                    }
+//                    if (positions[x][y].substring(0, 2).equals("WQ"))
+//                    {
+//                        setQueen(board, positions, x, y);
+//                    }
+//                    if (positions[x][y].substring(0, 2).equals("WK"))
+//                    {
+//                        setKing(board, positions, x, y);
+//                    }
+//                }
+//            }
+//            boolean piecesOnRoster = false;
+//            for (int i = 0; i < 30; i++)
+//            {
+//                if (!roster4p[i].substring(1, 2).equals("0"))
+//                {
+//                    piecesOnRoster = true;
+//                    setRosterPiece(board, positions, roster4, roster4p, i);
+//                }
+//            }
+//            if (!piecesOnRoster)
+//            {
+//                roster4p[0] = "WQ00";
+//                setRosterPiece(board, positions, roster4, roster4p, 0);
+//                roster4p[0] = "0000";
+//            }
+//
+//            searchingForCheckmate2 = false;
+//            if (checkmate2)
+//            {
+//                gameEndProcedures(0, 0);
+//            }
+//        }
 
     }
-    private void setBlackCheckConditions(ImageView[][] board, String[][] positions)
+
+    private void setBlackCheckConditions(ImageView[][] board, Piece[][] positions)
     {
-        if (checking)
-        {
-            for (int i = 0; i < 8; i++)
-            {
-                for (int j = 0; j < 8; j++)
-                {
-                    if (positions[i][j].substring(0, 2).equals("BK"))
-                    {
-                        board[i][j].setBackgroundColor(Color.BLUE);
-                        positions[i][j] = positions[i][j].substring(0, 3) + ("B");
-
-                    }
-                }
-            }
-        }
-        if (board(board, positions) == 1 && whiteTurn1 == 2)
-        {
-            searchingForCheckmate1 = true;
-            checkmate1 = true;
-
-                for (int x = 0; x < 8; x++)
-                {
-                    for (int y = 0; y < 8; y++)
-                    {
-                        if (positions[x][y].substring(0, 2).equals("BP"))
-                        {
-                            setBPawn(board, positions, x, y);
-                        }
-                        if (positions[x][y].substring(0, 2).equals("BR"))
-                        {
-                            setBRook(board, positions, x, y);
-                        }
-                        if (positions[x][y].substring(0, 2).equals("BN"))
-                        {
-                            setBKnight(board, positions, x, y);
-                        }
-                        if (positions[x][y].substring(0, 2).equals("BB"))
-                        {
-                            setBBishop(board, positions, x, y);
-                        }
-                        if (positions[x][y].substring(0, 2).equals("BQ"))
-                        {
-                            setBQueen(board, positions, x, y);
-                        }
-                        if (positions[x][y].substring(0, 2).equals("BK"))
-                        {
-                            setBKing(board, positions, x, y);
-                        }
-                    }
-                }
-
-                boolean piecesOnRoster = false;
-                for (int i = 0; i < 30; i++)
-                {
-                    if (!roster2p[i].substring(1, 2).equals("0"))
-                    {
-                        piecesOnRoster = true;
-                        setRosterPiece(board, positions, roster2, roster2p, i);
-                    }
-                }
-                if (!piecesOnRoster)
-                {
-                    roster2p[0] = "BQ00";
-                    setRosterPiece(board, positions, roster2, roster2p, 0);
-                    roster2p[0] = "0000";
-                }
-
-            searchingForCheckmate1 = false;
-            if (checkmate1)
-            {
-                gameEndProcedures(0, 0);
-            }
-        }
-        if (board(board, positions) == 2 && whiteTurn2 == 2)
-        {
-            searchingForCheckmate2 = true;
-            checkmate2 = true;
-
-                for (int x = 0; x < 8; x++)
-                {
-                    for (int y = 0; y < 8; y++)
-                    {
-                        if (positions[x][y].substring(0, 2).equals("BP")) {
-                            setBPawn(board, positions, x, y);
-                        }
-                        if (positions[x][y].substring(0, 2).equals("BR")) {
-                            setBRook(board, positions, x, y);
-                        }
-                        if (positions[x][y].substring(0, 2).equals("BN")) {
-                            setBKnight(board, positions, x, y);
-                        }
-                        if (positions[x][y].substring(0, 2).equals("BB")) {
-                            setBBishop(board, positions, x, y);
-                        }
-                        if (positions[x][y].substring(0, 2).equals("BQ")) {
-                            setBQueen(board, positions, x, y);
-                        }
-                        if (positions[x][y].substring(0, 2).equals("BK")) {
-                            setBKing(board, positions, x, y);
-                        }
-                    }
-                }
-                boolean piecesOnRoster = false;
-                for (int i = 0; i < 30; i++)
-                {
-                    if (!roster3p[i].substring(1, 2).equals("0"))
-                    {
-                        piecesOnRoster = true;
-                        setRosterPiece(board, positions, roster3, roster3p, i);
-                    }
-                }
-                if (!piecesOnRoster)
-                {
-                    roster3p[0] = "BQ00";
-                    setRosterPiece(board, positions, roster3, roster3p, 0);
-                    roster3p[0] = "0000";
-                }
-
-            searchingForCheckmate2 = false;
-            if (checkmate2)
-            {
-                gameEndProcedures(1, 0);
-            }
-        }
-
+//        if (checking)
+//        {
+//            for (int i = 0; i < 8; i++)
+//            {
+//                for (int j = 0; j < 8; j++)
+//                {
+//                    if (positions[i][j].substring(0, 2).equals("BK"))
+//                    {
+//                        board[i][j].setBackgroundColor(Color.BLUE);
+//                        positions[i][j] = positions[i][j].substring(0, 3) + ("B");
+//
+//                    }
+//                }
+//            }
+//        }
+//        if (board(board, positions) == 1 && whiteTurn1 == 2)
+//        {
+//            searchingForCheckmate1 = true;
+//            checkmate1 = true;
+//
+//            for (int x = 0; x < 8; x++)
+//            {
+//                for (int y = 0; y < 8; y++)
+//                {
+//                    if (positions[x][y].substring(0, 2).equals("BP"))
+//                    {
+//                        setBPawn(board, positions, x, y);
+//                    }
+//                    if (positions[x][y].substring(0, 2).equals("BR"))
+//                    {
+//                        setBRook(board, positions, x, y);
+//                    }
+//                    if (positions[x][y].substring(0, 2).equals("BN"))
+//                    {
+//                        setBKnight(board, positions, x, y);
+//                    }
+//                    if (positions[x][y].substring(0, 2).equals("BB"))
+//                    {
+//                        setBBishop(board, positions, x, y);
+//                    }
+//                    if (positions[x][y].substring(0, 2).equals("BQ"))
+//                    {
+//                        setBQueen(board, positions, x, y);
+//                    }
+//                    if (positions[x][y].substring(0, 2).equals("BK"))
+//                    {
+//                        setBKing(board, positions, x, y);
+//                    }
+//                }
+//            }
+//
+//            boolean piecesOnRoster = false;
+//            for (int i = 0; i < 30; i++)
+//            {
+//                if (!roster2p[i].substring(1, 2).equals("0"))
+//                {
+//                    piecesOnRoster = true;
+//                    setRosterPiece(board, positions, roster2, roster2p, i);
+//                }
+//            }
+//            if (!piecesOnRoster)
+//            {
+//                roster2p[0] = "BQ00";
+//                setRosterPiece(board, positions, roster2, roster2p, 0);
+//                roster2p[0] = "0000";
+//            }
+//
+//            searchingForCheckmate1 = false;
+//            if (checkmate1)
+//            {
+//                gameEndProcedures(0, 0);
+//            }
+//        }
+//        if (board(board, positions) == 2 && whiteTurn2 == 2)
+//        {
+//            searchingForCheckmate2 = true;
+//            checkmate2 = true;
+//
+//            for (int x = 0; x < 8; x++)
+//            {
+//                for (int y = 0; y < 8; y++)
+//                {
+//                    if (positions[x][y].substring(0, 2).equals("BP"))
+//                    {
+//                        setBPawn(board, positions, x, y);
+//                    }
+//                    if (positions[x][y].substring(0, 2).equals("BR"))
+//                    {
+//                        setBRook(board, positions, x, y);
+//                    }
+//                    if (positions[x][y].substring(0, 2).equals("BN"))
+//                    {
+//                        setBKnight(board, positions, x, y);
+//                    }
+//                    if (positions[x][y].substring(0, 2).equals("BB"))
+//                    {
+//                        setBBishop(board, positions, x, y);
+//                    }
+//                    if (positions[x][y].substring(0, 2).equals("BQ"))
+//                    {
+//                        setBQueen(board, positions, x, y);
+//                    }
+//                    if (positions[x][y].substring(0, 2).equals("BK"))
+//                    {
+//                        setBKing(board, positions, x, y);
+//                    }
+//                }
+//            }
+//            boolean piecesOnRoster = false;
+//            for (int i = 0; i < 30; i++)
+//            {
+//                if (!roster3p[i].substring(1, 2).equals("0"))
+//                {
+//                    piecesOnRoster = true;
+//                    setRosterPiece(board, positions, roster3, roster3p, i);
+//                }
+//            }
+//            if (!piecesOnRoster)
+//            {
+//                roster3p[0] = "BQ00";
+//                setRosterPiece(board, positions, roster3, roster3p, 0);
+//                roster3p[0] = "0000";
+//            }
+//
+//            searchingForCheckmate2 = false;
+//            if (checkmate2)
+//            {
+//                gameEndProcedures(1, 0);
+//            }
+//        }
+//
     }
 
     private void startAI()
     {
-
-        if (!position1)
-        {
-            new Thread(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    boolean a = true;
-                    while (a)
-                    {
-                        if (gameState == 0 || gameState == 2)
-                        {
-                            a = false;
-                        }
-                        Random rand = new Random();
-                        int wait = rand.nextInt(1000);
-                        try{
-                            Thread.sleep(wait);
-                        }catch(InterruptedException e){
-                            System.out.println("got interrupted!");
-                        }
-                        if (whiteTurn1 == 1)
-                        {
-                            try{
-                                Thread.sleep(1000);
-                            }catch(InterruptedException e){
-                                System.out.println("got interrupted!");
-                            }
-                        }
-                        if (whiteTurn1 == 1)
-                        {
-                            CPUsearch[0] = true;
-                            rating[0] = 0;
-                            for (int x = 0; x < 8; x++)
-                            {
-                                for (int y = 0; y < 8; y++)
-                                {
-                                    if (positions1[x][y].substring(0, 2).equals("WP")) {
-                                        setPawn(board1, positions1, x, y);
-                                    }
-                                    if (positions1[x][y].substring(0, 2).equals("WR")) {
-                                        setRook(board1, positions1, x, y);
-                                    }
-                                    if (positions1[x][y].substring(0, 2).equals("WN")) {
-                                        setKnight(board1, positions1, x, y);
-                                    }
-                                    if (positions1[x][y].substring(0, 2).equals("WB")) {
-                                        setBishop(board1, positions1, x, y);
-                                    }
-                                    if (positions1[x][y].substring(0, 2).equals("WQ")) {
-                                        setQueen(board1, positions1, x, y);
-                                    }
-                                    if (positions1[x][y].substring(0, 2).equals("WK")) {
-                                        setKing(board1, positions1, x, y);
-                                    }
-                                }
-                            }
-                            for (int i = 0; i < 30; i++)
-                            {
-                                if (!roster1p[i].substring(1, 2).equals("0"))
-                                {
-                                    setRosterPiece(board1, positions1, roster1, roster1p, i);
-                                }
-                            }
-                            runOnUiThread(new Runnable()
-                            {
-                                @Override
-                                public void run()
-                                {
-                                    if (rating[0] == 0)
-                                    {
-                                        return;
-                                    }
-                                    if (moveType[0].equals("move"))
-                                    {
-                                        changeShit(board1, positions1, cpuX[0], cpuY[0], cpuX1[0], cpuY1[0]);
-                                    }
-                                    if (moveType[0].equals("take"))
-                                    {
-                                        takeShit(board1, positions1, cpuX[0], cpuY[0], cpuX1[0], cpuY1[0]);
-                                    }
-                                    if (moveType[0].equals("drop"))
-                                    {
-                                        rosterShit(board1, positions1, roster1, roster1p, cpuRoster[0], cpuX1[0], cpuY1[0]);
-                                    }
-                                }
-                            });
-                            CPUsearch[0] = false;
-                        }
-                    }
-                }
-            }).start();
-        }
-
-        if (!position2)
-        {
-            new Thread(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    boolean a = true;
-                    while (a)
-                    {
-                        if (gameState == 0 || gameState == 2)
-                        {
-                            a = false;
-                        }
-                        Random rand = new Random();
-                        int wait = rand.nextInt(1000);
-                        try{
-                            Thread.sleep(wait);
-                        }catch(InterruptedException e){
-                            System.out.println("got interrupted!");
-                        }
-                        if (whiteTurn1 == 2)
-                        {
-                            try{
-                                Thread.sleep(1000);
-                            }catch(InterruptedException e){
-                                System.out.println("got interrupted!");
-                            }
-                        }
-                        if (whiteTurn1 == 2)
-                        {
-                            CPUsearch[1] = true;
-                            rating[1] = 0;
-
-                            for (int x = 0; x < 8; x++)
-                            {
-                                for (int y = 0; y < 8; y++)
-                                {
-                                    if (positions1[x][y].substring(0, 2).equals("BP"))
-                                    {
-                                        setBPawn(board1, positions1, x, y);
-                                    }
-                                    if (positions1[x][y].substring(0, 2).equals("BR")) {
-                                        setBRook(board1, positions1, x, y);
-                                    }
-                                    if (positions1[x][y].substring(0, 2).equals("BN")) {
-                                        setBKnight(board1, positions1, x, y);
-                                    }
-                                    if (positions1[x][y].substring(0, 2).equals("BB")) {
-                                        setBBishop(board1, positions1, x, y);
-                                    }
-                                    if (positions1[x][y].substring(0, 2).equals("BQ")) {
-                                        setBQueen(board1, positions1, x, y);
-                                    }
-                                    if (positions1[x][y].substring(0, 2).equals("BK")) {
-                                        setBKing(board1, positions1, x, y);
-                                    }
-                                }
-                            }
-                            for (int i = 0; i < 30; i++)
-                            {
-                                if (!roster2p[i].substring(1, 2).equals("0"))
-                                {
-                                    setRosterPiece(board1, positions1, roster2, roster2p, i);
-                                }
-                            }
-
-                            runOnUiThread(new Runnable()
-                            {
-                                @Override
-                                public void run()
-                                {
-                                    if (rating[1] == 0)
-                                    {
-                                        return;
-                                    }
-                                    if (moveType[1].equals("move"))
-                                    {
-                                        changeShit(board1, positions1, cpuX[1], cpuY[1], cpuX1[1], cpuY1[1]);
-                                    }
-                                    if (moveType[1].equals("take"))
-                                    {
-                                        takeShit(board1, positions1, cpuX[1], cpuY[1], cpuX1[1], cpuY1[1]);
-                                    }
-                                    if (moveType[1].equals("drop"))
-                                    {
-                                        rosterShit(board1, positions1, roster2, roster2p, cpuRoster[1], cpuX1[1], cpuY1[1]);
-                                    }
-                                }
-                            });
-                            CPUsearch[1] = false;
-                        }
-                    }
-
-                }
-            }).start();
-
-        }
-
-        if (!position3)
-        {
-            new Thread(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    boolean a = true;
-                    while (a)
-                    {
-                        if (gameState == 0 || gameState == 2)
-                        {
-                            a = false;
-                        }
-                        Random rand = new Random();
-                        int wait = rand.nextInt(1000);
-                        try{
-                            Thread.sleep(wait);
-                        }catch(InterruptedException e){
-                            System.out.println("got interrupted!");
-                        }
-                        if (whiteTurn2 == 2)
-                        {
-                            try{
-                                Thread.sleep(1000);
-                            }catch(InterruptedException e){
-                                System.out.println("got interrupted!");
-                            }
-                        }
-                        if (whiteTurn2 == 2)
-                        {
-                            CPUsearch[2] = true;
-                            rating[2] = 0;
-
-                            for (int x = 0; x < 8; x++)
-                            {
-                                for (int y = 0; y < 8; y++)
-                                {
-                                    if (positions2[x][y].substring(0, 2).equals("BP"))
-                                    {
-                                        setBPawn(board2, positions2, x, y);
-                                    }
-                                    if (positions2[x][y].substring(0, 2).equals("BR")) {
-                                        setBRook(board2, positions2, x, y);
-                                    }
-                                    if (positions2[x][y].substring(0, 2).equals("BN")) {
-                                        setBKnight(board2, positions2, x, y);
-                                    }
-                                    if (positions2[x][y].substring(0, 2).equals("BB")) {
-                                        setBBishop(board2, positions2, x, y);
-                                    }
-                                    if (positions2[x][y].substring(0, 2).equals("BQ")) {
-                                        setBQueen(board2, positions2, x, y);
-                                    }
-                                    if (positions2[x][y].substring(0, 2).equals("BK")) {
-                                        setBKing(board2, positions2, x, y);
-                                    }
-
-                                }
-                            }
-                            for (int i = 0; i < 30; i++)
-                            {
-                                if (!roster3p[i].substring(1, 2).equals("0"))
-                                {
-                                    setRosterPiece(board2, positions2, roster3, roster3p, i);
-                                }
-                            }
-
-                            runOnUiThread(new Runnable()
-                            {
-                                @Override
-                                public void run()
-                                {
-                                    if (rating[2] == 0)
-                                    {
-                                        return;
-                                    }
-                                    if (moveType[2].equals("move"))
-                                    {
-                                        changeShit(board2, positions2, cpuX[2], cpuY[2], cpuX1[2], cpuY1[2]);
-                                    }
-                                    if (moveType[2].equals("take"))
-                                    {
-                                        takeShit(board2, positions2, cpuX[2], cpuY[2], cpuX1[2], cpuY1[2]);
-                                    }
-                                    if (moveType[2].equals("drop"))
-                                    {
-                                        rosterShit(board2, positions2, roster3, roster3p, cpuRoster[2], cpuX1[2], cpuY1[2]);
-                                    }
-                                }
-                            });
-                            CPUsearch[2] = false;
-                        }
-                    }
-
-                }
-            }).start();
-
-        }
-        if (!position4)
-        {
-            new Thread(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    boolean a = true;
-                    while (a)
-                    {
-                        if (gameState == 0 || gameState == 2)
-                        {
-                            a = false;
-                        }
-                        Random rand = new Random();
-                        int wait = rand.nextInt(1000);
-                        try{
-                            Thread.sleep(wait);
-                        }catch(InterruptedException e){
-                            System.out.println("got interrupted!");
-                        }
-                        if (whiteTurn2 == 1)
-                        {
-                            try{
-                                Thread.sleep(1000);
-                            }catch(InterruptedException e){
-                                System.out.println("got interrupted!");
-                            }
-                        }
-                        if (whiteTurn2 == 1)
-                        {
-                            CPUsearch[3] = true;
-                            rating[3] = 0;
-                            for (int x = 0; x < 8; x++)
-                            {
-                                for (int y = 0; y < 8; y++)
-                                {
-                                    if (positions2[x][y].substring(0, 2).equals("WP"))
-                                    {
-                                        setPawn(board2, positions2, x, y);
-                                    }
-                                    if (positions2[x][y].substring(0, 2).equals("WR"))
-                                    {
-                                        setRook(board2, positions2, x, y);
-                                    }
-                                    if (positions2[x][y].substring(0, 2).equals("WN"))
-                                    {
-                                        setKnight(board2, positions2, x, y);
-                                    }
-                                    if (positions2[x][y].substring(0, 2).equals("WB"))
-                                    {
-                                        setBishop(board2, positions2, x, y);
-                                    }
-                                    if (positions2[x][y].substring(0, 2).equals("WQ"))
-                                    {
-                                        setQueen(board2, positions2, x, y);
-                                    }
-                                    if (positions2[x][y].substring(0, 2).equals("WK"))
-                                    {
-                                        setKing(board2, positions2, x, y);
-                                    }
-                                }
-                            }
-                            for (int i = 0; i < 30; i++)
-                            {
-                                if (!roster4p[i].substring(1, 2).equals("0"))
-                                {
-                                    setRosterPiece(board2, positions2, roster4, roster4p, i);
-                                }
-                            }
-
-                            runOnUiThread(new Runnable()
-                            {
-                                @Override
-                                public void run()
-                                {
-                                    if (rating[3] == 0)
-                                    {
-                                        return;
-                                    }
-                                    if (moveType[3].equals("move"))
-                                    {
-                                        changeShit(board2, positions2, cpuX[3], cpuY[3], cpuX1[3], cpuY1[3]);
-                                    }
-                                    if (moveType[3].equals("take"))
-                                    {
-                                        takeShit(board2, positions2, cpuX[3], cpuY[3], cpuX1[3], cpuY1[3]);
-                                    }
-                                    if (moveType[3].equals("drop"))
-                                    {
-                                        rosterShit(board2, positions2, roster4, roster4p, cpuRoster[3], cpuX1[3], cpuY1[3]);
-                                    }
-                                }
-                            });
-                            CPUsearch[3] = false;
-                        }
-                    }
-
-                }
-            }).start();
-
-        }
-
+//
+//        if (!position1)
+//        {
+//            new Thread(new Runnable()
+//            {
+//                @Override
+//                public void run()
+//                {
+//                    boolean a = true;
+//                    while (a)
+//                    {
+//                        if (gameState == 0 || gameState == 2)
+//                        {
+//                            a = false;
+//                        }
+//                        Random rand = new Random();
+//                        int wait = rand.nextInt(1000);
+//                        try
+//                        {
+//                            Thread.sleep(wait);
+//                        } catch (InterruptedException e)
+//                        {
+//                            System.out.println("got interrupted!");
+//                        }
+//                        if (whiteTurn1 == 1)
+//                        {
+//                            try
+//                            {
+//                                Thread.sleep(1000);
+//                            } catch (InterruptedException e)
+//                            {
+//                                System.out.println("got interrupted!");
+//                            }
+//                        }
+//                        if (whiteTurn1 == 1)
+//                        {
+//                            CPUsearch[0] = true;
+//                            rating[0] = 0;
+//                            for (int x = 0; x < 8; x++)
+//                            {
+//                                for (int y = 0; y < 8; y++)
+//                                {
+//                                    if (positions1[x][y].substring(0, 2).equals("WP"))
+//                                    {
+//                                        setPawn(board1, positions1, x, y);
+//                                    }
+//                                    if (positions1[x][y].substring(0, 2).equals("WR"))
+//                                    {
+//                                        setRook(board1, positions1, x, y);
+//                                    }
+//                                    if (positions1[x][y].substring(0, 2).equals("WN"))
+//                                    {
+//                                        setKnight(board1, positions1, x, y);
+//                                    }
+//                                    if (positions1[x][y].substring(0, 2).equals("WB"))
+//                                    {
+//                                        setBishop(board1, positions1, x, y);
+//                                    }
+//                                    if (positions1[x][y].substring(0, 2).equals("WQ"))
+//                                    {
+//                                        setQueen(board1, positions1, x, y);
+//                                    }
+//                                    if (positions1[x][y].substring(0, 2).equals("WK"))
+//                                    {
+//                                        setKing(board1, positions1, x, y);
+//                                    }
+//                                }
+//                            }
+//                            for (int i = 0; i < 30; i++)
+//                            {
+//                                if (!roster1p[i].substring(1, 2).equals("0"))
+//                                {
+//                                    setRosterPiece(board1, positions1, roster1, roster1p, i);
+//                                }
+//                            }
+//                            runOnUiThread(new Runnable()
+//                            {
+//                                @Override
+//                                public void run()
+//                                {
+//                                    if (rating[0] == 0)
+//                                    {
+//                                        return;
+//                                    }
+//                                    if (moveType[0].equals("move"))
+//                                    {
+//                                        changeShit(board1, positions1, cpuX[0], cpuY[0], cpuX1[0], cpuY1[0]);
+//                                    }
+//                                    if (moveType[0].equals("take"))
+//                                    {
+//                                        takeShit(board1, positions1, cpuX[0], cpuY[0], cpuX1[0], cpuY1[0]);
+//                                    }
+//                                    if (moveType[0].equals("drop"))
+//                                    {
+//                                        rosterShit(board1, positions1, roster1, roster1p, cpuRoster[0], cpuX1[0], cpuY1[0]);
+//                                    }
+//                                }
+//                            });
+//                            CPUsearch[0] = false;
+//                        }
+//                    }
+//                }
+//            }).start();
+//        }
+//
+//        if (!position2)
+//        {
+//            new Thread(new Runnable()
+//            {
+//                @Override
+//                public void run()
+//                {
+//                    boolean a = true;
+//                    while (a)
+//                    {
+//                        if (gameState == 0 || gameState == 2)
+//                        {
+//                            a = false;
+//                        }
+//                        Random rand = new Random();
+//                        int wait = rand.nextInt(1000);
+//                        try
+//                        {
+//                            Thread.sleep(wait);
+//                        } catch (InterruptedException e)
+//                        {
+//                            System.out.println("got interrupted!");
+//                        }
+//                        if (whiteTurn1 == 2)
+//                        {
+//                            try
+//                            {
+//                                Thread.sleep(1000);
+//                            } catch (InterruptedException e)
+//                            {
+//                                System.out.println("got interrupted!");
+//                            }
+//                        }
+//                        if (whiteTurn1 == 2)
+//                        {
+//                            CPUsearch[1] = true;
+//                            rating[1] = 0;
+//
+//                            for (int x = 0; x < 8; x++)
+//                            {
+//                                for (int y = 0; y < 8; y++)
+//                                {
+//                                    if (positions1[x][y].substring(0, 2).equals("BP"))
+//                                    {
+//                                        setBPawn(board1, positions1, x, y);
+//                                    }
+//                                    if (positions1[x][y].substring(0, 2).equals("BR"))
+//                                    {
+//                                        setBRook(board1, positions1, x, y);
+//                                    }
+//                                    if (positions1[x][y].substring(0, 2).equals("BN"))
+//                                    {
+//                                        setBKnight(board1, positions1, x, y);
+//                                    }
+//                                    if (positions1[x][y].substring(0, 2).equals("BB"))
+//                                    {
+//                                        setBBishop(board1, positions1, x, y);
+//                                    }
+//                                    if (positions1[x][y].substring(0, 2).equals("BQ"))
+//                                    {
+//                                        setBQueen(board1, positions1, x, y);
+//                                    }
+//                                    if (positions1[x][y].substring(0, 2).equals("BK"))
+//                                    {
+//                                        setBKing(board1, positions1, x, y);
+//                                    }
+//                                }
+//                            }
+//                            for (int i = 0; i < 30; i++)
+//                            {
+//                                if (!roster2p[i].substring(1, 2).equals("0"))
+//                                {
+//                                    setRosterPiece(board1, positions1, roster2, roster2p, i);
+//                                }
+//                            }
+//
+//                            runOnUiThread(new Runnable()
+//                            {
+//                                @Override
+//                                public void run()
+//                                {
+//                                    if (rating[1] == 0)
+//                                    {
+//                                        return;
+//                                    }
+//                                    if (moveType[1].equals("move"))
+//                                    {
+//                                        changeShit(board1, positions1, cpuX[1], cpuY[1], cpuX1[1], cpuY1[1]);
+//                                    }
+//                                    if (moveType[1].equals("take"))
+//                                    {
+//                                        takeShit(board1, positions1, cpuX[1], cpuY[1], cpuX1[1], cpuY1[1]);
+//                                    }
+//                                    if (moveType[1].equals("drop"))
+//                                    {
+//                                        rosterShit(board1, positions1, roster2, roster2p, cpuRoster[1], cpuX1[1], cpuY1[1]);
+//                                    }
+//                                }
+//                            });
+//                            CPUsearch[1] = false;
+//                        }
+//                    }
+//
+//                }
+//            }).start();
+//
+//        }
+//
+//        if (!position3)
+//        {
+//            new Thread(new Runnable()
+//            {
+//                @Override
+//                public void run()
+//                {
+//                    boolean a = true;
+//                    while (a)
+//                    {
+//                        if (gameState == 0 || gameState == 2)
+//                        {
+//                            a = false;
+//                        }
+//                        Random rand = new Random();
+//                        int wait = rand.nextInt(1000);
+//                        try
+//                        {
+//                            Thread.sleep(wait);
+//                        } catch (InterruptedException e)
+//                        {
+//                            System.out.println("got interrupted!");
+//                        }
+//                        if (whiteTurn2 == 2)
+//                        {
+//                            try
+//                            {
+//                                Thread.sleep(1000);
+//                            } catch (InterruptedException e)
+//                            {
+//                                System.out.println("got interrupted!");
+//                            }
+//                        }
+//                        if (whiteTurn2 == 2)
+//                        {
+//                            CPUsearch[2] = true;
+//                            rating[2] = 0;
+//
+//                            for (int x = 0; x < 8; x++)
+//                            {
+//                                for (int y = 0; y < 8; y++)
+//                                {
+//                                    if (positions2[x][y].substring(0, 2).equals("BP"))
+//                                    {
+//                                        setBPawn(board2, positions2, x, y);
+//                                    }
+//                                    if (positions2[x][y].substring(0, 2).equals("BR"))
+//                                    {
+//                                        setBRook(board2, positions2, x, y);
+//                                    }
+//                                    if (positions2[x][y].substring(0, 2).equals("BN"))
+//                                    {
+//                                        setBKnight(board2, positions2, x, y);
+//                                    }
+//                                    if (positions2[x][y].substring(0, 2).equals("BB"))
+//                                    {
+//                                        setBBishop(board2, positions2, x, y);
+//                                    }
+//                                    if (positions2[x][y].substring(0, 2).equals("BQ"))
+//                                    {
+//                                        setBQueen(board2, positions2, x, y);
+//                                    }
+//                                    if (positions2[x][y].substring(0, 2).equals("BK"))
+//                                    {
+//                                        setBKing(board2, positions2, x, y);
+//                                    }
+//
+//                                }
+//                            }
+//                            for (int i = 0; i < 30; i++)
+//                            {
+//                                if (!roster3p[i].substring(1, 2).equals("0"))
+//                                {
+//                                    setRosterPiece(board2, positions2, roster3, roster3p, i);
+//                                }
+//                            }
+//
+//                            runOnUiThread(new Runnable()
+//                            {
+//                                @Override
+//                                public void run()
+//                                {
+//                                    if (rating[2] == 0)
+//                                    {
+//                                        return;
+//                                    }
+//                                    if (moveType[2].equals("move"))
+//                                    {
+//                                        changeShit(board2, positions2, cpuX[2], cpuY[2], cpuX1[2], cpuY1[2]);
+//                                    }
+//                                    if (moveType[2].equals("take"))
+//                                    {
+//                                        takeShit(board2, positions2, cpuX[2], cpuY[2], cpuX1[2], cpuY1[2]);
+//                                    }
+//                                    if (moveType[2].equals("drop"))
+//                                    {
+//                                        rosterShit(board2, positions2, roster3, roster3p, cpuRoster[2], cpuX1[2], cpuY1[2]);
+//                                    }
+//                                }
+//                            });
+//                            CPUsearch[2] = false;
+//                        }
+//                    }
+//
+//                }
+//            }).start();
+//
+//        }
+//        if (!position4)
+//        {
+//            new Thread(new Runnable()
+//            {
+//                @Override
+//                public void run()
+//                {
+//                    boolean a = true;
+//                    while (a)
+//                    {
+//                        if (gameState == 0 || gameState == 2)
+//                        {
+//                            a = false;
+//                        }
+//                        Random rand = new Random();
+//                        int wait = rand.nextInt(1000);
+//                        try
+//                        {
+//                            Thread.sleep(wait);
+//                        } catch (InterruptedException e)
+//                        {
+//                            System.out.println("got interrupted!");
+//                        }
+//                        if (whiteTurn2 == 1)
+//                        {
+//                            try
+//                            {
+//                                Thread.sleep(1000);
+//                            } catch (InterruptedException e)
+//                            {
+//                                System.out.println("got interrupted!");
+//                            }
+//                        }
+//                        if (whiteTurn2 == 1)
+//                        {
+//                            CPUsearch[3] = true;
+//                            rating[3] = 0;
+//                            for (int x = 0; x < 8; x++)
+//                            {
+//                                for (int y = 0; y < 8; y++)
+//                                {
+//                                    if (positions2[x][y].substring(0, 2).equals("WP"))
+//                                    {
+//                                        setPawn(board2, positions2, x, y);
+//                                    }
+//                                    if (positions2[x][y].substring(0, 2).equals("WR"))
+//                                    {
+//                                        setRook(board2, positions2, x, y);
+//                                    }
+//                                    if (positions2[x][y].substring(0, 2).equals("WN"))
+//                                    {
+//                                        setKnight(board2, positions2, x, y);
+//                                    }
+//                                    if (positions2[x][y].substring(0, 2).equals("WB"))
+//                                    {
+//                                        setBishop(board2, positions2, x, y);
+//                                    }
+//                                    if (positions2[x][y].substring(0, 2).equals("WQ"))
+//                                    {
+//                                        setQueen(board2, positions2, x, y);
+//                                    }
+//                                    if (positions2[x][y].substring(0, 2).equals("WK"))
+//                                    {
+//                                        setKing(board2, positions2, x, y);
+//                                    }
+//                                }
+//                            }
+//                            for (int i = 0; i < 30; i++)
+//                            {
+//                                if (!roster4p[i].substring(1, 2).equals("0"))
+//                                {
+//                                    setRosterPiece(board2, positions2, roster4, roster4p, i);
+//                                }
+//                            }
+//
+//                            runOnUiThread(new Runnable()
+//                            {
+//                                @Override
+//                                public void run()
+//                                {
+//                                    if (rating[3] == 0)
+//                                    {
+//                                        return;
+//                                    }
+//                                    if (moveType[3].equals("move"))
+//                                    {
+//                                        changeShit(board2, positions2, cpuX[3], cpuY[3], cpuX1[3], cpuY1[3]);
+//                                    }
+//                                    if (moveType[3].equals("take"))
+//                                    {
+//                                        takeShit(board2, positions2, cpuX[3], cpuY[3], cpuX1[3], cpuY1[3]);
+//                                    }
+//                                    if (moveType[3].equals("drop"))
+//                                    {
+//                                        rosterShit(board2, positions2, roster4, roster4p, cpuRoster[3], cpuX1[3], cpuY1[3]);
+//                                    }
+//                                }
+//                            });
+//                            CPUsearch[3] = false;
+//                        }
+//                    }
+//
+//                }
+//            }).start();
+//
+//        }
+//
     }
 
-    private void rate(ImageView[][] board, String[][] positions, int x, int y, int x1, int y1, String type, String[] rosterp, int cpu)
+    private void rate(ImageView[][] board, Piece[][] positions, int x, int y, int x1, int y1, String type, Piece[] rosterp, int cpu)
     {
         if (cpuLevel[cpu] == 0)
         {
@@ -6748,7 +7198,7 @@ public class MainActivity extends AppCompatActivity
         tempRating = 17 - (XProx + YProx);
         if (x != -1)
         {
-            if (positions[x][y].substring(1, 2).equals("K"))
+            if (positions[x][y].type.equals("K"))
             {
                 tempRating = XProx + YProx;
             }
@@ -6773,7 +7223,7 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
-        String positionSave = positions[x1][y1];
+        Piece positionSave = positions[x1][y1];
         if (x == -1)
         {
             positions[x1][y1] = rosterp[y];
@@ -6781,7 +7231,7 @@ public class MainActivity extends AppCompatActivity
         else
         {
             positions[x1][y1] = positions[x][y];
-            positions[x][y] = "0000";
+            positions[x][y] = new Empty();
         }
 
         if (whiteInCheck(positions) || blackInCheck(positions))
@@ -6790,8 +7240,8 @@ public class MainActivity extends AppCompatActivity
         }
         if (cpuLevel[cpu] == 2)
         {
-            if (positions[x1][y1].substring(1, 2).equals("Q") || positions[x1][y1].substring(1, 2).equals("R")
-                    || positions[x1][y1].substring(1, 2).equals("N") || positions[x1][y1].substring(1, 2).equals("B"))
+            if (positions[x1][y1].type.equals("Q") || positions[x1][y1].type.equals("R")
+                    || positions[x1][y1].type.equals("N") || positions[x1][y1].type.equals("B"))
             {
                 if (inCheck[cpu] && !checkCheck(positions, x1, y1))
                 {
@@ -6806,7 +7256,7 @@ public class MainActivity extends AppCompatActivity
 
         if (x == -1)
         {
-            positions[x1][y1] = "0000";
+            positions[x1][y1] = new Empty();
         }
         else
         {
@@ -6816,11 +7266,11 @@ public class MainActivity extends AppCompatActivity
 
         if (x != -1)
         {
-            if (positions[x][y].substring(0, 2).equals("WP") && y == 6)
+            if (positions[x][y].color.equals("white") && positions[x][y].type.equals("pawn") && y == 6)
             {
                 tempRating = tempRating + 30;
             }
-            if (positions[x][y].substring(0, 2).equals("BP") && y == 1)
+            if (positions[x][y].color.equals("black") && positions[x][y].type.equals("pawn") && y == 1)
             {
                 tempRating = tempRating + 30;
             }
@@ -6847,7 +7297,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void kingStillStanding(ImageView[][] board, String[][] positions)
+    private void kingStillStanding(ImageView[][] board, Piece[][] positions)
     {
         boolean player1 = false;
         boolean player2 = false;
@@ -6860,22 +7310,22 @@ public class MainActivity extends AppCompatActivity
             {
                 if (board(board, positions) == 1)
                 {
-                    if (positions1[i][j].substring(0, 2).equals("WK"))
+                    if (positions1[i][j].color.equals("white") && positions1[i][j].type.equals("king"))
                     {
                         player1 = true;
                     }
-                    if (positions1[i][j].substring(0, 2).equals("BK"))
+                    if (positions1[i][j].color.equals("black") && positions1[i][j].type.equals("king"))
                     {
                         player2 = true;
                     }
                 }
                 if (board(board, positions) == 2)
                 {
-                    if (positions2[i][j].substring(0, 2).equals("WK"))
+                    if (positions2[i][j].color.equals("white") && positions2[i][j].type.equals("king"))
                     {
                         player3 = true;
                     }
-                    if (positions2[i][j].substring(0, 2).equals("BK"))
+                    if (positions2[i][j].color.equals("black") && positions2[i][j].type.equals("king"))
                     {
                         player4 = true;
                     }
@@ -6905,8 +7355,6 @@ public class MainActivity extends AppCompatActivity
                 gameEndProcedures(0, 1);
             }
         }
-
-
 
 
     }
@@ -6946,7 +7394,6 @@ public class MainActivity extends AppCompatActivity
             R_.setRotation(270);
 
 
-
         }
         final TextView endType = (TextView) findViewById(R.id.endType);
         if (type == 0)
@@ -6965,7 +7412,7 @@ public class MainActivity extends AppCompatActivity
         {
             public void onTick(long millisUntilFinished)
             {
-                double trouble =  ((double)(2000 - millisUntilFinished) / 4000) * 255;
+                double trouble = ((double) (2000 - millisUntilFinished) / 4000) * 255;
                 finishScreen.setAlpha((float) (2000 - millisUntilFinished) / 2000);
                 //fssection.getBackground().setAlpha((int) trouble);
                 finishScreen.setVisibility(View.VISIBLE);
@@ -6979,7 +7426,8 @@ public class MainActivity extends AppCompatActivity
                     public void onClick(View v)
                     {
                         finishScreen.setVisibility(View.INVISIBLE);
-                        if (mInterstitialAd.isLoaded()) {
+                        if (mInterstitialAd.isLoaded())
+                        {
                             mInterstitialAd.show();
                         }
                     }
@@ -7024,7 +7472,8 @@ public class MainActivity extends AppCompatActivity
         final int width = options.outWidth;
         int inSampleSize = 1;
 
-        if (height > reqHeight || width > reqWidth) {
+        if (height > reqHeight || width > reqWidth)
+        {
 
             final int halfHeight = height / 2;
             final int halfWidth = width / 2;
@@ -7032,13 +7481,15 @@ public class MainActivity extends AppCompatActivity
             // Calculate the largest inSampleSize value that is a power of 2 and keeps both
             // height and width larger than the requested height and width.
             while ((halfHeight / inSampleSize) > reqHeight
-                    && (halfWidth / inSampleSize) > reqWidth) {
+                    && (halfWidth / inSampleSize) > reqWidth)
+            {
                 inSampleSize *= 2;
             }
         }
 
         return inSampleSize;
     }
+
     public static Bitmap decodeSampledBitmapFromResource(Resources res, int resId, int reqWidth, int reqHeight)
     {
 
@@ -7075,7 +7526,7 @@ public class MainActivity extends AppCompatActivity
             start.setText("Resume");
         }
 
-        if(currentApiVersion >= Build.VERSION_CODES.KITKAT && hasFocus)
+        if (currentApiVersion >= Build.VERSION_CODES.KITKAT && hasFocus)
         {
             getWindow().getDecorView().setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -7093,70 +7544,72 @@ public class MainActivity extends AppCompatActivity
     {
         private BitmapDrawable PIC;
         private int rotation;
+
         public MyShadowBuilder(View v, String ID)
         {
             super(v);
 
-            if (ID.substring(1 , 2).equals("1") || ID.substring(1, 2).equals("3"))
+            int length = ID.length();
+            System.out.println(ID);
+            if (ID.substring(length-1, length).equals("1") || ID.substring(length-1, length).equals("3"))
             {
-                if (ID.substring(0, 1).equals("P"))
+                if (ID.substring(0, length-1).equals("pawn"))
                 {
                     PIC = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.mipmap.pawn, 100, 100));
                 }
-                if (ID.substring(0, 1).equals("R"))
+                if (ID.substring(0, length-1).equals("rook"))
                 {
                     PIC = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.mipmap.rook, 100, 100));
                 }
-                if (ID.substring(0, 1).equals("N"))
+                if (ID.substring(0, length-1).equals("knight"))
                 {
                     PIC = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.mipmap.knight, 100, 100));
                 }
-                if (ID.substring(0, 1).equals("B"))
+                if (ID.substring(0, length-1).equals("bishop"))
                 {
                     PIC = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.mipmap.bishop, 100, 100));
                 }
-                if (ID.substring(0, 1).equals("Q"))
+                if (ID.substring(0, length-1).equals("queen"))
                 {
                     PIC = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.mipmap.queen, 100, 100));
                 }
-                if (ID.substring(0, 1).equals("K"))
+                if (ID.substring(0, length-1).equals("king"))
                 {
                     PIC = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.mipmap.king, 100, 100));
                 }
-
             }
-            if (ID.substring(1 , 2).equals("2") || ID.substring(1, 2).equals("4"))
+            if (ID.substring(length-1, length).equals("2") || ID.substring(length-1, length).equals("4"))
             {
-                if (ID.substring(0, 1).equals("P"))
+                if (ID.substring(0, length-1).equals("pawn"))
                 {
                     PIC = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.mipmap.bpawn, 100, 100));
                 }
-                if (ID.substring(0, 1).equals("R"))
+                if (ID.substring(0, length-1).equals("rook"))
                 {
                     PIC = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.mipmap.brook, 100, 100));
                 }
-                if (ID.substring(0, 1).equals("N"))
+                if (ID.substring(0, length-1).equals("knight"))
                 {
                     PIC = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.mipmap.bknight, 100, 100));
                 }
-                if (ID.substring(0, 1).equals("B"))
+                if (ID.substring(0, length-1).equals("bishop"))
                 {
                     PIC = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.mipmap.bbishop, 100, 100));
                 }
-                if (ID.substring(0, 1).equals("Q"))
+                if (ID.substring(0, length-1).equals("queen"))
                 {
                     PIC = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.mipmap.bqueen, 100, 100));
                 }
-                if (ID.substring(0, 1).equals("K"))
+                if (ID.substring(0, length-1).equals("king"))
                 {
                     PIC = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.mipmap.bking, 100, 100));
                 }
             }
-            if (ID.substring(1 , 2).equals("1") || ID.substring(1 , 2).equals("4"))
+            if (ID.substring(length-1, length).equals("1") || ID.substring(length-1, length).equals("4"))
             {
                 rotation = 90;
             }
-            if (ID.substring(1 , 2).equals("2") || ID.substring(1 , 2).equals("3"))
+            if (ID.substring(length-1, length).equals("2") || ID.substring(length-1, length).equals("3"))
             {
                 rotation = 270;
             }
@@ -7176,7 +7629,7 @@ public class MainActivity extends AppCompatActivity
         {
             int height, width;
             height = (int) (getView().getHeight() * 2);
-            width = (int) (getView().getHeight()  * 2);
+            width = (int) (getView().getHeight() * 2);
 
             PIC.setBounds(0, 0, width, height);
 
@@ -7184,17 +7637,18 @@ public class MainActivity extends AppCompatActivity
 
             if (rotation == 90)
             {
-                shadowTouchPoint.set(0, height/2);
+                shadowTouchPoint.set(0, height / 2);
             }
             if (rotation == 270)
             {
-                shadowTouchPoint.set(width, height/2);
+                shadowTouchPoint.set(width, height / 2);
             }
         }
 
     }
 
-    private void requestNewInterstitial() {
+    private void requestNewInterstitial()
+    {
         AdRequest adRequest = new AdRequest.Builder()
                 .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
                 .addTestDevice("261C12037B82A37B909C2E6BE482F9ED")
@@ -7202,6 +7656,5 @@ public class MainActivity extends AppCompatActivity
 
         mInterstitialAd.loadAd(adRequest);
     }
-
 
 }
