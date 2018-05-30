@@ -1793,7 +1793,7 @@ public class MainActivity extends AppCompatActivity
             {
                 if (whiteTurn1 == 1)
                 {
-                    if (blackInCheck(board,positions))
+                    if (blackInCheck(board, positions))
                     {
                         positions[x][y] = old;
                         return;
@@ -1913,10 +1913,10 @@ public class MainActivity extends AppCompatActivity
         roster[i].setBackgroundColor(Color.YELLOW);
         if (!rosterp[i].backgroundColor.equals("Y"))
         {
-            rosterp[i].backgroundColor =("Y");
+            rosterp[i].backgroundColor = ("Y");
         }
         board[x][y].setImageResource(R.mipmap.dot);
-        positions[x][y].backgroundColor =("D");
+        positions[x][y].backgroundColor = ("D");
 
 
         board[x][y].setOnTouchListener(new View.OnTouchListener()
@@ -2103,10 +2103,14 @@ public class MainActivity extends AppCompatActivity
             }
             if (m.type.equals("move")) move(m.board, m.positions, m.x, m.y, m.x1, m.y1);
             if (m.type.equals("take")) take(m.board, m.positions, m.x, m.y, m.x1, m.y1);
-            if (m.type.equals("whiteKingCastle")) whiteKingCastle(m.board, m.positions, m.x, m.y, m.x1, m.y1);
-            if (m.type.equals("whiteQueenCastle")) whiteQueenCastle(m.board, m.positions, m.x, m.y, m.x1, m.y1);
-            if (m.type.equals("blackKingCastle")) blackKingCastle(m.board, m.positions, m.x, m.y, m.x1, m.y1);
-            if (m.type.equals("blackQueenCastle")) blackQueenCastle(m.board, m.positions, m.x, m.y, m.x1, m.y1);
+            if (m.type.equals("whiteKingCastle"))
+                whiteKingCastle(m.board, m.positions, m.x, m.y, m.x1, m.y1);
+            if (m.type.equals("whiteQueenCastle"))
+                whiteQueenCastle(m.board, m.positions, m.x, m.y, m.x1, m.y1);
+            if (m.type.equals("blackKingCastle"))
+                blackKingCastle(m.board, m.positions, m.x, m.y, m.x1, m.y1);
+            if (m.type.equals("blackQueenCastle"))
+                blackQueenCastle(m.board, m.positions, m.x, m.y, m.x1, m.y1);
             if (m.type.equals("whiteEnP")) whiteEnP(m.board, m.positions, m.x, m.x1);
             if (m.type.equals("blackEnP")) blackEnP(m.board, m.positions, m.x, m.x1);
 
@@ -3884,7 +3888,7 @@ public class MainActivity extends AppCompatActivity
             {
                 if (whiteTurn2 == 1)
                 {
-                    if (whiteInCheck(board ,positions))
+                    if (whiteInCheck(board, positions))
                     {
                         positions[x][y] = positions[x1][y1];
                         positions[x1][y1] = old;
@@ -4235,10 +4239,10 @@ public class MainActivity extends AppCompatActivity
         board[x][y].setBackgroundColor(Color.YELLOW);
         if (!positions[x][y].backgroundColor.equals("Y"))
         {
-            positions[x][y].backgroundColor =  "Y";
+            positions[x][y].backgroundColor = "Y";
         }
         board[x1][y1].setBackgroundColor(Color.RED);
-        positions[x1][y1].backgroundColor =  "R";
+        positions[x1][y1].backgroundColor = "R";
 
         board[x1][y1].setOnTouchListener(new View.OnTouchListener()
         {
@@ -4775,7 +4779,7 @@ public class MainActivity extends AppCompatActivity
             positions[x][y].backgroundColor = "Y";
         }
         board[x1][y1].setImageResource(R.mipmap.dot);
-        positions[x1][y1].backgroundColor =  "D";
+        positions[x1][y1].backgroundColor = "D";
 
 
         board[x1][y1].setOnTouchListener(new View.OnTouchListener()
@@ -4921,7 +4925,7 @@ public class MainActivity extends AppCompatActivity
         board[x][y].setBackgroundColor(Color.YELLOW);
         if (!positions[x][y].backgroundColor.equals("Y"))
         {
-            positions[x][y].backgroundColor ="Y";
+            positions[x][y].backgroundColor = "Y";
         }
         board[x1][y1].setImageResource(R.mipmap.dot);
         positions[x1][y1].backgroundColor = "D";
@@ -5118,7 +5122,7 @@ public class MainActivity extends AppCompatActivity
             positions[x][y].backgroundColor = "Y";
         }
         board[x1][y].setBackgroundColor(Color.RED);
-        positions[x1][y].backgroundColor ="R";
+        positions[x1][y].backgroundColor = "R";
 
         //NOT SURE WHY I USED A SET ON CLICK LISTENER HERE
 //        board[x1][y].setOnClickListener(new View.OnClickListener()
@@ -5134,7 +5138,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent)
             {
-                whiteEnPShit(board, positions,x,x1);
+                whiteEnPShit(board, positions, x, x1);
                 return true;
             }
         });
@@ -5286,7 +5290,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 if (whiteTurn2 == 2)
                 {
-                    if (blackInCheck(board ,positions))
+                    if (blackInCheck(board, positions))
                     {
                         positions[x][y] = positions[x1][y1];
                         positions[x1][y1] = old;
@@ -5324,13 +5328,98 @@ public class MainActivity extends AppCompatActivity
         board[x1][y].setBackgroundColor(Color.RED);
         positions[x1][y].backgroundColor = "R";
 
-        board[x1][y].setOnClickListener(new View.OnClickListener()
+//        board[x1][y].setOnClickListener(new View.OnClickListener()
+//        {
+//            @Override
+//            public void onClick(View v)
+//            {
+//                blackEnPShit(board, positions, x, x1);
+//            }
+//        });
+        board[x1][y].setOnTouchListener(new View.OnTouchListener()
         {
             @Override
-            public void onClick(View v)
+            public boolean onTouch(View view, MotionEvent motionEvent)
             {
                 blackEnPShit(board, positions, x, x1);
+                return true;
             }
+        });
+        board[x1][y].setOnDragListener(new View.OnDragListener()
+        {
+            @Override
+            public boolean onDrag(View v, DragEvent event)
+            {
+
+                int dragEvent = event.getAction();
+                //TextView dropText = (TextView) v;
+                BitmapDrawable black = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.drawable.black, 10, 10));
+                BitmapDrawable white = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.drawable.white, 10, 10));
+                switch (dragEvent)
+                {
+                    case DragEvent.ACTION_DRAG_ENTERED:
+                        board[x1][y].setBackgroundColor(0xFFFF7F7F);
+                        break;
+
+                    case DragEvent.ACTION_DRAG_EXITED:
+                        int i = x1;
+                        int j = y;
+                        if (i == 0 || i == 2 || i == 4 || i == 6)
+                        {
+                            if (j == 0 || j == 2 || j == 4 || j == 6)
+                            {
+                                board[i][j].setBackground(black);
+                            }
+                            else
+                            {
+                                board[i][j].setBackground(white);
+                            }
+                        }
+                        else
+                        {
+                            if (j == 0 || j == 2 || j == 4 || j == 6)
+                            {
+                                board[i][j].setBackground(white);
+                            }
+                            else
+                            {
+                                board[i][j].setBackground(black);
+                            }
+                        }
+                        break;
+
+                    case DragEvent.ACTION_DROP:
+                        i = x1;
+                        j = y;
+                        if (i == 0 || i == 2 || i == 4 || i == 6)
+                        {
+                            if (j == 0 || j == 2 || j == 4 || j == 6)
+                            {
+                                board[i][j].setBackground(black);
+                            }
+                            else
+                            {
+                                board[i][j].setBackground(white);
+                            }
+                        }
+                        else
+                        {
+                            if (j == 0 || j == 2 || j == 4 || j == 6)
+                            {
+                                board[i][j].setBackground(white);
+                            }
+                            else
+                            {
+                                board[i][j].setBackground(black);
+                            }
+                        }
+                        blackEnPShit(board, positions, x, x1);
+                        break;
+                }
+
+                return true;
+            }
+
         });
     }
 
@@ -5379,462 +5468,486 @@ public class MainActivity extends AppCompatActivity
 
     private void castleCheck(ImageView[][] board, Piece[][] positions)
     {
-//        if (board(board, positions) == 1)
-//        {
-//            if (!positions[0][0].substring(0, 2).equals("WR"))
-//            {
-//                whiteCastleQueen1 = false;
-//            }
-//            if (!positions[7][0].substring(0, 2).equals("WR"))
-//            {
-//                whiteCastleKing1 = false;
-//            }
-//            if (!positions[4][0].substring(0, 2).equals("WK"))
-//            {
-//                whiteCastleKing1 = false;
-//                whiteCastleQueen1 = false;
-//            }
-//            if (!positions[0][7].substring(0, 2).equals("BR"))
-//            {
-//                blackCastleQueen1 = false;
-//            }
-//            if (!positions[7][7].substring(0, 2).equals("BR"))
-//            {
-//                blackCastleKing1 = false;
-//            }
-//            if (!positions[4][7].substring(0, 2).equals("BK"))
-//            {
-//                blackCastleKing1 = false;
-//                blackCastleQueen1 = false;
-//            }
-//        }
-//        else
-//        {
-//            if (!positions[0][0].substring(0, 2).equals("WR"))
-//            {
-//                whiteCastleQueen2 = false;
-//            }
-//            if (!positions[7][0].substring(0, 2).equals("WR"))
-//            {
-//                whiteCastleKing2 = false;
-//            }
-//            if (!positions[4][0].substring(0, 2).equals("WK"))
-//            {
-//                whiteCastleKing2 = false;
-//                whiteCastleQueen2 = false;
-//            }
-//            if (!positions[0][7].substring(0, 2).equals("BR"))
-//            {
-//                blackCastleQueen2 = false;
-//            }
-//            if (!positions[7][7].substring(0, 2).equals("BR"))
-//            {
-//                blackCastleKing2 = false;
-//            }
-//            if (!positions[4][7].substring(0, 2).equals("BK"))
-//            {
-//                blackCastleKing2 = false;
-//                blackCastleQueen2 = false;
-//            }
-//        }
+        if (board(board, positions) == 1)
+        {
+            if (!positions[0][0].color.equals("white") || !positions[0][0].type.equals("rook"))
+            {
+                whiteCastleQueen1 = false;
+            }
+            if (!positions[7][0].color.equals("white") || !positions[7][0].type.equals("rook"))
+            {
+                whiteCastleKing1 = false;
+            }
+            if (!positions[4][0].color.equals("white") || !positions[4][0].type.equals("king"))
+            {
+                whiteCastleKing1 = false;
+                whiteCastleQueen1 = false;
+            }
+            if (!positions[0][7].color.equals("black") || !positions[0][7].type.equals("rook"))
+            {
+                blackCastleQueen1 = false;
+            }
+            if (!positions[7][7].color.equals("black") || !positions[7][7].type.equals("rook"))
+            {
+                blackCastleKing1 = false;
+            }
+            if (!positions[4][7].color.equals("black") || !positions[4][7].type.equals("king"))
+            {
+                blackCastleKing1 = false;
+                blackCastleQueen1 = false;
+            }
+        }
+        else
+        {
+            if (!positions[0][0].color.equals("white") || !positions[0][0].type.equals("rook"))
+            {
+                whiteCastleQueen2 = false;
+            }
+            if (!positions[7][0].color.equals("white") || !positions[7][0].type.equals("rook"))
+            {
+                whiteCastleKing2 = false;
+            }
+            if (!positions[4][0].color.equals("white") || !positions[4][0].type.equals("king"))
+            {
+                whiteCastleKing2 = false;
+                whiteCastleQueen2 = false;
+            }
+            if (!positions[0][7].color.equals("black") || !positions[0][7].type.equals("rook"))
+            {
+                blackCastleQueen2 = false;
+            }
+            if (!positions[7][7].color.equals("black") || !positions[7][7].type.equals("rook"))
+            {
+                blackCastleKing2 = false;
+            }
+            if (!positions[4][7].color.equals("black") || !positions[4][7].type.equals("king"))
+            {
+                blackCastleKing2 = false;
+                blackCastleQueen2 = false;
+            }
+        }
     }
 
     private void pawnCheck(final ImageView[][] board, final Piece[][] positions)
     {
-//        final LinearLayout pawnOptions1 = (LinearLayout) findViewById(R.id.pawnOptions1);
-//        final LinearLayout pawnOptions2 = (LinearLayout) findViewById(R.id.pawnOptions2);
-//        final Button queen1 = (Button) findViewById(R.id.queen1);
-//        Button queen2 = (Button) findViewById(R.id.queen2);
-//        Button rook1 = (Button) findViewById(R.id.rook1);
-//        Button rook2 = (Button) findViewById(R.id.rook2);
-//        Button bishop1 = (Button) findViewById(R.id.bishop1);
-//        Button bishop2 = (Button) findViewById(R.id.bishop2);
-//        Button knight1 = (Button) findViewById(R.id.knight1);
-//        Button knight2 = (Button) findViewById(R.id.knight2);
-//
-//        final ImageView square = (ImageView) findViewById(R.id.a1_1);
-//        int width = square.getWidth();
-//
-//        pawnOptions1.getLayoutParams().width = width * 8;
-//        pawnOptions1.getLayoutParams().height = width * 8;
-//        pawnOptions2.getLayoutParams().width = width * 8;
-//        pawnOptions2.getLayoutParams().height = width * 8;
-//
-//        if (board(board, positions) == 1)
-//        {
-//            if (whiteTurn1 == 2)
-//            {
-//                for (int i = 0; i < 8; i++)
-//                {
-//                    final int x = i;
-//                    if (positions[i][7].substring(0, 2).equals("WP"))
-//                    {
-//                        whiteTurn1 = 3;
-//                        nuke(board, positions);
-//                        pawnOptions1.setVisibility(View.VISIBLE);
-//                        pawnOptions1.setRotation(90);
-//                        if (gameState == 1)
-//                        {
-//                            queen1.setOnClickListener(new View.OnClickListener()
-//                            {
-//                                @Override
-//                                public void onClick(View v)
-//                                {
+        final LinearLayout pawnOptions1 = (LinearLayout) findViewById(R.id.pawnOptions1);
+        final LinearLayout pawnOptions2 = (LinearLayout) findViewById(R.id.pawnOptions2);
+        final Button queen1 = (Button) findViewById(R.id.queen1);
+        Button queen2 = (Button) findViewById(R.id.queen2);
+        Button rook1 = (Button) findViewById(R.id.rook1);
+        Button rook2 = (Button) findViewById(R.id.rook2);
+        Button bishop1 = (Button) findViewById(R.id.bishop1);
+        Button bishop2 = (Button) findViewById(R.id.bishop2);
+        Button knight1 = (Button) findViewById(R.id.knight1);
+        Button knight2 = (Button) findViewById(R.id.knight2);
+
+        final ImageView square = (ImageView) findViewById(R.id.a1_1);
+        int width = square.getWidth();
+
+        pawnOptions1.getLayoutParams().width = width * 8;
+        pawnOptions1.getLayoutParams().height = width * 8;
+        pawnOptions2.getLayoutParams().width = width * 8;
+        pawnOptions2.getLayoutParams().height = width * 8;
+
+        if (board(board, positions) == 1)
+        {
+            if (whiteTurn1 == 2)
+            {
+                for (int i = 0; i < 8; i++)
+                {
+                    final int x = i;
+                    if (positions[i][7].color.equals("white") && positions[i][7].color.equals("pawn"))
+                    {
+                        whiteTurn1 = 3;
+                        nuke(board, positions);
+                        pawnOptions1.setVisibility(View.VISIBLE);
+                        pawnOptions1.setRotation(90);
+                        if (gameState == 1)
+                        {
+                            queen1.setOnClickListener(new View.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(View v)
+                                {
 //                                    positions[x][7] = "WQP0";
-//                                    board[x][7].setImageResource(R.mipmap.queen);
-//                                    if (gameState == 1)
-//                                    {
-//                                        pawnOptions1.setVisibility(View.INVISIBLE);
-//                                        whiteTurn1 = 2;
-//                                        setActions(board, positions);
-//                                    }
-//                                }
-//                            });
-//                            rook1.setOnClickListener(new View.OnClickListener()
-//                            {
-//                                @Override
-//                                public void onClick(View v)
-//                                {
-//                                    positions[x][7] = "WRP0";
-//                                    board[x][7].setImageResource(R.mipmap.rook);
-//                                    if (gameState == 1)
-//                                    {
-//                                        pawnOptions1.setVisibility(View.INVISIBLE);
-//                                        whiteTurn1 = 2;
-//                                        setActions(board, positions);
-//                                    }
-//                                }
-//                            });
-//                            bishop1.setOnClickListener(new View.OnClickListener()
-//                            {
-//                                @Override
-//                                public void onClick(View v)
-//                                {
-//                                    positions[x][7] = "WBP0";
-//                                    board[x][7].setImageResource(R.mipmap.bishop);
-//                                    if (gameState == 1)
-//                                    {
-//                                        pawnOptions1.setVisibility(View.INVISIBLE);
-//                                        whiteTurn1 = 2;
-//                                        setActions(board, positions);
-//                                    }
-//                                }
-//                            });
-//                            knight1.setOnClickListener(new View.OnClickListener()
-//                            {
-//                                @Override
-//                                public void onClick(View v)
-//                                {
-//                                    positions[x][7] = "WNP0";
-//                                    board[x][7].setImageResource(R.mipmap.knight);
-//                                    if (gameState == 1)
-//                                    {
-//                                        pawnOptions1.setVisibility(View.INVISIBLE);
-//                                        whiteTurn1 = 2;
-//                                        setActions(board, positions);
-//                                    }
-//
-//                                }
-//                            });
-//                            if (!position1)
-//                            {
-//                                positions[x][7] = "WQP0";
-//                                board[x][7].setImageResource(R.mipmap.queen);
-//                                if (gameState == 1)
-//                                {
-//                                    pawnOptions1.setVisibility(View.INVISIBLE);
-//                                    whiteTurn1 = 2;
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//            if (whiteTurn1 == 1)
-//            {
-//                for (int i = 0; i < 8; i++)
-//                {
-//                    final int x = i;
-//                    if (positions[i][0].substring(0, 2).equals("BP"))
-//                    {
-//                        whiteTurn1 = 3;
-//                        nuke(board, positions);
-//                        pawnOptions1.setVisibility(View.VISIBLE);
-//                        pawnOptions1.setRotation(270);
-//
-//                        queen1.setOnClickListener(new View.OnClickListener()
-//                        {
-//                            @Override
-//                            public void onClick(View v)
-//                            {
+                                    positions[x][7] = new Queen("white");
+                                    positions[x][7].wasPawn = true;
+                                    board[x][7].setImageResource(R.mipmap.queen);
+                                    if (gameState == 1)
+                                    {
+                                        pawnOptions1.setVisibility(View.INVISIBLE);
+                                        whiteTurn1 = 2;
+                                        setActions(board, positions);
+                                    }
+                                }
+                            });
+                            rook1.setOnClickListener(new View.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(View v)
+                                {
+                                    positions[x][7] = new Rook("white");
+                                    positions[x][7].wasPawn = true;
+                                    board[x][7].setImageResource(R.mipmap.rook);
+                                    if (gameState == 1)
+                                    {
+                                        pawnOptions1.setVisibility(View.INVISIBLE);
+                                        whiteTurn1 = 2;
+                                        setActions(board, positions);
+                                    }
+                                }
+                            });
+                            bishop1.setOnClickListener(new View.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(View v)
+                                {
+                                    positions[x][7] = new Bishop("white");
+                                    positions[x][7].wasPawn = true;
+                                    board[x][7].setImageResource(R.mipmap.bishop);
+                                    if (gameState == 1)
+                                    {
+                                        pawnOptions1.setVisibility(View.INVISIBLE);
+                                        whiteTurn1 = 2;
+                                        setActions(board, positions);
+                                    }
+                                }
+                            });
+                            knight1.setOnClickListener(new View.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(View v)
+                                {
+                                    positions[x][7] = new Knight("white");
+                                    positions[x][7].wasPawn = true;
+                                    board[x][7].setImageResource(R.mipmap.knight);
+                                    if (gameState == 1)
+                                    {
+                                        pawnOptions1.setVisibility(View.INVISIBLE);
+                                        whiteTurn1 = 2;
+                                        setActions(board, positions);
+                                    }
+
+                                }
+                            });
+                            if (!position1)
+                            {
+                                positions[x][7] = new Queen("white");
+                                positions[x][7].wasPawn = true;
+                                board[x][7].setImageResource(R.mipmap.queen);
+                                if (gameState == 1)
+                                {
+                                    pawnOptions1.setVisibility(View.INVISIBLE);
+                                    whiteTurn1 = 2;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (whiteTurn1 == 1)
+            {
+                for (int i = 0; i < 8; i++)
+                {
+                    final int x = i;
+                    if (positions[i][0].color.equals("black") && positions[i][0].color.equals("pawn"))
+                    {
+                        whiteTurn1 = 3;
+                        nuke(board, positions);
+                        pawnOptions1.setVisibility(View.VISIBLE);
+                        pawnOptions1.setRotation(270);
+
+                        queen1.setOnClickListener(new View.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(View v)
+                            {
 //                                positions[x][0] = "BQP0";
-//                                board[x][0].setImageResource(R.mipmap.bqueen);
-//                                if (gameState == 1)
-//                                {
-//                                    pawnOptions1.setVisibility(View.INVISIBLE);
-//                                    whiteTurn1 = 1;
-//                                    setActions(board, positions);
-//                                }
-//                            }
-//                        });
-//                        rook1.setOnClickListener(new View.OnClickListener()
-//                        {
-//                            @Override
-//                            public void onClick(View v)
-//                            {
-//                                positions[x][0] = "BRP0";
-//                                board[x][0].setImageResource(R.mipmap.brook);
-//                                if (gameState == 1)
-//                                {
-//                                    pawnOptions1.setVisibility(View.INVISIBLE);
-//                                    whiteTurn1 = 1;
-//                                    setActions(board, positions);
-//                                }
-//                            }
-//                        });
-//                        bishop1.setOnClickListener(new View.OnClickListener()
-//                        {
-//                            @Override
-//                            public void onClick(View v)
-//                            {
-//                                positions[x][0] = "BBP0";
-//                                board[x][0].setImageResource(R.mipmap.bbishop);
-//                                if (gameState == 1)
-//                                {
-//                                    pawnOptions1.setVisibility(View.INVISIBLE);
-//                                    whiteTurn1 = 1;
-//                                    setActions(board, positions);
-//                                }
-//                            }
-//                        });
-//                        knight1.setOnClickListener(new View.OnClickListener()
-//                        {
-//                            @Override
-//                            public void onClick(View v)
-//                            {
-//                                positions[x][0] = "BNP0";
-//                                board[x][0].setImageResource(R.mipmap.bknight);
-//                                if (gameState == 1)
-//                                {
-//                                    pawnOptions1.setVisibility(View.INVISIBLE);
-//                                    whiteTurn1 = 1;
-//                                    setActions(board, positions);
-//                                }
-//                            }
-//                        });
-//                        if (!position2)
-//                        {
-//                            positions[x][0] = "BQP0";
-//                            board[x][0].setImageResource(R.mipmap.bqueen);
-//                            if (gameState == 1)
-//                            {
-//                                pawnOptions1.setVisibility(View.INVISIBLE);
-//                                whiteTurn1 = 1;
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        if (board(board, positions) == 2)
-//        {
-//            if (whiteTurn2 == 2)
-//            {
-//                for (int i = 0; i < 8; i++)
-//                {
-//                    final int x = i;
-//                    if (positions[i][7].substring(0, 2).equals("WP"))
-//                    {
-//                        whiteTurn2 = 3;
-//                        nuke(board, positions);
-//                        pawnOptions2.setVisibility(View.VISIBLE);
-//                        pawnOptions2.setRotation(270);
-//                        queen2.setOnClickListener(new View.OnClickListener()
-//                        {
-//                            @Override
-//                            public void onClick(View v)
-//                            {
+                                positions[x][0] = new Queen("black");
+                                positions[x][0].wasPawn = true;
+                                board[x][0].setImageResource(R.mipmap.bqueen);
+                                if (gameState == 1)
+                                {
+                                    pawnOptions1.setVisibility(View.INVISIBLE);
+                                    whiteTurn1 = 1;
+                                    setActions(board, positions);
+                                }
+                            }
+                        });
+                        rook1.setOnClickListener(new View.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                positions[x][0] = new Rook("black");
+                                positions[x][0].wasPawn = true;
+                                board[x][0].setImageResource(R.mipmap.brook);
+                                if (gameState == 1)
+                                {
+                                    pawnOptions1.setVisibility(View.INVISIBLE);
+                                    whiteTurn1 = 1;
+                                    setActions(board, positions);
+                                }
+                            }
+                        });
+                        bishop1.setOnClickListener(new View.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                positions[x][0] = new Bishop("black");
+                                positions[x][0].wasPawn = true;
+                                board[x][0].setImageResource(R.mipmap.bbishop);
+                                if (gameState == 1)
+                                {
+                                    pawnOptions1.setVisibility(View.INVISIBLE);
+                                    whiteTurn1 = 1;
+                                    setActions(board, positions);
+                                }
+                            }
+                        });
+                        knight1.setOnClickListener(new View.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                positions[x][0] = new Knight("black");
+                                positions[x][0].wasPawn = true;
+                                board[x][0].setImageResource(R.mipmap.bknight);
+                                if (gameState == 1)
+                                {
+                                    pawnOptions1.setVisibility(View.INVISIBLE);
+                                    whiteTurn1 = 1;
+                                    setActions(board, positions);
+                                }
+                            }
+                        });
+                        if (!position2)
+                        {
+                            positions[x][0] = new Queen("black");
+                            positions[x][0].wasPawn = true;
+                            board[x][0].setImageResource(R.mipmap.bqueen);
+                            if (gameState == 1)
+                            {
+                                pawnOptions1.setVisibility(View.INVISIBLE);
+                                whiteTurn1 = 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (board(board, positions) == 2)
+        {
+            if (whiteTurn2 == 2)
+            {
+                for (int i = 0; i < 8; i++)
+                {
+                    final int x = i;
+                    if (positions[i][7].color.equals("white") && positions[i][7].color.equals("pawn"))
+                    {
+                        whiteTurn2 = 3;
+                        nuke(board, positions);
+                        pawnOptions2.setVisibility(View.VISIBLE);
+                        pawnOptions2.setRotation(270);
+                        queen2.setOnClickListener(new View.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(View v)
+                            {
 //                                positions[x][7] = "WQP0";
-//                                board[x][7].setImageResource(R.mipmap.queen);
-//                                if (gameState == 1)
-//                                {
-//                                    pawnOptions2.setVisibility(View.INVISIBLE);
-//                                    whiteTurn2 = 2;
-//                                    setActions(board, positions);
-//                                }
-//                            }
-//                        });
-//                        rook2.setOnClickListener(new View.OnClickListener()
-//                        {
-//                            @Override
-//                            public void onClick(View v)
-//                            {
-//                                positions[x][7] = "WRP0";
-//                                board[x][7].setImageResource(R.mipmap.rook);
-//                                if (gameState == 1)
-//                                {
-//                                    pawnOptions2.setVisibility(View.INVISIBLE);
-//                                    whiteTurn2 = 2;
-//                                    setActions(board, positions);
-//                                }
-//                            }
-//                        });
-//                        bishop2.setOnClickListener(new View.OnClickListener()
-//                        {
-//                            @Override
-//                            public void onClick(View v)
-//                            {
-//                                positions[x][7] = "WBP0";
-//                                board[x][7].setImageResource(R.mipmap.bishop);
-//                                if (gameState == 1)
-//                                {
-//                                    pawnOptions2.setVisibility(View.INVISIBLE);
-//                                    whiteTurn2 = 2;
-//                                    setActions(board, positions);
-//                                }
-//                            }
-//                        });
-//                        knight2.setOnClickListener(new View.OnClickListener()
-//                        {
-//                            @Override
-//                            public void onClick(View v)
-//                            {
-//                                positions[x][7] = "WNP0";
-//                                board[x][7].setImageResource(R.mipmap.knight);
-//                                if (gameState == 1)
-//                                {
-//                                    pawnOptions2.setVisibility(View.INVISIBLE);
-//                                    whiteTurn2 = 2;
-//                                    setActions(board, positions);
-//                                }
-//                            }
-//                        });
-//                        if (!position4)
-//                        {
-//                            positions[x][7] = "WQP0";
-//                            board[x][7].setImageResource(R.mipmap.queen);
-//                            if (gameState == 1)
-//                            {
-//                                pawnOptions2.setVisibility(View.INVISIBLE);
-//                                whiteTurn2 = 2;
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//            if (whiteTurn2 == 1)
-//            {
-//                for (int i = 0; i < 8; i++)
-//                {
-//                    final int x = i;
-//                    if (positions[i][0].substring(0, 2).equals("BP"))
-//                    {
-//                        whiteTurn2 = 3;
-//                        nuke(board, positions);
-//                        pawnOptions2.setVisibility(View.VISIBLE);
-//                        pawnOptions2.setRotation(90);
-//                        queen2.setOnClickListener(new View.OnClickListener()
-//                        {
-//                            @Override
-//                            public void onClick(View v)
-//                            {
-//                                positions[x][0] = "BQP0";
-//                                board[x][0].setImageResource(R.mipmap.bqueen);
-//                                if (gameState == 1)
-//                                {
-//                                    pawnOptions2.setVisibility(View.INVISIBLE);
-//                                    whiteTurn2 = 1;
-//                                    setActions(board, positions);
-//                                }
-//                            }
-//                        });
-//                        rook2.setOnClickListener(new View.OnClickListener()
-//                        {
-//                            @Override
-//                            public void onClick(View v)
-//                            {
-//                                positions[x][0] = "BRP0";
-//                                board[x][0].setImageResource(R.mipmap.brook);
-//                                if (gameState == 1)
-//                                {
-//                                    pawnOptions2.setVisibility(View.INVISIBLE);
-//                                    whiteTurn2 = 1;
-//                                    setActions(board, positions);
-//                                }
-//                            }
-//                        });
-//                        bishop2.setOnClickListener(new View.OnClickListener()
-//                        {
-//                            @Override
-//                            public void onClick(View v)
-//                            {
-//                                positions[x][0] = "BBP0";
-//                                board[x][0].setImageResource(R.mipmap.bbishop);
-//                                if (gameState == 1)
-//                                {
-//                                    pawnOptions2.setVisibility(View.INVISIBLE);
-//                                    whiteTurn2 = 1;
-//                                    setActions(board, positions);
-//                                }
-//                            }
-//                        });
-//                        knight2.setOnClickListener(new View.OnClickListener()
-//                        {
-//                            @Override
-//                            public void onClick(View v)
-//                            {
-//                                positions[x][0] = "BNP0";
-//                                board[x][0].setImageResource(R.mipmap.bknight);
-//                                if (gameState == 1)
-//                                {
-//                                    pawnOptions2.setVisibility(View.INVISIBLE);
-//                                    whiteTurn2 = 1;
-//                                    setActions(board, positions);
-//                                }
-//                            }
-//                        });
-//                        if (!position3)
-//                        {
-//                            positions[x][0] = "BQP0";
-//                            board[x][0].setImageResource(R.mipmap.bqueen);
-//                            if (gameState == 1)
-//                            {
-//                                pawnOptions2.setVisibility(View.INVISIBLE);
-//                                whiteTurn2 = 1;
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
+                                positions[x][7] = new Queen("white");
+                                positions[x][7].wasPawn = true;
+                                board[x][7].setImageResource(R.mipmap.queen);
+                                if (gameState == 1)
+                                {
+                                    pawnOptions2.setVisibility(View.INVISIBLE);
+                                    whiteTurn2 = 2;
+                                    setActions(board, positions);
+                                }
+                            }
+                        });
+                        rook2.setOnClickListener(new View.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                positions[x][7] = new Rook("white");
+                                positions[x][7].wasPawn = true;
+                                board[x][7].setImageResource(R.mipmap.rook);
+                                if (gameState == 1)
+                                {
+                                    pawnOptions2.setVisibility(View.INVISIBLE);
+                                    whiteTurn2 = 2;
+                                    setActions(board, positions);
+                                }
+                            }
+                        });
+                        bishop2.setOnClickListener(new View.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                positions[x][7] = new Bishop("white");
+                                positions[x][7].wasPawn = true;
+                                board[x][7].setImageResource(R.mipmap.bishop);
+                                if (gameState == 1)
+                                {
+                                    pawnOptions2.setVisibility(View.INVISIBLE);
+                                    whiteTurn2 = 2;
+                                    setActions(board, positions);
+                                }
+                            }
+                        });
+                        knight2.setOnClickListener(new View.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                positions[x][7] = new Knight("white");
+                                positions[x][7].wasPawn = true;
+                                board[x][7].setImageResource(R.mipmap.knight);
+                                if (gameState == 1)
+                                {
+                                    pawnOptions2.setVisibility(View.INVISIBLE);
+                                    whiteTurn2 = 2;
+                                    setActions(board, positions);
+                                }
+                            }
+                        });
+                        if (!position4)
+                        {
+                            positions[x][7] = new Queen("white");
+                            positions[x][7].wasPawn = true;
+                            board[x][7].setImageResource(R.mipmap.queen);
+                            if (gameState == 1)
+                            {
+                                pawnOptions2.setVisibility(View.INVISIBLE);
+                                whiteTurn2 = 2;
+                            }
+                        }
+                    }
+                }
+            }
+            if (whiteTurn2 == 1)
+            {
+                for (int i = 0; i < 8; i++)
+                {
+                    final int x = i;
+                    if (positions[i][0].color.equals("black") && positions[i][0].color.equals("pawn"))
+                    {
+                        whiteTurn2 = 3;
+                        nuke(board, positions);
+                        pawnOptions2.setVisibility(View.VISIBLE);
+                        pawnOptions2.setRotation(90);
+                        queen2.setOnClickListener(new View.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                positions[x][0] = new Queen("black");
+                                positions[x][0].wasPawn = true;
+                                board[x][0].setImageResource(R.mipmap.bqueen);
+                                if (gameState == 1)
+                                {
+                                    pawnOptions2.setVisibility(View.INVISIBLE);
+                                    whiteTurn2 = 1;
+                                    setActions(board, positions);
+                                }
+                            }
+                        });
+                        rook2.setOnClickListener(new View.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                positions[x][0] = new Rook("black");
+                                positions[x][0].wasPawn = true;
+                                board[x][0].setImageResource(R.mipmap.brook);
+                                if (gameState == 1)
+                                {
+                                    pawnOptions2.setVisibility(View.INVISIBLE);
+                                    whiteTurn2 = 1;
+                                    setActions(board, positions);
+                                }
+                            }
+                        });
+                        bishop2.setOnClickListener(new View.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                positions[x][0] = new Bishop("black");
+                                positions[x][0].wasPawn = true;
+                                board[x][0].setImageResource(R.mipmap.bbishop);
+                                if (gameState == 1)
+                                {
+                                    pawnOptions2.setVisibility(View.INVISIBLE);
+                                    whiteTurn2 = 1;
+                                    setActions(board, positions);
+                                }
+                            }
+                        });
+                        knight2.setOnClickListener(new View.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                positions[x][0] = new Knight("black");
+                                positions[x][0].wasPawn = true;
+                                board[x][0].setImageResource(R.mipmap.bknight);
+                                if (gameState == 1)
+                                {
+                                    pawnOptions2.setVisibility(View.INVISIBLE);
+                                    whiteTurn2 = 1;
+                                    setActions(board, positions);
+                                }
+                            }
+                        });
+                        if (!position3)
+                        {
+                            positions[x][0] = new Queen("black");
+                            positions[x][0].wasPawn = true;
+                            board[x][0].setImageResource(R.mipmap.bqueen);
+                            if (gameState == 1)
+                            {
+                                pawnOptions2.setVisibility(View.INVISIBLE);
+                                whiteTurn2 = 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private void turnChange(final ImageView[][] board, final Piece[][] positions, final int x, final int y)
     {
-        /**
-         if (gameState == 2)
-         {
-         new Thread(new Runnable()
-         {
-         @Override public void run()
-         {
-         while (gameState == 2)
-         {
-         try
-         {
-         Thread.sleep(1);
-         }
-         catch (InterruptedException e)
-         {
-         e.printStackTrace();
-         }
-         }
 
+        //IDK WHAT THIS IS FOR, WAS COMMENTED OUT IN THE OLD VERSION
+//        if (gameState == 2)
+//        {
+//            new Thread(new Runnable()
+//            {
+//                @Override
+//                public void run()
+//                {
+//                    while (gameState == 2)
+//                    {
+//                        try
+//                        {
+//                            Thread.sleep(1);
+//                        } catch (InterruptedException e)
+//                        {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//
+//
+//                }
+//            }).start();
+//        }
 
-         }
-         }).start();
-         }
-         */
 
         if (board(board, positions) == 1)
         {
@@ -5970,7 +6083,7 @@ public class MainActivity extends AppCompatActivity
         {
             for (int j = 0; j < 8; j++)
             {
-                if (positions[i][j].color.equals("white") && positions[i][j].type.equals("king")&& checkCheck(board, positions, i, j))
+                if (positions[i][j].color.equals("white") && positions[i][j].type.equals("king") && checkCheck(board, positions, i, j))
                 {
                     return true;
                 }
@@ -5986,7 +6099,7 @@ public class MainActivity extends AppCompatActivity
         {
             for (int j = 0; j < 8; j++)
             {
-                if (positions[i][j].color.equals("black") && positions[i][j].type.equals("king")&& checkCheck(board, positions, i, j))
+                if (positions[i][j].color.equals("black") && positions[i][j].type.equals("king") && checkCheck(board, positions, i, j))
                 {
                     return true;
                 }
@@ -6000,7 +6113,7 @@ public class MainActivity extends AppCompatActivity
     {
         for (int i = 0; i < 8; i++)
         {
-            for (int j =0; j < 8;j++)
+            for (int j = 0; j < 8; j++)
             {
                 if (positions[i][j].isOpposite(positions[x][y]))
                 {
@@ -6017,271 +6130,191 @@ public class MainActivity extends AppCompatActivity
 
     private void setWhiteCheckConditions(ImageView[][] board, Piece[][] positions)
     {
-//        if (checking)
-//        {
-//            for (int i = 0; i < 8; i++)
-//            {
-//                for (int j = 0; j < 8; j++)
-//                {
-//                    if (positions[i][j].substring(0, 2).equals("WK"))
-//                    {
-//                        board[i][j].setBackgroundColor(Color.BLUE);
-//                        positions[i][j] = positions[i][j].substring(0, 3) + ("B");
-//                    }
-//                }
-//            }
-//        }
-//        if (board(board, positions) == 1 && whiteTurn1 == 1)
-//        {
-//            searchingForCheckmate1 = true;
-//            checkmate1 = true;
-//
-//            for (int x = 0; x < 8; x++)
-//            {
-//                for (int y = 0; y < 8; y++)
-//                {
-//                    if (positions[x][y].substring(0, 2).equals("WP"))
-//                    {
-//                        setPawn(board, positions, x, y);
-//                    }
-//                    if (positions[x][y].substring(0, 2).equals("WR"))
-//                    {
-//                        setRook(board, positions, x, y);
-//                    }
-//                    if (positions[x][y].substring(0, 2).equals("WN"))
-//                    {
-//                        setKnight(board, positions, x, y);
-//                    }
-//                    if (positions[x][y].substring(0, 2).equals("WB"))
-//                    {
-//                        setBishop(board, positions, x, y);
-//                    }
-//                    if (positions[x][y].substring(0, 2).equals("WQ"))
-//                    {
-//                        setQueen(board, positions, x, y);
-//                    }
-//                    if (positions[x][y].substring(0, 2).equals("WK"))
-//                    {
-//                        setKing(board, positions, x, y);
-//                    }
-//                }
-//            }
-//
-//            boolean piecesOnRoster = false;
-//            for (int i = 0; i < 30; i++)
-//            {
-//                if (!roster1p[i].substring(1, 2).equals("0"))
-//                {
-//                    piecesOnRoster = true;
-//                    setRosterPiece(board, positions, roster1, roster1p, i);
-//                }
-//            }
-//            if (!piecesOnRoster)
-//            {
-//                roster1p[0] = "WQ00";
-//                setRosterPiece(board, positions, roster1, roster1p, 0);
-//                roster1p[0] = "0000";
-//            }
-//
-//            searchingForCheckmate1 = false;
-//            if (checkmate1)
-//            {
-//                gameEndProcedures(1, 0);
-//            }
-//        }
-//        if (board(board, positions) == 2 && whiteTurn2 == 1)
-//        {
-//            searchingForCheckmate2 = true;
-//            checkmate2 = true;
-//
-//            for (int x = 0; x < 8; x++)
-//            {
-//                for (int y = 0; y < 8; y++)
-//                {
-//                    if (positions[x][y].substring(0, 2).equals("WP"))
-//                    {
-//                        setPawn(board, positions, x, y);
-//                    }
-//                    if (positions[x][y].substring(0, 2).equals("WR"))
-//                    {
-//                        setRook(board, positions, x, y);
-//                    }
-//                    if (positions[x][y].substring(0, 2).equals("WN"))
-//                    {
-//                        setKnight(board, positions, x, y);
-//                    }
-//                    if (positions[x][y].substring(0, 2).equals("WB"))
-//                    {
-//                        setBishop(board, positions, x, y);
-//                    }
-//                    if (positions[x][y].substring(0, 2).equals("WQ"))
-//                    {
-//                        setQueen(board, positions, x, y);
-//                    }
-//                    if (positions[x][y].substring(0, 2).equals("WK"))
-//                    {
-//                        setKing(board, positions, x, y);
-//                    }
-//                }
-//            }
-//            boolean piecesOnRoster = false;
-//            for (int i = 0; i < 30; i++)
-//            {
-//                if (!roster4p[i].substring(1, 2).equals("0"))
-//                {
-//                    piecesOnRoster = true;
-//                    setRosterPiece(board, positions, roster4, roster4p, i);
-//                }
-//            }
-//            if (!piecesOnRoster)
-//            {
-//                roster4p[0] = "WQ00";
-//                setRosterPiece(board, positions, roster4, roster4p, 0);
-//                roster4p[0] = "0000";
-//            }
-//
-//            searchingForCheckmate2 = false;
-//            if (checkmate2)
-//            {
-//                gameEndProcedures(0, 0);
-//            }
-//        }
+        if (checking)
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    if (positions[i][j].color.equals("white") && positions[i][j].type.equals("king"))
+                    {
+                        board[i][j].setBackgroundColor(Color.BLUE);
+                        positions[i][j].backgroundColor = "B";
+                    }
+                }
+            }
+        }
+        if (board(board, positions) == 1 && whiteTurn1 == 1)
+        {
+            searchingForCheckmate1 = true;
+            checkmate1 = true;
+
+            for (int x = 0; x < 8; x++)
+            {
+                for (int y = 0; y < 8; y++)
+                {
+                    if (positions[x][y].color.equals("white"))
+                    {
+                        setPiece(board, positions, x, y);
+                    }
+                }
+            }
+
+            boolean piecesOnRoster = false;
+            for (int i = 0; i < 30; i++)
+            {
+                if (!roster1p[i].empty)
+                {
+                    piecesOnRoster = true;
+                    setRosterPiece(board, positions, roster1, roster1p, i);
+                }
+            }
+            if (!piecesOnRoster)
+            {
+                roster1p[0] = new Queen("white");
+                setRosterPiece(board, positions, roster1, roster1p, 0);
+                roster1p[0] = new Empty();
+            }
+
+            searchingForCheckmate1 = false;
+            if (checkmate1)
+            {
+                gameEndProcedures(1, 0);
+            }
+        }
+        if (board(board, positions) == 2 && whiteTurn2 == 1)
+        {
+            searchingForCheckmate2 = true;
+            checkmate2 = true;
+
+            for (int x = 0; x < 8; x++)
+            {
+                for (int y = 0; y < 8; y++)
+                {
+                    if (positions[x][y].color.equals("white"))
+                    {
+                        setPiece(board, positions, x, y);
+                    }
+                }
+            }
+            boolean piecesOnRoster = false;
+            for (int i = 0; i < 30; i++)
+            {
+                if (!roster4p[i].empty)
+                {
+                    piecesOnRoster = true;
+                    setRosterPiece(board, positions, roster4, roster4p, i);
+                }
+            }
+            if (!piecesOnRoster)
+            {
+                roster4p[0] = new Queen("white");
+                setRosterPiece(board, positions, roster4, roster4p, 0);
+                roster4p[0] = new Empty();
+            }
+
+            searchingForCheckmate2 = false;
+            if (checkmate2)
+            {
+                gameEndProcedures(0, 0);
+            }
+        }
 
     }
 
     private void setBlackCheckConditions(ImageView[][] board, Piece[][] positions)
     {
-//        if (checking)
-//        {
-//            for (int i = 0; i < 8; i++)
-//            {
-//                for (int j = 0; j < 8; j++)
-//                {
-//                    if (positions[i][j].substring(0, 2).equals("BK"))
-//                    {
-//                        board[i][j].setBackgroundColor(Color.BLUE);
-//                        positions[i][j] = positions[i][j].substring(0, 3) + ("B");
-//
-//                    }
-//                }
-//            }
-//        }
-//        if (board(board, positions) == 1 && whiteTurn1 == 2)
-//        {
-//            searchingForCheckmate1 = true;
-//            checkmate1 = true;
-//
-//            for (int x = 0; x < 8; x++)
-//            {
-//                for (int y = 0; y < 8; y++)
-//                {
-//                    if (positions[x][y].substring(0, 2).equals("BP"))
-//                    {
-//                        setBPawn(board, positions, x, y);
-//                    }
-//                    if (positions[x][y].substring(0, 2).equals("BR"))
-//                    {
-//                        setBRook(board, positions, x, y);
-//                    }
-//                    if (positions[x][y].substring(0, 2).equals("BN"))
-//                    {
-//                        setBKnight(board, positions, x, y);
-//                    }
-//                    if (positions[x][y].substring(0, 2).equals("BB"))
-//                    {
-//                        setBBishop(board, positions, x, y);
-//                    }
-//                    if (positions[x][y].substring(0, 2).equals("BQ"))
-//                    {
-//                        setBQueen(board, positions, x, y);
-//                    }
-//                    if (positions[x][y].substring(0, 2).equals("BK"))
-//                    {
-//                        setBKing(board, positions, x, y);
-//                    }
-//                }
-//            }
-//
-//            boolean piecesOnRoster = false;
-//            for (int i = 0; i < 30; i++)
-//            {
-//                if (!roster2p[i].substring(1, 2).equals("0"))
-//                {
-//                    piecesOnRoster = true;
-//                    setRosterPiece(board, positions, roster2, roster2p, i);
-//                }
-//            }
-//            if (!piecesOnRoster)
-//            {
-//                roster2p[0] = "BQ00";
-//                setRosterPiece(board, positions, roster2, roster2p, 0);
-//                roster2p[0] = "0000";
-//            }
-//
-//            searchingForCheckmate1 = false;
-//            if (checkmate1)
-//            {
-//                gameEndProcedures(0, 0);
-//            }
-//        }
-//        if (board(board, positions) == 2 && whiteTurn2 == 2)
-//        {
-//            searchingForCheckmate2 = true;
-//            checkmate2 = true;
-//
-//            for (int x = 0; x < 8; x++)
-//            {
-//                for (int y = 0; y < 8; y++)
-//                {
-//                    if (positions[x][y].substring(0, 2).equals("BP"))
-//                    {
-//                        setBPawn(board, positions, x, y);
-//                    }
-//                    if (positions[x][y].substring(0, 2).equals("BR"))
-//                    {
-//                        setBRook(board, positions, x, y);
-//                    }
-//                    if (positions[x][y].substring(0, 2).equals("BN"))
-//                    {
-//                        setBKnight(board, positions, x, y);
-//                    }
-//                    if (positions[x][y].substring(0, 2).equals("BB"))
-//                    {
-//                        setBBishop(board, positions, x, y);
-//                    }
-//                    if (positions[x][y].substring(0, 2).equals("BQ"))
-//                    {
-//                        setBQueen(board, positions, x, y);
-//                    }
-//                    if (positions[x][y].substring(0, 2).equals("BK"))
-//                    {
-//                        setBKing(board, positions, x, y);
-//                    }
-//                }
-//            }
-//            boolean piecesOnRoster = false;
-//            for (int i = 0; i < 30; i++)
-//            {
-//                if (!roster3p[i].substring(1, 2).equals("0"))
-//                {
-//                    piecesOnRoster = true;
-//                    setRosterPiece(board, positions, roster3, roster3p, i);
-//                }
-//            }
-//            if (!piecesOnRoster)
-//            {
-//                roster3p[0] = "BQ00";
-//                setRosterPiece(board, positions, roster3, roster3p, 0);
-//                roster3p[0] = "0000";
-//            }
-//
-//            searchingForCheckmate2 = false;
-//            if (checkmate2)
-//            {
-//                gameEndProcedures(1, 0);
-//            }
-//        }
-//
+        if (checking)
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    if (positions[i][j].color.equals("black") && positions[i][j].type.equals("king"))
+                    {
+                        board[i][j].setBackgroundColor(Color.BLUE);
+                        positions[i][j].backgroundColor = "B";
+
+                    }
+                }
+            }
+        }
+        if (board(board, positions) == 1 && whiteTurn1 == 2)
+        {
+            searchingForCheckmate1 = true;
+            checkmate1 = true;
+
+            for (int x = 0; x < 8; x++)
+            {
+                for (int y = 0; y < 8; y++)
+                {
+                    if (positions[x][y].color.equals("black"))
+                    {
+                        setPiece(board, positions, x, y);
+                    }
+                }
+            }
+
+            boolean piecesOnRoster = false;
+            for (int i = 0; i < 30; i++)
+            {
+                if (!roster2p[i].empty)
+                {
+                    piecesOnRoster = true;
+                    setRosterPiece(board, positions, roster2, roster2p, i);
+                }
+            }
+            if (!piecesOnRoster)
+            {
+                roster2p[0] = new Queen("black");
+                setRosterPiece(board, positions, roster2, roster2p, 0);
+                roster2p[0] = new Empty();
+            }
+
+            searchingForCheckmate1 = false;
+            if (checkmate1)
+            {
+                gameEndProcedures(0, 0);
+            }
+        }
+        if (board(board, positions) == 2 && whiteTurn2 == 2)
+        {
+            searchingForCheckmate2 = true;
+            checkmate2 = true;
+
+            for (int x = 0; x < 8; x++)
+            {
+                for (int y = 0; y < 8; y++)
+                {
+                    if (positions[x][y].color.equals("black"))
+                    {
+                        setPiece(board, positions, x, y);
+                    }
+                }
+            }
+            boolean piecesOnRoster = false;
+            for (int i = 0; i < 30; i++)
+            {
+                if (!roster3p[i].empty)
+                {
+                    piecesOnRoster = true;
+                    setRosterPiece(board, positions, roster3, roster3p, i);
+                }
+            }
+            if (!piecesOnRoster)
+            {
+                roster3p[0] = new Queen("black");
+                setRosterPiece(board, positions, roster3, roster3p, 0);
+                roster3p[0] = new Empty();
+            }
+
+            searchingForCheckmate2 = false;
+            if (checkmate2)
+            {
+                gameEndProcedures(1, 0);
+            }
+        }
+
     }
 
     private void startAI()
@@ -7094,65 +7127,65 @@ public class MainActivity extends AppCompatActivity
             super(v);
 
             int length = ID.length();
-            if (ID.substring(length-1, length).equals("1") || ID.substring(length-1, length).equals("3"))
+            if (ID.substring(length - 1, length).equals("1") || ID.substring(length - 1, length).equals("3"))
             {
-                if (ID.substring(0, length-1).equals("pawn"))
+                if (ID.substring(0, length - 1).equals("pawn"))
                 {
                     PIC = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.mipmap.pawn, 100, 100));
                 }
-                if (ID.substring(0, length-1).equals("rook"))
+                if (ID.substring(0, length - 1).equals("rook"))
                 {
                     PIC = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.mipmap.rook, 100, 100));
                 }
-                if (ID.substring(0, length-1).equals("knight"))
+                if (ID.substring(0, length - 1).equals("knight"))
                 {
                     PIC = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.mipmap.knight, 100, 100));
                 }
-                if (ID.substring(0, length-1).equals("bishop"))
+                if (ID.substring(0, length - 1).equals("bishop"))
                 {
                     PIC = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.mipmap.bishop, 100, 100));
                 }
-                if (ID.substring(0, length-1).equals("queen"))
+                if (ID.substring(0, length - 1).equals("queen"))
                 {
                     PIC = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.mipmap.queen, 100, 100));
                 }
-                if (ID.substring(0, length-1).equals("king"))
+                if (ID.substring(0, length - 1).equals("king"))
                 {
                     PIC = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.mipmap.king, 100, 100));
                 }
             }
-            if (ID.substring(length-1, length).equals("2") || ID.substring(length-1, length).equals("4"))
+            if (ID.substring(length - 1, length).equals("2") || ID.substring(length - 1, length).equals("4"))
             {
-                if (ID.substring(0, length-1).equals("pawn"))
+                if (ID.substring(0, length - 1).equals("pawn"))
                 {
                     PIC = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.mipmap.bpawn, 100, 100));
                 }
-                if (ID.substring(0, length-1).equals("rook"))
+                if (ID.substring(0, length - 1).equals("rook"))
                 {
                     PIC = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.mipmap.brook, 100, 100));
                 }
-                if (ID.substring(0, length-1).equals("knight"))
+                if (ID.substring(0, length - 1).equals("knight"))
                 {
                     PIC = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.mipmap.bknight, 100, 100));
                 }
-                if (ID.substring(0, length-1).equals("bishop"))
+                if (ID.substring(0, length - 1).equals("bishop"))
                 {
                     PIC = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.mipmap.bbishop, 100, 100));
                 }
-                if (ID.substring(0, length-1).equals("queen"))
+                if (ID.substring(0, length - 1).equals("queen"))
                 {
                     PIC = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.mipmap.bqueen, 100, 100));
                 }
-                if (ID.substring(0, length-1).equals("king"))
+                if (ID.substring(0, length - 1).equals("king"))
                 {
                     PIC = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.mipmap.bking, 100, 100));
                 }
             }
-            if (ID.substring(length-1, length).equals("1") || ID.substring(length-1, length).equals("4"))
+            if (ID.substring(length - 1, length).equals("1") || ID.substring(length - 1, length).equals("4"))
             {
                 rotation = 90;
             }
-            if (ID.substring(length-1, length).equals("2") || ID.substring(length-1, length).equals("3"))
+            if (ID.substring(length - 1, length).equals("2") || ID.substring(length - 1, length).equals("3"))
             {
                 rotation = 270;
             }
