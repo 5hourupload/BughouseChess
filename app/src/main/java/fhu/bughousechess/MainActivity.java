@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -14,11 +13,8 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
-import android.net.nsd.NsdManager;
-import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Build;
 import android.os.CountDownTimer;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -36,9 +32,6 @@ import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.TimeZone;
@@ -47,15 +40,6 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
-
-
-import android.net.nsd.NsdServiceInfo;
-import android.os.Message;
-import android.util.Log;
-import android.widget.EditText;
-
-import static fhu.bughousechess.NsdHelper.SERVICE_TYPE;
-
 
 public class MainActivity extends AppCompatActivity
 {
@@ -85,7 +69,6 @@ public class MainActivity extends AppCompatActivity
     static boolean blackCastleQueen2 = true;
     static boolean blackCastleKing2 = true;
 
-
     static int minute = 5;
     static int second = 0;
     static boolean checking = true;
@@ -112,7 +95,6 @@ public class MainActivity extends AppCompatActivity
 
     InterstitialAd mInterstitialAd;
 
-
     static boolean position1 = true;
     static boolean position2 = true;
     static boolean position3 = true;
@@ -132,29 +114,15 @@ public class MainActivity extends AppCompatActivity
     static int menu_code = 0;
     static int dialog_margin;
 
-    NsdHelper mNsdHelper;
-    private TextView mStatusView;
-    private Handler mUpdateHandler;
-    public static final String TAG = "NsdChat";
-    ChatConnection mConnection;
-    private final IntentFilter intentFilter = new IntentFilter();
-    WifiP2pManager.Channel mChannel;
-    NsdManager.DiscoveryListener mDiscoveryListener;
-    WifiP2pManager mManager;
-    NsdManager mNsdManager;
-
-
-    Set<Piece> pieces = new HashSet<>();
+    //Old scheme
     // W = White, B = Black, 0 = Not a piece
     // Piece first letter, 0 = Not a piece
     // P = Was a pawn, 0 = Legit
     // Y = Yellow, R = Red, B = Blue, D = Dot, 0 = No background
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getSupportActionBar().hide();
@@ -260,15 +228,15 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        final TextView connect = (TextView) findViewById(R.id.connect);
-        connect.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                nsd();
-            }
-        });
+//        final TextView connect = (TextView) findViewById(R.id.connect);
+//        connect.setOnClickListener(new View.OnClickListener()
+//        {
+//            @Override
+//            public void onClick(View v)
+//            {
+//                nsd();
+//            }
+//        });
 
         final TextView timer1 = (TextView) findViewById(R.id.timer1);
         final TextView timer2 = (TextView) findViewById(R.id.timer2);
@@ -340,7 +308,7 @@ public class MainActivity extends AppCompatActivity
         play.setTypeface(custom_font);
         mainToOptions.setTypeface(custom_font);
         howToPlay.setTypeface(custom_font);
-        connect.setTypeface(custom_font);
+//        connect.setTypeface(custom_font);
 
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -855,17 +823,8 @@ public class MainActivity extends AppCompatActivity
         WindowManager wm = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE); // the results will be higher than using the activity context object or the getWindowManager() shortcut
         wm.getDefaultDisplay().getMetrics(displayMetrics);
         int screenWidth = displayMetrics.widthPixels;
-        int screenHeight = displayMetrics.heightPixels;
-
         dialog_margin = (int) screenWidth / 5;
-
     }
-
-    private void nsd()
-    {
-
-    }
-
 
     private void newGame()
     {
@@ -1424,37 +1383,6 @@ public class MainActivity extends AppCompatActivity
                                     setPiece(board, positions, x, y);
                                     ID = positions[x][y].type + "1";
                                 }
-//                                if (positions[x][y].substring(0, 2).equals("WP"))
-//                                {
-//                                    setPawn(board, positions, x, y);
-//                                    ID = "P1";
-//                                }
-//                                if (positions[x][y].substring(0, 2).equals("WR"))
-//                                {
-//                                    setRook(board, positions, x, y);
-//                                    ID = "R1";
-//                                }
-//                                if (positions[x][y].substring(0, 2).equals("WN"))
-//                                {
-//                                    setKnight(board, positions, x, y);
-//                                    ID = "N1";
-//                                }
-//                                if (positions[x][y].substring(0, 2).equals("WB"))
-//                                {
-//                                    setBishop(board, positions, x, y);
-//                                    ID = "B1";
-//                                }
-//                                if (positions[x][y].substring(0, 2).equals("WQ"))
-//                                {
-//                                    setQueen(board, positions, x, y);
-//                                    ID = "Q1";
-//                                }
-//                                if (positions[x][y].substring(0, 2).equals("WK"))
-//                                {
-//                                    setKing(board, positions, x, y);
-//                                    ID = "K1";
-//                                }
-//
                             }
                             if (whiteTurn1 == 2 && position2)
                             {
@@ -1463,36 +1391,6 @@ public class MainActivity extends AppCompatActivity
                                     setPiece(board, positions, x, y);
                                     ID = positions[x][y].type + "2";
                                 }
-//                                if (positions[x][y].substring(0, 2).equals("BP"))
-//                                {
-//                                    setBPawn(board, positions, x, y);
-//                                    ID = "P2";
-//                                }
-//                                if (positions[x][y].substring(0, 2).equals("BR"))
-//                                {
-//                                    setBRook(board, positions, x, y);
-//                                    ID = "R2";
-//                                }
-//                                if (positions[x][y].substring(0, 2).equals("BN"))
-//                                {
-//                                    setBKnight(board, positions, x, y);
-//                                    ID = "N2";
-//                                }
-//                                if (positions[x][y].substring(0, 2).equals("BB"))
-//                                {
-//                                    setBBishop(board, positions, x, y);
-//                                    ID = "B2";
-//                                }
-//                                if (positions[x][y].substring(0, 2).equals("BQ"))
-//                                {
-//                                    setBQueen(board, positions, x, y);
-//                                    ID = "Q2";
-//                                }
-//                                if (positions[x][y].substring(0, 2).equals("BK"))
-//                                {
-//                                    setBKing(board, positions, x, y);
-//                                    ID = "K2";
-//                                }
                             }
                         }
                         else
@@ -1504,36 +1402,6 @@ public class MainActivity extends AppCompatActivity
                                     setPiece(board, positions, x, y);
                                     ID = positions[x][y].type + "3";
                                 }
-//                                if (positions[x][y].substring(0, 2).equals("WP"))
-//                                {
-//                                    setPawn(board, positions, x, y);
-//                                    ID = "P3";
-//                                }
-//                                if (positions[x][y].substring(0, 2).equals("WR"))
-//                                {
-//                                    setRook(board, positions, x, y);
-//                                    ID = "R3";
-//                                }
-//                                if (positions[x][y].substring(0, 2).equals("WN"))
-//                                {
-//                                    setKnight(board, positions, x, y);
-//                                    ID = "N3";
-//                                }
-//                                if (positions[x][y].substring(0, 2).equals("WB"))
-//                                {
-//                                    setBishop(board, positions, x, y);
-//                                    ID = "B3";
-//                                }
-//                                if (positions[x][y].substring(0, 2).equals("WQ"))
-//                                {
-//                                    setQueen(board, positions, x, y);
-//                                    ID = "Q3";
-//                                }
-//                                if (positions[x][y].substring(0, 2).equals("WK"))
-//                                {
-//                                    setKing(board, positions, x, y);
-//                                    ID = "K3";
-//                                }
                             }
                             if (whiteTurn2 == 2 && position3)
                             {
@@ -1542,37 +1410,6 @@ public class MainActivity extends AppCompatActivity
                                     setPiece(board, positions, x, y);
                                     ID = positions[x][y].type + "4";
                                 }
-//                                if (positions[x][y].substring(0, 2).equals("BP"))
-//                                {
-//                                    setBPawn(board, positions, x, y);
-//                                    ID = "P4";
-//                                }
-//                                if (positions[x][y].substring(0, 2).equals("BR"))
-//                                {
-//                                    setBRook(board, positions, x, y);
-//                                    ID = "R4";
-//                                }
-//                                if (positions[x][y].substring(0, 2).equals("BN"))
-//                                {
-//                                    setBKnight(board, positions, x, y);
-//                                    ID = "N4";
-//                                }
-//                                if (positions[x][y].substring(0, 2).equals("BB"))
-//                                {
-//                                    setBBishop(board, positions, x, y);
-//                                    ID = "B4";
-//                                }
-//                                if (positions[x][y].substring(0, 2).equals("BQ"))
-//                                {
-//                                    setBQueen(board, positions, x, y);
-//                                    ID = "Q4";
-//                                }
-//                                if (positions[x][y].substring(0, 2).equals("BK"))
-//                                {
-//                                    setBKing(board, positions, x, y);
-//                                    ID = "K4";
-//                                }
-//                            }
                             }
                         }
 
@@ -1586,11 +1423,8 @@ public class MainActivity extends AppCompatActivity
 
                         return true;
                     }
-
                 });
-
             }
-
         }
 
         for (int i = 0; i < 30; i++)
@@ -1779,7 +1613,6 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         }
-
     }
 
     private void moveRoster(final ImageView[][] board, final Piece[][] positions, final ImageView[] roster, final Piece[] rosterp, final int i, final int x, final int y)
@@ -1935,9 +1768,6 @@ public class MainActivity extends AppCompatActivity
             {
 
                 int dragEvent = event.getAction();
-                //TextView dropText = (TextView) v;
-                BitmapDrawable black = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.drawable.black, 10, 10));
-                BitmapDrawable white = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.drawable.white, 10, 10));
                 switch (dragEvent)
                 {
                     case DragEvent.ACTION_DRAG_ENTERED:
@@ -1945,64 +1775,16 @@ public class MainActivity extends AppCompatActivity
                         break;
 
                     case DragEvent.ACTION_DRAG_EXITED:
-                        int p = x;
-                        int j = y;
-                        if (p == 0 || p == 2 || p == 4 || p == 6)
-                        {
-                            if (j == 0 || j == 2 || j == 4 || j == 6)
-                            {
-                                board[p][j].setBackground(black);
-                            }
-                            else
-                            {
-                                board[p][j].setBackground(white);
-                            }
-                        }
-                        else
-                        {
-                            if (j == 0 || j == 2 || j == 4 || j == 6)
-                            {
-                                board[p][j].setBackground(white);
-                            }
-                            else
-                            {
-                                board[p][j].setBackground(black);
-                            }
-                        }
+                        dragClean(board, x, y);
                         break;
 
                     case DragEvent.ACTION_DROP:
-                        p = x;
-                        j = y;
-                        if (p == 0 || p == 2 || p == 4 || p == 6)
-                        {
-                            if (j == 0 || j == 2 || j == 4 || j == 6)
-                            {
-                                board[p][j].setBackground(black);
-                            }
-                            else
-                            {
-                                board[p][j].setBackground(white);
-                            }
-                        }
-                        else
-                        {
-                            if (j == 0 || j == 2 || j == 4 || j == 6)
-                            {
-                                board[p][j].setBackground(white);
-                            }
-                            else
-                            {
-                                board[p][j].setBackground(black);
-                            }
-                        }
+                        dragClean(board, x, y);
                         rosterShit(board, positions, roster, rosterp, i, x, y);
                         break;
                 }
-
                 return true;
             }
-
         });
     }
 
@@ -2073,8 +1855,7 @@ public class MainActivity extends AppCompatActivity
 
         positions[x][y] = rosterp[i];
         rosterp[i] = new Empty();
-        updateImage(board, positions, x, y);
-
+        board[x][y].setImageResource(positions[x][y].getResID());
         board[x][y].setRotation(roster[i].getRotation());
         roster[i].setRotation(0);
         roster[i].setImageResource(android.R.color.transparent);
@@ -2116,1720 +1897,6 @@ public class MainActivity extends AppCompatActivity
 
         }
     }
-
-
-//    private void setPawn(ImageView[][] board, String[][] positions, int x, int y)
-//    {
-//        if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
-//        {
-//            setActions(board, positions);
-//        }
-//        if (board(board, positions) == 2 && !searchingForCheckmate2 && !CPUsearch[2] && !CPUsearch[3])
-//        {
-//            setActions(board, positions);
-//        }
-//
-//        if (y < 7)
-//        {
-//            if (positions[x][y + 1].substring(1, 2).equals("0"))
-//            {
-//                move(board, positions, x, y, x, y + 1);
-//                if (y == 1)
-//                {
-//                    if (positions[x][y + 2].substring(1, 2).equals("0"))
-//                    {
-//                        move(board, positions, x, y, x, y + 2);
-//                    }
-//                }
-//            }
-//        }
-//        if (x < 7 && y < 7)
-//        {
-//            if (positions[x + 1][y + 1].substring(0, 1).equals("B"))
-//            {
-//                take(board, positions, x, y, x + 1, y + 1);
-//            }
-//            if (y == 4 && positions[x + 1][y].substring(0, 2).equals("BP"))
-//            {
-//                if (board(board, positions) == 1)
-//                {
-//                    if (enP[x + 1][1].substring(0, 1).equals("1") && enP[x + 1][1].substring(1, enP[x + 1][1].length()).equals(Integer.toString(board1Turn)))
-//                    {
-//                        whiteEnP(board, positions, x, x + 1);
-//                    }
-//                }
-//                if (board(board, positions) == 2)
-//                {
-//                    if (enP[x + 1][3].substring(0, 1).equals("1") && enP[x + 1][3].substring(1, enP[x + 1][3].length()).equals(Integer.toString(board2Turn)))
-//                    {
-//                        whiteEnP(board, positions, x, x + 1);
-//                    }
-//                }
-//            }
-//        }
-//        if (x > 0 && y < 7)
-//        {
-//            if (positions[x - 1][y + 1].substring(0, 1).equals("B"))
-//            {
-//                take(board, positions, x, y, x - 1, y + 1);
-//            }
-//            if (y == 4 && positions[x - 1][y].substring(0, 2).equals("BP"))
-//            {
-//                if (board(board, positions) == 1)
-//                {
-//                    if (enP[x - 1][1].substring(0, 1).equals("1") && enP[x - 1][1].substring(1, enP[x - 1][1].length()).equals(Integer.toString(board1Turn)))
-//                    {
-//                        whiteEnP(board, positions, x, x - 1);
-//                    }
-//                }
-//                if (board(board, positions) == 2)
-//                {
-//                    if (enP[x - 1][3].substring(0, 1).equals("1") && enP[x - 1][3].substring(1, enP[x - 1][3].length()).equals(Integer.toString(board2Turn)))
-//                    {
-//                        whiteEnP(board, positions, x, x - 1);
-//                    }
-//                }
-//            }
-//        }
-//
-//    }
-//
-//    private void setRook(ImageView[][] board, String[][] positions, int x, int y)
-//    {
-//        if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
-//        {
-//            setActions(board, positions);
-//        }
-//        if (board(board, positions) == 2 && !searchingForCheckmate2 && !CPUsearch[2] && !CPUsearch[3])
-//        {
-//            setActions(board, positions);
-//        }
-//
-//        boolean inbetween = false;
-//        for (int i = y + 1; i < 8; i++)
-//        {
-//            for (int j = y + 1; j < i; j++)
-//            {
-//                if (!positions[x][j].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[x][i].substring(1, 2).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, x, i);
-//                }
-//            }
-//            if (positions[x][i].substring(0, 1).equals("B"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, x, i);
-//                }
-//            }
-//        }
-//        inbetween = false;
-//        for (int i = y - 1; i > -1; i--)
-//        {
-//            for (int j = y - 1; j > i; j--)
-//            {
-//                if (!positions[x][j].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[x][i].substring(1, 2).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, x, i);
-//                }
-//            }
-//            if (positions[x][i].substring(0, 1).equals("B"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, x, i);
-//                }
-//            }
-//        }
-//        inbetween = false;
-//        for (int i = x + 1; i < 8; i++)
-//        {
-//            for (int j = x + 1; j < i; j++)
-//            {
-//                if (!positions[j][y].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[i][y].substring(1, 2).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, i, y);
-//                }
-//            }
-//            if (positions[i][y].substring(0, 1).equals("B"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, i, y);
-//                }
-//            }
-//        }
-//        inbetween = false;
-//        for (int i = x - 1; i > -1; i--)
-//        {
-//            for (int j = x - 1; j > i; j--)
-//            {
-//                if (!positions[j][y].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[i][y].substring(1, 2).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, i, y);
-//                }
-//            }
-//            if (positions[i][y].substring(0, 1).equals("B"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, i, y);
-//                }
-//            }
-//        }
-//    }
-//
-//    private void setKnight(ImageView[][] board, String[][] positions, int x, int y)
-//    {
-//        if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
-//        {
-//            setActions(board, positions);
-//        }
-//        if (board(board, positions) == 2 && !searchingForCheckmate2 && !CPUsearch[2] && !CPUsearch[3])
-//        {
-//            setActions(board, positions);
-//        }
-//
-//        if (x + 1 < 8 && y + 2 < 8)
-//        {
-//            if (!positions[x + 1][y + 2].substring(0, 1).equals("W"))
-//            {
-//                if (positions[x + 1][y + 2].substring(0, 1).equals("B"))
-//                {
-//                    take(board, positions, x, y, x + 1, y + 2);
-//                }
-//                else
-//                {
-//                    move(board, positions, x, y, x + 1, y + 2);
-//                }
-//            }
-//        }
-//        if (x + 2 < 8 && y + 1 < 8)
-//        {
-//            if (!positions[x + 2][y + 1].substring(0, 1).equals("W"))
-//            {
-//                if (positions[x + 2][y + 1].substring(0, 1).equals("B"))
-//                {
-//                    take(board, positions, x, y, x + 2, y + 1);
-//                }
-//                else
-//                {
-//                    move(board, positions, x, y, x + 2, y + 1);
-//                }
-//            }
-//        }
-//        if (x - 1 > -1 && y + 2 < 8)
-//        {
-//            if (!positions[x - 1][y + 2].substring(0, 1).equals("W"))
-//            {
-//                if (positions[x - 1][y + 2].substring(0, 1).equals("B"))
-//                {
-//                    take(board, positions, x, y, x - 1, y + 2);
-//                }
-//                else
-//                {
-//                    move(board, positions, x, y, x - 1, y + 2);
-//                }
-//            }
-//        }
-//        if (x - 2 > -1 && y + 1 < 8)
-//        {
-//            if (!positions[x - 2][y + 1].substring(0, 1).equals("W"))
-//            {
-//                if (positions[x - 2][y + 1].substring(0, 1).equals("B"))
-//                {
-//                    take(board, positions, x, y, x - 2, y + 1);
-//                }
-//                else
-//                {
-//                    move(board, positions, x, y, x - 2, y + 1);
-//                }
-//            }
-//        }
-//        if (x + 1 < 8 && y - 2 > -1)
-//        {
-//            if (!positions[x + 1][y - 2].substring(0, 1).equals("W"))
-//            {
-//                if (positions[x + 1][y - 2].substring(0, 1).equals("B"))
-//                {
-//                    take(board, positions, x, y, x + 1, y - 2);
-//                }
-//                else
-//                {
-//                    move(board, positions, x, y, x + 1, y - 2);
-//                }
-//            }
-//        }
-//        if (x + 2 < 8 && y - 1 > -1)
-//        {
-//            if (!positions[x + 2][y - 1].substring(0, 1).equals("W"))
-//            {
-//                if (positions[x + 2][y - 1].substring(0, 1).equals("B"))
-//                {
-//                    take(board, positions, x, y, x + 2, y - 1);
-//                }
-//                else
-//                {
-//                    move(board, positions, x, y, x + 2, y - 1);
-//                }
-//            }
-//        }
-//        if (x - 1 > -1 && y - 2 > -1)
-//        {
-//            if (!positions[x - 1][y - 2].substring(0, 1).equals("W"))
-//            {
-//                if (positions[x - 1][y - 2].substring(0, 1).equals("B"))
-//                {
-//                    take(board, positions, x, y, x - 1, y - 2);
-//                }
-//                else
-//                {
-//                    move(board, positions, x, y, x - 1, y - 2);
-//                }
-//            }
-//        }
-//        if (x - 2 > -1 && y - 1 > -1)
-//        {
-//            if (!positions[x - 2][y - 1].substring(0, 1).equals("W"))
-//            {
-//                if (positions[x - 2][y - 1].substring(0, 1).equals("B"))
-//                {
-//                    take(board, positions, x, y, x - 2, y - 1);
-//                }
-//                else
-//                {
-//                    move(board, positions, x, y, x - 2, y - 1);
-//                }
-//            }
-//        }
-//    }
-//
-//    private void setBishop(ImageView[][] board, String[][] positions, int x, int y)
-//    {
-//        if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
-//        {
-//            setActions(board, positions);
-//        }
-//        if (board(board, positions) == 2 && !searchingForCheckmate2 && !CPUsearch[2] && !CPUsearch[3])
-//        {
-//            setActions(board, positions);
-//        }
-//
-//        boolean inbetween = false;
-//        int z = x;
-//        if (y > x)
-//        {
-//            z = y;
-//        }
-//        for (int i = 1; i < 8 - z; i++)
-//        {
-//            for (int j = 1; j < i; j++)
-//            {
-//                if (!positions[x + j][y + j].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[x + i][y + i].substring(0, 1).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, x + i, y + i);
-//                }
-//            }
-//            if (positions[x + i][y + i].substring(0, 1).equals("B"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, x + i, y + i);
-//                }
-//            }
-//        }
-//        inbetween = false;
-//        if (x < y)
-//        {
-//            z = x;
-//        }
-//        else
-//        {
-//            z = y;
-//        }
-//        for (int i = 1; i < z + 1; i++)
-//        {
-//            for (int j = 1; j < i; j++)
-//            {
-//                if (!positions[x - j][y - j].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[x - i][y - i].substring(0, 1).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, x - i, y - i);
-//                }
-//            }
-//            if (positions[x - i][y - i].substring(0, 1).equals("B"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, x - i, y - i);
-//                }
-//            }
-//        }
-//        inbetween = false;
-//        if (7 - x < y)
-//        {
-//            z = 7 - x;
-//        }
-//        else
-//        {
-//            z = y;
-//        }
-//        for (int i = 1; i < z + 1; i++)
-//        {
-//            for (int j = 1; j < i; j++)
-//            {
-//                if (!positions[x + j][y - j].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[x + i][y - i].substring(0, 1).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, x + i, y - i);
-//                }
-//            }
-//            if (positions[x + i][y - i].substring(0, 1).equals("B"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, x + i, y - i);
-//                }
-//            }
-//        }
-//        inbetween = false;
-//        if (7 - y < x)
-//        {
-//            z = 7 - y;
-//        }
-//        else
-//        {
-//            z = x;
-//        }
-//        for (int i = 1; i < z + 1; i++)
-//        {
-//            for (int j = 1; j < i; j++)
-//            {
-//                if (!positions[x - j][y + j].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[x - i][y + i].substring(0, 1).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, x - i, y + i);
-//                }
-//            }
-//            if (positions[x - i][y + i].substring(0, 1).equals("B"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, x - i, y + i);
-//                }
-//            }
-//        }
-//    }
-//
-//    private void setQueen(ImageView[][] board, String[][] positions, int x, int y)
-//    {
-//        if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
-//        {
-//            setActions(board, positions);
-//        }
-//        if (board(board, positions) == 2 && !searchingForCheckmate2 && !CPUsearch[2] && !CPUsearch[3])
-//        {
-//            setActions(board, positions);
-//        }
-//
-//        boolean inbetween = false;
-//        for (int i = y + 1; i < 8; i++)
-//        {
-//            for (int j = y + 1; j < i; j++)
-//            {
-//                if (!positions[x][j].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[x][i].substring(1, 2).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, x, i);
-//                }
-//            }
-//            if (positions[x][i].substring(0, 1).equals("B"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, x, i);
-//                }
-//            }
-//        }
-//        inbetween = false;
-//        for (int i = y - 1; i > -1; i--)
-//        {
-//            for (int j = y - 1; j > i; j--)
-//            {
-//                if (!positions[x][j].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[x][i].substring(1, 2).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, x, i);
-//                }
-//            }
-//            if (positions[x][i].substring(0, 1).equals("B"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, x, i);
-//                }
-//            }
-//        }
-//        inbetween = false;
-//        for (int i = x + 1; i < 8; i++)
-//        {
-//            for (int j = x + 1; j < i; j++)
-//            {
-//                if (!positions[j][y].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[i][y].substring(1, 2).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, i, y);
-//                }
-//            }
-//            if (positions[i][y].substring(0, 1).equals("B"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, i, y);
-//                }
-//            }
-//        }
-//        inbetween = false;
-//        for (int i = x - 1; i > -1; i--)
-//        {
-//            for (int j = x - 1; j > i; j--)
-//            {
-//                if (!positions[j][y].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[i][y].substring(1, 2).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, i, y);
-//                }
-//            }
-//            if (positions[i][y].substring(0, 1).equals("B"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, i, y);
-//                }
-//            }
-//        }
-//        inbetween = false;
-//        int z = x;
-//        if (y > x)
-//        {
-//            z = y;
-//        }
-//        for (int i = 1; i < 8 - z; i++)
-//        {
-//            for (int j = 1; j < i; j++)
-//            {
-//                if (!positions[x + j][y + j].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[x + i][y + i].substring(0, 1).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, x + i, y + i);
-//                }
-//            }
-//            if (positions[x + i][y + i].substring(0, 1).equals("B"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, x + i, y + i);
-//                }
-//            }
-//        }
-//        inbetween = false;
-//        if (x < y)
-//        {
-//            z = x;
-//        }
-//        else
-//        {
-//            z = y;
-//        }
-//        for (int i = 1; i < z + 1; i++)
-//        {
-//            for (int j = 1; j < i; j++)
-//            {
-//                if (!positions[x - j][y - j].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[x - i][y - i].substring(0, 1).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, x - i, y - i);
-//                }
-//            }
-//            if (positions[x - i][y - i].substring(0, 1).equals("B"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, x - i, y - i);
-//                }
-//            }
-//        }
-//        inbetween = false;
-//        if (7 - x < y)
-//        {
-//            z = 7 - x;
-//        }
-//        else
-//        {
-//            z = y;
-//        }
-//        for (int i = 1; i < z + 1; i++)
-//        {
-//            for (int j = 1; j < i; j++)
-//            {
-//                if (!positions[x + j][y - j].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[x + i][y - i].substring(0, 1).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, x + i, y - i);
-//                }
-//            }
-//            if (positions[x + i][y - i].substring(0, 1).equals("B"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, x + i, y - i);
-//                }
-//            }
-//        }
-//        inbetween = false;
-//        if (7 - y < x)
-//        {
-//            z = 7 - y;
-//        }
-//        else
-//        {
-//            z = x;
-//        }
-//        for (int i = 1; i < z + 1; i++)
-//        {
-//            for (int j = 1; j < i; j++)
-//            {
-//                if (!positions[x - j][y + j].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[x - i][y + i].substring(0, 1).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, x - i, y + i);
-//                }
-//            }
-//            if (positions[x - i][y + i].substring(0, 1).equals("B"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, x - i, y + i);
-//                }
-//            }
-//        }
-//    }
-//
-//    private void setKing(ImageView[][] board, String[][] positions, int x, int y)
-//    {
-//        if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
-//        {
-//            setActions(board, positions);
-//        }
-//        if (board(board, positions) == 2 && !searchingForCheckmate2 && !CPUsearch[2] && !CPUsearch[3])
-//        {
-//            setActions(board, positions);
-//        }
-//
-//        if (x + 1 < 8)
-//        {
-//            if (positions[x + 1][y].substring(1, 2).equals("0"))
-//            {
-//                move(board, positions, x, y, x + 1, y);
-//                if (positions[6][0].substring(1, 2).equals("0") && positions[4][0].substring(1, 2).equals("K"))
-//                {
-//                    positions[5][0] = "W" + positions[5][0].substring(1, 4);
-//                    positions[6][0] = "W" + positions[6][0].substring(1, 4);
-//                    if (board(board, positions) == 1)
-//                    {
-//
-//                        if (whiteCastleKing1 && positions[6][0].substring(1, 2).equals("0") && !checkCheck(positions, 4, 0) && !checkCheck(positions, 5, 0) && !checkCheck(positions, 6, 0))
-//                        {
-//                            positions[5][0] = "0" + positions[5][0].substring(1, 4);
-//                            positions[6][0] = "0" + positions[6][0].substring(1, 4);
-//                            whiteKingCastle(board, positions, x, y, 6, 0);
-//                        }
-//                    }
-//                    else
-//                    {
-//                        if (whiteCastleKing2 && positions[6][0].substring(1, 2).equals("0") && !checkCheck(positions, 4, 0) && !checkCheck(positions, 5, 0) && !checkCheck(positions, 6, 0))
-//                        {
-//                            positions[5][0] = "0" + positions[5][0].substring(1, 4);
-//                            positions[6][0] = "0" + positions[6][0].substring(1, 4);
-//                            whiteKingCastle(board, positions, x, y, 6, 0);
-//                        }
-//                    }
-//                    positions[5][0] = "0" + positions[5][0].substring(1, 4);
-//                    positions[6][0] = "0" + positions[6][0].substring(1, 4);
-//                }
-//
-//            }
-//            if (positions[x + 1][y].substring(0, 1).equals("B"))
-//            {
-//                take(board, positions, x, y, x + 1, y);
-//            }
-//            if (y + 1 < 8)
-//            {
-//                if (positions[x + 1][y + 1].substring(1, 2).equals("0"))
-//                {
-//                    move(board, positions, x, y, x + 1, y + 1);
-//                }
-//                if (positions[x + 1][y + 1].substring(0, 1).equals("B"))
-//                {
-//                    take(board, positions, x, y, x + 1, y + 1);
-//                }
-//            }
-//            if (y - 1 > -1)
-//            {
-//                if (positions[x + 1][y - 1].substring(1, 2).equals("0"))
-//                {
-//                    move(board, positions, x, y, x + 1, y - 1);
-//                }
-//                if (positions[x + 1][y - 1].substring(0, 1).equals("B"))
-//                {
-//                    take(board, positions, x, y, x + 1, y - 1);
-//                }
-//            }
-//        }
-//        if (x - 1 > -1)
-//        {
-//            if (positions[x - 1][y].substring(1, 2).equals("0"))
-//            {
-//                move(board, positions, x, y, x - 1, y);
-//                if (positions[2][0].substring(1, 2).equals("0") && positions[1][0].substring(1, 2).equals("0") && positions[4][0].substring(1, 2).equals("K"))
-//                {
-//                    positions[1][0] = "W" + positions[1][0].substring(1, 4);
-//                    positions[2][0] = "W" + positions[2][0].substring(1, 4);
-//                    positions[3][0] = "W" + positions[3][0].substring(1, 4);
-//                    if (board(board, positions) == 1)
-//                    {
-//
-//                        if (whiteCastleQueen1 && positions[2][0].substring(1, 2).equals("0") && !checkCheck(positions, 1, 0) && !checkCheck(positions, 2, 0) && !checkCheck(positions, 3, 0) && !checkCheck(positions, 4, 0))
-//                        {
-//                            positions[1][0] = "0" + positions[1][0].substring(1, 4);
-//                            positions[2][0] = "0" + positions[2][0].substring(1, 4);
-//                            positions[3][0] = "0" + positions[3][0].substring(1, 4);
-//                            whiteQueenCastle(board, positions, x, y, 2, 0);
-//                        }
-//                    }
-//                    else
-//                    {
-//                        if (whiteCastleQueen2 && positions[2][0].substring(1, 2).equals("0") && !checkCheck(positions, 1, 0) && !checkCheck(positions, 2, 0) && !checkCheck(positions, 3, 0) && !checkCheck(positions, 4, 0))
-//                        {
-//                            positions[1][0] = "0" + positions[1][0].substring(1, 4);
-//                            positions[2][0] = "0" + positions[2][0].substring(1, 4);
-//                            positions[3][0] = "0" + positions[3][0].substring(1, 4);
-//                            whiteQueenCastle(board, positions, x, y, 2, 0);
-//                        }
-//                    }
-//                    positions[1][0] = "0" + positions[1][0].substring(1, 4);
-//                    positions[2][0] = "0" + positions[2][0].substring(1, 4);
-//                    positions[3][0] = "0" + positions[3][0].substring(1, 4);
-//                }
-//
-//            }
-//            if (positions[x - 1][y].substring(0, 1).equals("B"))
-//            {
-//                take(board, positions, x, y, x - 1, y);
-//            }
-//            if (y + 1 < 8)
-//            {
-//                if (positions[x - 1][y + 1].substring(1, 2).equals("0"))
-//                {
-//                    move(board, positions, x, y, x - 1, y + 1);
-//                }
-//                if (positions[x - 1][y + 1].substring(0, 1).equals("B"))
-//                {
-//                    take(board, positions, x, y, x - 1, y + 1);
-//                }
-//            }
-//            if (y - 1 > -1)
-//            {
-//                if (positions[x - 1][y - 1].substring(1, 2).equals("0"))
-//                {
-//                    move(board, positions, x, y, x - 1, y - 1);
-//                }
-//                if (positions[x - 1][y - 1].substring(0, 1).equals("B"))
-//                {
-//                    take(board, positions, x, y, x - 1, y - 1);
-//                }
-//            }
-//        }
-//        if (y + 1 < 8)
-//        {
-//            if (positions[x][y + 1].substring(1, 2).equals("0"))
-//            {
-//                move(board, positions, x, y, x, y + 1);
-//            }
-//            if (positions[x][y + 1].substring(0, 1).equals("B"))
-//            {
-//                take(board, positions, x, y, x, y + 1);
-//            }
-//        }
-//        if (y - 1 > -1)
-//        {
-//            if (positions[x][y - 1].substring(1, 2).equals("0"))
-//            {
-//                move(board, positions, x, y, x, y - 1);
-//            }
-//            if (positions[x][y - 1].substring(0, 1).equals("B"))
-//            {
-//                take(board, positions, x, y, x, y - 1);
-//            }
-//        }
-//    }
-
-//
-//    private void setBPawn(ImageView[][] board, String[][] positions, int x, int y)
-//    {
-//        if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
-//        {
-//            setActions(board, positions);
-//        }
-//        if (board(board, positions) == 2 && !searchingForCheckmate2 && !CPUsearch[2] && !CPUsearch[3])
-//        {
-//            setActions(board, positions);
-//        }
-//
-//        if (y > 0)
-//        {
-//            if (positions[x][y - 1].substring(1, 2).equals("0"))
-//            {
-//                move(board, positions, x, y, x, y - 1);
-//                if (y == 6)
-//                {
-//                    if (positions[x][y - 2].substring(1, 2).equals("0"))
-//                    {
-//                        move(board, positions, x, y, x, y - 2);
-//                    }
-//                }
-//            }
-//        }
-//        if (x < 7 && y > 0)
-//        {
-//            if (positions[x + 1][y - 1].substring(0, 1).equals("W"))
-//            {
-//                take(board, positions, x, y, x + 1, y - 1);
-//            }
-//            if (y == 3 && positions[x + 1][y].substring(0, 2).equals("WP"))
-//            {
-//                if (board(board, positions) == 1)
-//                {
-//                    if (enP[x + 1][0].substring(0, 1).equals("1") && enP[x + 1][0].substring(1, enP[x + 1][0].length()).equals(Integer.toString(board1Turn)))
-//                    {
-//                        blackEnP(board, positions, x, x + 1);
-//                    }
-//                }
-//                if (board(board, positions) == 2)
-//                {
-//                    if (enP[x + 1][2].substring(0, 1).equals("1") && enP[x + 1][2].substring(1, enP[x + 1][2].length()).equals(Integer.toString(board2Turn)))
-//                    {
-//                        blackEnP(board, positions, x, x + 1);
-//                    }
-//                }
-//            }
-//        }
-//        if (x > 0 && y > 0)
-//        {
-//            if (positions[x - 1][y - 1].substring(0, 1).equals("W"))
-//            {
-//                take(board, positions, x, y, x - 1, y - 1);
-//            }
-//            if (y == 3 && positions[x - 1][y].substring(0, 2).equals("WP"))
-//            {
-//                if (board(board, positions) == 1)
-//                {
-//                    if (enP[x - 1][0].substring(0, 1).equals("1") && enP[x - 1][0].substring(1, enP[x - 1][0].length()).equals(Integer.toString(board1Turn)))
-//                    {
-//                        blackEnP(board, positions, x, x - 1);
-//                    }
-//                }
-//                if (board(board, positions) == 2)
-//                {
-//                    if (enP[x - 1][2].substring(0, 1).equals("1") && enP[x - 1][2].substring(1, enP[x - 1][2].length()).equals(Integer.toString(board2Turn)))
-//                    {
-//                        blackEnP(board, positions, x, x - 1);
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-//    private void setBKnight(ImageView[][] board, String[][] positions, int x, int y)
-//    {
-//        if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
-//        {
-//            setActions(board, positions);
-//        }
-//        if (board(board, positions) == 2 && !searchingForCheckmate2 && !CPUsearch[2] && !CPUsearch[3])
-//        {
-//            setActions(board, positions);
-//        }
-//
-//        if (x + 1 < 8 && y + 2 < 8)
-//        {
-//            if (!positions[x + 1][y + 2].substring(0, 1).equals("B"))
-//            {
-//                if (positions[x + 1][y + 2].substring(0, 1).equals("W"))
-//                {
-//                    take(board, positions, x, y, x + 1, y + 2);
-//                }
-//                else
-//                {
-//                    move(board, positions, x, y, x + 1, y + 2);
-//                }
-//            }
-//        }
-//        if (x + 2 < 8 && y + 1 < 8)
-//        {
-//            if (!positions[x + 2][y + 1].substring(0, 1).equals("B"))
-//            {
-//                if (positions[x + 2][y + 1].substring(0, 1).equals("W"))
-//                {
-//                    take(board, positions, x, y, x + 2, y + 1);
-//                }
-//                else
-//                {
-//                    move(board, positions, x, y, x + 2, y + 1);
-//                }
-//            }
-//        }
-//        if (x - 1 > -1 && y + 2 < 8)
-//        {
-//            if (!positions[x - 1][y + 2].substring(0, 1).equals("B"))
-//            {
-//                if (positions[x - 1][y + 2].substring(0, 1).equals("W"))
-//                {
-//                    take(board, positions, x, y, x - 1, y + 2);
-//                }
-//                else
-//                {
-//                    move(board, positions, x, y, x - 1, y + 2);
-//                }
-//            }
-//        }
-//        if (x - 2 > -1 && y + 1 < 8)
-//        {
-//            if (!positions[x - 2][y + 1].substring(0, 1).equals("B"))
-//            {
-//                if (positions[x - 2][y + 1].substring(0, 1).equals("W"))
-//                {
-//                    take(board, positions, x, y, x - 2, y + 1);
-//                }
-//                else
-//                {
-//                    move(board, positions, x, y, x - 2, y + 1);
-//                }
-//            }
-//        }
-//        if (x + 1 < 8 && y - 2 > -1)
-//        {
-//            if (!positions[x + 1][y - 2].substring(0, 1).equals("B"))
-//            {
-//                if (positions[x + 1][y - 2].substring(0, 1).equals("W"))
-//                {
-//                    take(board, positions, x, y, x + 1, y - 2);
-//                }
-//                else
-//                {
-//                    move(board, positions, x, y, x + 1, y - 2);
-//                }
-//            }
-//        }
-//        if (x + 2 < 8 && y - 1 > -1)
-//        {
-//            if (!positions[x + 2][y - 1].substring(0, 1).equals("B"))
-//            {
-//                if (positions[x + 2][y - 1].substring(0, 1).equals("W"))
-//                {
-//                    take(board, positions, x, y, x + 2, y - 1);
-//                }
-//                else
-//                {
-//                    move(board, positions, x, y, x + 2, y - 1);
-//                }
-//            }
-//        }
-//        if (x - 1 > -1 && y - 2 > -1)
-//        {
-//            if (!positions[x - 1][y - 2].substring(0, 1).equals("B"))
-//            {
-//                if (positions[x - 1][y - 2].substring(0, 1).equals("W"))
-//                {
-//                    take(board, positions, x, y, x - 1, y - 2);
-//                }
-//                else
-//                {
-//                    move(board, positions, x, y, x - 1, y - 2);
-//                }
-//            }
-//        }
-//        if (x - 2 > -1 && y - 1 > -1)
-//        {
-//            if (!positions[x - 2][y - 1].substring(0, 1).equals("B"))
-//            {
-//                if (positions[x - 2][y - 1].substring(0, 1).equals("W"))
-//                {
-//                    take(board, positions, x, y, x - 2, y - 1);
-//                }
-//                else
-//                {
-//                    move(board, positions, x, y, x - 2, y - 1);
-//                }
-//            }
-//        }
-//    }
-//
-//    private void setBRook(ImageView[][] board, String[][] positions, int x, int y)
-//    {
-//        if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
-//        {
-//            setActions(board, positions);
-//        }
-//        if (board(board, positions) == 2 && !searchingForCheckmate2 && !CPUsearch[2] && !CPUsearch[3])
-//        {
-//            setActions(board, positions);
-//        }
-//
-//        boolean inbetween = false;
-//        for (int i = y + 1; i < 8; i++)
-//        {
-//            for (int j = y + 1; j < i; j++)
-//            {
-//                if (!positions[x][j].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[x][i].substring(1, 2).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, x, i);
-//                }
-//            }
-//            if (positions[x][i].substring(0, 1).equals("W"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, x, i);
-//                }
-//            }
-//        }
-//        inbetween = false;
-//        for (int i = y - 1; i > -1; i--)
-//        {
-//            for (int j = y - 1; j > i; j--)
-//            {
-//                if (!positions[x][j].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[x][i].substring(1, 2).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, x, i);
-//                }
-//            }
-//            if (positions[x][i].substring(0, 1).equals("W"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, x, i);
-//                }
-//            }
-//        }
-//        inbetween = false;
-//        for (int i = x + 1; i < 8; i++)
-//        {
-//            for (int j = x + 1; j < i; j++)
-//            {
-//                if (!positions[j][y].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[i][y].substring(1, 2).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, i, y);
-//                }
-//            }
-//            if (positions[i][y].substring(0, 1).equals("W"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, i, y);
-//                }
-//            }
-//        }
-//        inbetween = false;
-//        for (int i = x - 1; i > -1; i--)
-//        {
-//            for (int j = x - 1; j > i; j--)
-//            {
-//                if (!positions[j][y].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[i][y].substring(1, 2).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, i, y);
-//                }
-//            }
-//            if (positions[i][y].substring(0, 1).equals("W"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, i, y);
-//                }
-//            }
-//        }
-//    }
-//
-//    private void setBBishop(ImageView[][] board, String[][] positions, int x, int y)
-//    {
-//        if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
-//        {
-//            setActions(board, positions);
-//        }
-//        if (board(board, positions) == 2 && !searchingForCheckmate2 && !CPUsearch[2] && !CPUsearch[3])
-//        {
-//            setActions(board, positions);
-//        }
-//
-//        boolean inbetween = false;
-//        int z = x;
-//        if (y > x)
-//        {
-//            z = y;
-//        }
-//        for (int i = 1; i < 8 - z; i++)
-//        {
-//            for (int j = 1; j < i; j++)
-//            {
-//                if (!positions[x + j][y + j].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[x + i][y + i].substring(0, 1).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, x + i, y + i);
-//                }
-//            }
-//            if (positions[x + i][y + i].substring(0, 1).equals("W"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, x + i, y + i);
-//                }
-//            }
-//        }
-//        inbetween = false;
-//        if (x < y)
-//        {
-//            z = x;
-//        }
-//        else
-//        {
-//            z = y;
-//        }
-//        for (int i = 1; i < z + 1; i++)
-//        {
-//            for (int j = 1; j < i; j++)
-//            {
-//                if (!positions[x - j][y - j].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[x - i][y - i].substring(0, 1).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, x - i, y - i);
-//                }
-//            }
-//            if (positions[x - i][y - i].substring(0, 1).equals("W"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, x - i, y - i);
-//                }
-//            }
-//        }
-//        inbetween = false;
-//        if (7 - x < y)
-//        {
-//            z = 7 - x;
-//        }
-//        else
-//        {
-//            z = y;
-//        }
-//        for (int i = 1; i < z + 1; i++)
-//        {
-//            for (int j = 1; j < i; j++)
-//            {
-//                if (!positions[x + j][y - j].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[x + i][y - i].substring(0, 1).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, x + i, y - i);
-//                }
-//            }
-//            if (positions[x + i][y - i].substring(0, 1).equals("W"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, x + i, y - i);
-//                }
-//            }
-//        }
-//        inbetween = false;
-//        if (7 - y < x)
-//        {
-//            z = 7 - y;
-//        }
-//        else
-//        {
-//            z = x;
-//        }
-//        for (int i = 1; i < z + 1; i++)
-//        {
-//            for (int j = 1; j < i; j++)
-//            {
-//                if (!positions[x - j][y + j].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[x - i][y + i].substring(0, 1).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, x - i, y + i);
-//                }
-//            }
-//            if (positions[x - i][y + i].substring(0, 1).equals("W"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, x - i, y + i);
-//                }
-//            }
-//        }
-//    }
-//
-//    private void setBQueen(ImageView[][] board, String[][] positions, int x, int y)
-//    {
-//        if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
-//        {
-//            setActions(board, positions);
-//        }
-//        if (board(board, positions) == 2 && !searchingForCheckmate2 && !CPUsearch[2] && !CPUsearch[3])
-//        {
-//            setActions(board, positions);
-//        }
-//
-//        boolean inbetween = false;
-//        for (int i = y + 1; i < 8; i++)
-//        {
-//            for (int j = y + 1; j < i; j++)
-//            {
-//                if (!positions[x][j].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[x][i].substring(1, 2).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, x, i);
-//                }
-//            }
-//            if (positions[x][i].substring(0, 1).equals("W"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, x, i);
-//                }
-//            }
-//        }
-//        inbetween = false;
-//        for (int i = y - 1; i > -1; i--)
-//        {
-//            for (int j = y - 1; j > i; j--)
-//            {
-//                if (!positions[x][j].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[x][i].substring(1, 2).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, x, i);
-//                }
-//            }
-//            if (positions[x][i].substring(0, 1).equals("W"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, x, i);
-//                }
-//            }
-//        }
-//        inbetween = false;
-//        for (int i = x + 1; i < 8; i++)
-//        {
-//            for (int j = x + 1; j < i; j++)
-//            {
-//                if (!positions[j][y].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[i][y].substring(1, 2).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, i, y);
-//                }
-//            }
-//            if (positions[i][y].substring(0, 1).equals("W"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, i, y);
-//                }
-//            }
-//        }
-//        inbetween = false;
-//        for (int i = x - 1; i > -1; i--)
-//        {
-//            for (int j = x - 1; j > i; j--)
-//            {
-//                if (!positions[j][y].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[i][y].substring(1, 2).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, i, y);
-//                }
-//            }
-//            if (positions[i][y].substring(0, 1).equals("W"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, i, y);
-//                }
-//            }
-//        }
-//        inbetween = false;
-//        int z = x;
-//        if (y > x)
-//        {
-//            z = y;
-//        }
-//        for (int i = 1; i < 8 - z; i++)
-//        {
-//            for (int j = 1; j < i; j++)
-//            {
-//                if (!positions[x + j][y + j].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[x + i][y + i].substring(0, 1).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, x + i, y + i);
-//                }
-//            }
-//            if (positions[x + i][y + i].substring(0, 1).equals("W"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, x + i, y + i);
-//                }
-//            }
-//        }
-//        inbetween = false;
-//        if (x < y)
-//        {
-//            z = x;
-//        }
-//        else
-//        {
-//            z = y;
-//        }
-//        for (int i = 1; i < z + 1; i++)
-//        {
-//            for (int j = 1; j < i; j++)
-//            {
-//                if (!positions[x - j][y - j].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[x - i][y - i].substring(0, 1).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, x - i, y - i);
-//                }
-//            }
-//            if (positions[x - i][y - i].substring(0, 1).equals("W"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, x - i, y - i);
-//                }
-//            }
-//        }
-//        inbetween = false;
-//        if (7 - x < y)
-//        {
-//            z = 7 - x;
-//        }
-//        else
-//        {
-//            z = y;
-//        }
-//        for (int i = 1; i < z + 1; i++)
-//        {
-//            for (int j = 1; j < i; j++)
-//            {
-//                if (!positions[x + j][y - j].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[x + i][y - i].substring(0, 1).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, x + i, y - i);
-//                }
-//            }
-//            if (positions[x + i][y - i].substring(0, 1).equals("W"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, x + i, y - i);
-//                }
-//            }
-//        }
-//        inbetween = false;
-//        if (7 - y < x)
-//        {
-//            z = 7 - y;
-//        }
-//        else
-//        {
-//            z = x;
-//        }
-//        for (int i = 1; i < z + 1; i++)
-//        {
-//            for (int j = 1; j < i; j++)
-//            {
-//                if (!positions[x - j][y + j].substring(0, 1).equals("0"))
-//                {
-//                    inbetween = true;
-//                }
-//            }
-//            if (positions[x - i][y + i].substring(0, 1).equals("0"))
-//            {
-//                if (!inbetween)
-//                {
-//                    move(board, positions, x, y, x - i, y + i);
-//                }
-//            }
-//            if (positions[x - i][y + i].substring(0, 1).equals("W"))
-//            {
-//                if (!inbetween)
-//                {
-//                    take(board, positions, x, y, x - i, y + i);
-//                }
-//            }
-//        }
-//    }
-//
-//    private void setBKing(ImageView[][] board, String[][] positions, int x, int y)
-//    {
-//        if (board(board, positions) == 1 && !searchingForCheckmate1 && !CPUsearch[0] && !CPUsearch[1])
-//        {
-//            setActions(board, positions);
-//        }
-//        if (board(board, positions) == 2 && !searchingForCheckmate2 && !CPUsearch[2] && !CPUsearch[3])
-//        {
-//            setActions(board, positions);
-//        }
-//
-//        if (x + 1 < 8)
-//        {
-//            if (positions[x + 1][y].substring(1, 2).equals("0"))
-//            {
-//                move(board, positions, x, y, x + 1, y);
-//                if (positions[6][7].substring(1, 2).equals("0") && positions[4][7].substring(1, 2).equals("K"))
-//                {
-//                    positions[5][7] = "B" + positions[5][7].substring(1, 4);
-//                    positions[6][7] = "B" + positions[6][7].substring(1, 4);
-//                    if (board(board, positions) == 1)
-//                    {
-//                        if (blackCastleKing1 && positions[6][7].substring(1, 2).equals("0") && !checkCheck(positions, 4, 7) && !checkCheck(positions, 5, 7) && !checkCheck(positions, 6, 7))
-//                        {
-//                            positions[5][7] = "0" + positions[5][7].substring(1, 4);
-//                            positions[6][7] = "0" + positions[6][7].substring(1, 4);
-//                            blackKingCastle(board, positions, x, y, 6, 7);
-//                        }
-//                    }
-//                    else
-//                    {
-//                        if (blackCastleKing2 && positions[6][7].substring(1, 2).equals("0") && !checkCheck(positions, 4, 7) && !checkCheck(positions, 5, 7) && !checkCheck(positions, 6, 7))
-//                        {
-//                            positions[5][7] = "0" + positions[5][7].substring(1, 4);
-//                            positions[6][7] = "0" + positions[6][7].substring(1, 4);
-//                            blackKingCastle(board, positions, x, y, 6, 7);
-//                        }
-//                    }
-//                    positions[5][7] = "0" + positions[5][7].substring(1, 4);
-//                    positions[6][7] = "0" + positions[6][7].substring(1, 4);
-//                }
-//            }
-//            if (positions[x + 1][y].substring(0, 1).equals("W"))
-//            {
-//                take(board, positions, x, y, x + 1, y);
-//            }
-//            if (y + 1 < 8)
-//            {
-//                if (positions[x + 1][y + 1].substring(1, 2).equals("0"))
-//                {
-//                    move(board, positions, x, y, x + 1, y + 1);
-//                }
-//                if (positions[x + 1][y + 1].substring(0, 1).equals("W"))
-//                {
-//                    take(board, positions, x, y, x + 1, y + 1);
-//                }
-//            }
-//            if (y - 1 > -1)
-//            {
-//                if (positions[x + 1][y - 1].substring(1, 2).equals("0"))
-//                {
-//                    move(board, positions, x, y, x + 1, y - 1);
-//                }
-//                if (positions[x + 1][y - 1].substring(0, 1).equals("W"))
-//                {
-//                    take(board, positions, x, y, x + 1, y - 1);
-//                }
-//            }
-//        }
-//        if (x - 1 > -1)
-//        {
-//            if (positions[x - 1][y].substring(1, 2).equals("0"))
-//            {
-//                move(board, positions, x, y, x - 1, y);
-//                if (positions[2][7].substring(1, 2).equals("0") && positions[1][7].substring(1, 2).equals("0") && positions[4][7].substring(1, 2).equals("K"))
-//                {
-//                    positions[1][7] = "B" + positions[1][7].substring(1, 4);
-//                    positions[2][7] = "B" + positions[2][7].substring(1, 4);
-//                    positions[3][7] = "B" + positions[3][7].substring(1, 4);
-//                    if (board(board, positions) == 1)
-//                    {
-//
-//                        if (blackCastleQueen1 && positions[2][7].substring(1, 2).equals("0") && !checkCheck(positions, 1, 7) && !checkCheck(positions, 2, 7) && !checkCheck(positions, 3, 7) && !checkCheck(positions, 4, 7))
-//                        {
-//                            positions[1][7] = "0" + positions[1][7].substring(1, 4);
-//                            positions[2][7] = "0" + positions[2][7].substring(1, 4);
-//                            positions[3][7] = "0" + positions[3][7].substring(1, 4);
-//                            blackQueenCastle(board, positions, x, y, 2, 7);
-//                        }
-//                    }
-//                    else
-//                    {
-//                        if (blackCastleQueen2 && positions[2][7].substring(1, 2).equals("0") && !checkCheck(positions, 1, 7) && !checkCheck(positions, 2, 7) && !checkCheck(positions, 3, 7) && !checkCheck(positions, 4, 7))
-//                        {
-//                            positions[1][7] = "0" + positions[1][7].substring(1, 4);
-//                            positions[2][7] = "0" + positions[2][7].substring(1, 4);
-//                            positions[3][7] = "0" + positions[3][7].substring(1, 4);
-//                            blackQueenCastle(board, positions, x, y, 2, 7);
-//                        }
-//                    }
-//                    positions[1][7] = "0" + positions[1][7].substring(1, 4);
-//                    positions[2][7] = "0" + positions[2][7].substring(1, 4);
-//                    positions[3][7] = "0" + positions[3][7].substring(1, 4);
-//                }
-//
-//            }
-//            if (positions[x - 1][y].substring(0, 1).equals("W"))
-//            {
-//                take(board, positions, x, y, x - 1, y);
-//            }
-//            if (y + 1 < 8)
-//            {
-//                if (positions[x - 1][y + 1].substring(1, 2).equals("0"))
-//                {
-//                    move(board, positions, x, y, x - 1, y + 1);
-//                }
-//                if (positions[x - 1][y + 1].substring(0, 1).equals("W"))
-//                {
-//                    take(board, positions, x, y, x - 1, y + 1);
-//                }
-//            }
-//            if (y - 1 > -1)
-//            {
-//                if (positions[x - 1][y - 1].substring(1, 2).equals("0"))
-//                {
-//                    move(board, positions, x, y, x - 1, y - 1);
-//                }
-//                if (positions[x - 1][y - 1].substring(0, 1).equals("W"))
-//                {
-//                    take(board, positions, x, y, x - 1, y - 1);
-//                }
-//            }
-//        }
-//        if (y + 1 < 8)
-//        {
-//            if (positions[x][y + 1].substring(1, 2).equals("0"))
-//            {
-//                move(board, positions, x, y, x, y + 1);
-//            }
-//            if (positions[x][y + 1].substring(0, 1).equals("W"))
-//            {
-//                take(board, positions, x, y, x, y + 1);
-//            }
-//        }
-//        if (y - 1 > -1)
-//        {
-//            if (positions[x][y - 1].substring(1, 2).equals("0"))
-//            {
-//                move(board, positions, x, y, x, y - 1);
-//            }
-//            if (positions[x][y - 1].substring(0, 1).equals("W"))
-//            {
-//                take(board, positions, x, y, x, y - 1);
-//            }
-//        }
-//    }
-
 
     public static int board(ImageView[][] board, Piece[][] positions)
     {
@@ -3943,7 +2010,6 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
-
         board[x][y].setBackgroundColor(Color.YELLOW);
         if (!positions[x][y].backgroundColor.equals("Y"))
         {
@@ -3966,11 +2032,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onDrag(View v, DragEvent event)
             {
-
                 int dragEvent = event.getAction();
-                //TextView dropText = (TextView) v;
-                BitmapDrawable black = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.drawable.black, 10, 10));
-                BitmapDrawable white = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.drawable.white, 10, 10));
                 switch (dragEvent)
                 {
                     case DragEvent.ACTION_DRAG_ENTERED:
@@ -3978,66 +2040,17 @@ public class MainActivity extends AppCompatActivity
                         break;
 
                     case DragEvent.ACTION_DRAG_EXITED:
-                        int i = x1;
-                        int j = y1;
-                        if (i == 0 || i == 2 || i == 4 || i == 6)
-                        {
-                            if (j == 0 || j == 2 || j == 4 || j == 6)
-                            {
-                                board[i][j].setBackground(black);
-                            }
-                            else
-                            {
-                                board[i][j].setBackground(white);
-                            }
-                        }
-                        else
-                        {
-                            if (j == 0 || j == 2 || j == 4 || j == 6)
-                            {
-                                board[i][j].setBackground(white);
-                            }
-                            else
-                            {
-                                board[i][j].setBackground(black);
-                            }
-                        }
+                        dragClean(board, x1, y1);
                         break;
 
                     case DragEvent.ACTION_DROP:
-                        i = x1;
-                        j = y1;
-                        if (i == 0 || i == 2 || i == 4 || i == 6)
-                        {
-                            if (j == 0 || j == 2 || j == 4 || j == 6)
-                            {
-                                board[i][j].setBackground(black);
-                            }
-                            else
-                            {
-                                board[i][j].setBackground(white);
-                            }
-                        }
-                        else
-                        {
-                            if (j == 0 || j == 2 || j == 4 || j == 6)
-                            {
-                                board[i][j].setBackground(white);
-                            }
-                            else
-                            {
-                                board[i][j].setBackground(black);
-                            }
-                        }
+                        dragClean(board, x1, y1);
                         changeShit(board, positions, x, y, x1, y1);
                         break;
                 }
-
                 return true;
             }
-
         });
-
     }
 
     private void changeShit(final ImageView[][] board, final Piece[][] positions, int x, int y, final int x1, final int y1)
@@ -4078,8 +2091,7 @@ public class MainActivity extends AppCompatActivity
 
         positions[x1][y1] = positions[x][y];
         positions[x][y] = new Empty();
-        updateImage(board, positions, x1, y1);
-
+        board[x1][y1].setImageResource(positions[x1][y1].getResID());
         board[x1][y1].setRotation(board[x][y].getRotation());
         board[x][y].setRotation(0);
         board[x][y].setImageResource(android.R.color.transparent);
@@ -4088,61 +2100,6 @@ public class MainActivity extends AppCompatActivity
         setActions(board, positions);
 
     }
-
-    private void updateImage(ImageView[][] board, Piece[][] positions, int x1, int y1)
-    {
-        board[x1][y1].setImageResource(positions[x1][y1].getResID());
-
-//        if (positions[x1][y1].substring(0, 2).equals("WP"))
-//        {
-//            board[x1][y1].setImageResource(R.mipmap.pawn);
-//        }
-//        if (positions[x1][y1].substring(0, 2).equals("WR"))
-//        {
-//            board[x1][y1].setImageResource(R.mipmap.rook);
-//        }
-//        if (positions[x1][y1].substring(0, 2).equals("WN"))
-//        {
-//            board[x1][y1].setImageResource(R.mipmap.knight);
-//        }
-//        if (positions[x1][y1].substring(0, 2).equals("WB"))
-//        {
-//            board[x1][y1].setImageResource(R.mipmap.bishop);
-//        }
-//        if (positions[x1][y1].substring(0, 2).equals("WQ"))
-//        {
-//            board[x1][y1].setImageResource(R.mipmap.queen);
-//        }
-//        if (positions[x1][y1].substring(0, 2).equals("WK"))
-//        {
-//            board[x1][y1].setImageResource(R.mipmap.king);
-//        }
-//        if (positions[x1][y1].substring(0, 2).equals("BP"))
-//        {
-//            board[x1][y1].setImageResource(R.mipmap.bpawn);
-//        }
-//        if (positions[x1][y1].substring(0, 2).equals("BR"))
-//        {
-//            board[x1][y1].setImageResource(R.mipmap.brook);
-//        }
-//        if (positions[x1][y1].substring(0, 2).equals("BN"))
-//        {
-//            board[x1][y1].setImageResource(R.mipmap.bknight);
-//        }
-//        if (positions[x1][y1].substring(0, 2).equals("BB"))
-//        {
-//            board[x1][y1].setImageResource(R.mipmap.bbishop);
-//        }
-//        if (positions[x1][y1].substring(0, 2).equals("BQ"))
-//        {
-//            board[x1][y1].setImageResource(R.mipmap.bqueen);
-//        }
-//        if (positions[x1][y1].substring(0, 2).equals("BK"))
-//        {
-//            board[x1][y1].setImageResource(R.mipmap.bking);
-//        }
-    }
-
 
     private void take(final ImageView[][] board, final Piece[][] positions, final int x, final int y, final int x1, final int y1)
     {
@@ -4260,9 +2217,6 @@ public class MainActivity extends AppCompatActivity
             {
 
                 int dragEvent = event.getAction();
-                //TextView dropText = (TextView) v;
-                BitmapDrawable black = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.drawable.black, 10, 10));
-                BitmapDrawable white = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.drawable.white, 10, 10));
                 switch (dragEvent)
                 {
                     case DragEvent.ACTION_DRAG_ENTERED:
@@ -4298,8 +2252,7 @@ public class MainActivity extends AppCompatActivity
         addToRoster(board, positions, x1, y1);
         positions[x1][y1] = positions[x][y];
         positions[x][y] = new Empty();
-
-        updateImage(board, positions, x1, y1);
+        board[x1][y1].setImageResource(positions[x1][y1].getResID());
         board[x1][y1].setRotation(board[x][y].getRotation());
         board[x][y].setRotation(0);
         board[x][y].setImageResource(android.R.color.transparent);
@@ -4500,67 +2453,65 @@ public class MainActivity extends AppCompatActivity
             {
 
                 int dragEvent = event.getAction();
-                //TextView dropText = (TextView) v;
-                BitmapDrawable black = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.drawable.black, 10, 10));
-                BitmapDrawable white = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.drawable.white, 10, 10));
                 switch (dragEvent)
                 {
                     case DragEvent.ACTION_DRAG_ENTERED:
                         board[x1][y1].setBackgroundColor(0xFFFFFF00);
                         break;
-
                     case DragEvent.ACTION_DRAG_EXITED:
-                        int i = x1;
-                        int j = y1;
-                        if (i == 0 || i == 2 || i == 4 || i == 6)
-                        {
-                            if (j == 0 || j == 2 || j == 4 || j == 6)
-                            {
-                                board[i][j].setBackground(black);
-                            }
-                            else
-                            {
-                                board[i][j].setBackground(white);
-                            }
-                        }
-                        else
-                        {
-                            if (j == 0 || j == 2 || j == 4 || j == 6)
-                            {
-                                board[i][j].setBackground(white);
-                            }
-                            else
-                            {
-                                board[i][j].setBackground(black);
-                            }
-                        }
+//                        int i = x1;
+//                        int j = y1;
+//                        if (i == 0 || i == 2 || i == 4 || i == 6)
+//                        {
+//                            if (j == 0 || j == 2 || j == 4 || j == 6)
+//                            {
+//                                board[i][j].setBackground(black);
+//                            }
+//                            else
+//                            {
+//                                board[i][j].setBackground(white);
+//                            }
+//                        }
+//                        else
+//                        {
+//                            if (j == 0 || j == 2 || j == 4 || j == 6)
+//                            {
+//                                board[i][j].setBackground(white);
+//                            }
+//                            else
+//                            {
+//                                board[i][j].setBackground(black);
+//                            }
+//                        }
+                        dragClean(board, x1, y1);
                         break;
 
                     case DragEvent.ACTION_DROP:
-                        i = x1;
-                        j = y1;
-                        if (i == 0 || i == 2 || i == 4 || i == 6)
-                        {
-                            if (j == 0 || j == 2 || j == 4 || j == 6)
-                            {
-                                board[i][j].setBackground(black);
-                            }
-                            else
-                            {
-                                board[i][j].setBackground(white);
-                            }
-                        }
-                        else
-                        {
-                            if (j == 0 || j == 2 || j == 4 || j == 6)
-                            {
-                                board[i][j].setBackground(white);
-                            }
-                            else
-                            {
-                                board[i][j].setBackground(black);
-                            }
-                        }
+//                        i = x1;
+//                        j = y1;
+//                        if (i == 0 || i == 2 || i == 4 || i == 6)
+//                        {
+//                            if (j == 0 || j == 2 || j == 4 || j == 6)
+//                            {
+//                                board[i][j].setBackground(black);
+//                            }
+//                            else
+//                            {
+//                                board[i][j].setBackground(white);
+//                            }
+//                        }
+//                        else
+//                        {
+//                            if (j == 0 || j == 2 || j == 4 || j == 6)
+//                            {
+//                                board[i][j].setBackground(white);
+//                            }
+//                            else
+//                            {
+//                                board[i][j].setBackground(black);
+//                            }
+//                        }
+                        dragClean(board, x1, y1);
                         whiteKingCastleShit(board, positions, x, y, x1, y1);
                         break;
                 }
@@ -4651,8 +2602,6 @@ public class MainActivity extends AppCompatActivity
 
                 int dragEvent = event.getAction();
                 //TextView dropText = (TextView) v;
-                BitmapDrawable black = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.drawable.black, 10, 10));
-                BitmapDrawable white = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.drawable.white, 10, 10));
                 switch (dragEvent)
                 {
                     case DragEvent.ACTION_DRAG_ENTERED:
@@ -4660,57 +2609,14 @@ public class MainActivity extends AppCompatActivity
                         break;
 
                     case DragEvent.ACTION_DRAG_EXITED:
-                        int i = x1;
-                        int j = y1;
-                        if (i == 0 || i == 2 || i == 4 || i == 6)
-                        {
-                            if (j == 0 || j == 2 || j == 4 || j == 6)
-                            {
-                                board[i][j].setBackground(black);
-                            }
-                            else
-                            {
-                                board[i][j].setBackground(white);
-                            }
-                        }
-                        else
-                        {
-                            if (j == 0 || j == 2 || j == 4 || j == 6)
-                            {
-                                board[i][j].setBackground(white);
-                            }
-                            else
-                            {
-                                board[i][j].setBackground(black);
-                            }
-                        }
+
+                        dragClean(board, x1, y1);
                         break;
 
                     case DragEvent.ACTION_DROP:
-                        i = x1;
-                        j = y1;
-                        if (i == 0 || i == 2 || i == 4 || i == 6)
-                        {
-                            if (j == 0 || j == 2 || j == 4 || j == 6)
-                            {
-                                board[i][j].setBackground(black);
-                            }
-                            else
-                            {
-                                board[i][j].setBackground(white);
-                            }
-                        }
-                        else
-                        {
-                            if (j == 0 || j == 2 || j == 4 || j == 6)
-                            {
-                                board[i][j].setBackground(white);
-                            }
-                            else
-                            {
-                                board[i][j].setBackground(black);
-                            }
-                        }
+
+                        dragClean(board, x1, y1);
+
                         whiteQueenCastleShit(board, positions, x, y, x1, y1);
                         break;
                 }
@@ -4798,9 +2704,6 @@ public class MainActivity extends AppCompatActivity
             {
 
                 int dragEvent = event.getAction();
-                //TextView dropText = (TextView) v;
-                BitmapDrawable black = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.drawable.black, 10, 10));
-                BitmapDrawable white = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.drawable.white, 10, 10));
                 switch (dragEvent)
                 {
                     case DragEvent.ACTION_DRAG_ENTERED:
@@ -4808,57 +2711,11 @@ public class MainActivity extends AppCompatActivity
                         break;
 
                     case DragEvent.ACTION_DRAG_EXITED:
-                        int i = x1;
-                        int j = y1;
-                        if (i == 0 || i == 2 || i == 4 || i == 6)
-                        {
-                            if (j == 0 || j == 2 || j == 4 || j == 6)
-                            {
-                                board[i][j].setBackground(black);
-                            }
-                            else
-                            {
-                                board[i][j].setBackground(white);
-                            }
-                        }
-                        else
-                        {
-                            if (j == 0 || j == 2 || j == 4 || j == 6)
-                            {
-                                board[i][j].setBackground(white);
-                            }
-                            else
-                            {
-                                board[i][j].setBackground(black);
-                            }
-                        }
+                        dragClean(board, x1, y1);
                         break;
 
                     case DragEvent.ACTION_DROP:
-                        i = x1;
-                        j = y1;
-                        if (i == 0 || i == 2 || i == 4 || i == 6)
-                        {
-                            if (j == 0 || j == 2 || j == 4 || j == 6)
-                            {
-                                board[i][j].setBackground(black);
-                            }
-                            else
-                            {
-                                board[i][j].setBackground(white);
-                            }
-                        }
-                        else
-                        {
-                            if (j == 0 || j == 2 || j == 4 || j == 6)
-                            {
-                                board[i][j].setBackground(white);
-                            }
-                            else
-                            {
-                                board[i][j].setBackground(black);
-                            }
-                        }
+                        dragClean(board, x1, y1);
                         blackKingCastleShit(board, positions, x, y, x1, y1);
                         break;
                 }
@@ -4947,9 +2804,6 @@ public class MainActivity extends AppCompatActivity
             {
 
                 int dragEvent = event.getAction();
-                //TextView dropText = (TextView) v;
-                BitmapDrawable black = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.drawable.black, 10, 10));
-                BitmapDrawable white = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.drawable.white, 10, 10));
                 switch (dragEvent)
                 {
                     case DragEvent.ACTION_DRAG_ENTERED:
@@ -4957,57 +2811,11 @@ public class MainActivity extends AppCompatActivity
                         break;
 
                     case DragEvent.ACTION_DRAG_EXITED:
-                        int i = x1;
-                        int j = y1;
-                        if (i == 0 || i == 2 || i == 4 || i == 6)
-                        {
-                            if (j == 0 || j == 2 || j == 4 || j == 6)
-                            {
-                                board[i][j].setBackground(black);
-                            }
-                            else
-                            {
-                                board[i][j].setBackground(white);
-                            }
-                        }
-                        else
-                        {
-                            if (j == 0 || j == 2 || j == 4 || j == 6)
-                            {
-                                board[i][j].setBackground(white);
-                            }
-                            else
-                            {
-                                board[i][j].setBackground(black);
-                            }
-                        }
+                        dragClean(board, x1, y1);
                         break;
 
                     case DragEvent.ACTION_DROP:
-                        i = x1;
-                        j = y1;
-                        if (i == 0 || i == 2 || i == 4 || i == 6)
-                        {
-                            if (j == 0 || j == 2 || j == 4 || j == 6)
-                            {
-                                board[i][j].setBackground(black);
-                            }
-                            else
-                            {
-                                board[i][j].setBackground(white);
-                            }
-                        }
-                        else
-                        {
-                            if (j == 0 || j == 2 || j == 4 || j == 6)
-                            {
-                                board[i][j].setBackground(white);
-                            }
-                            else
-                            {
-                                board[i][j].setBackground(black);
-                            }
-                        }
+                        dragClean(board, x1, y1);
                         blackQueenCastleShit(board, positions, x, y, x1, y1);
                         break;
                 }
@@ -5147,11 +2955,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onDrag(View v, DragEvent event)
             {
-
                 int dragEvent = event.getAction();
-                //TextView dropText = (TextView) v;
-                BitmapDrawable black = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.drawable.black, 10, 10));
-                BitmapDrawable white = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.drawable.white, 10, 10));
                 switch (dragEvent)
                 {
                     case DragEvent.ACTION_DRAG_ENTERED:
@@ -5159,64 +2963,16 @@ public class MainActivity extends AppCompatActivity
                         break;
 
                     case DragEvent.ACTION_DRAG_EXITED:
-                        int i = x1;
-                        int j = y;
-                        if (i == 0 || i == 2 || i == 4 || i == 6)
-                        {
-                            if (j == 0 || j == 2 || j == 4 || j == 6)
-                            {
-                                board[i][j].setBackground(black);
-                            }
-                            else
-                            {
-                                board[i][j].setBackground(white);
-                            }
-                        }
-                        else
-                        {
-                            if (j == 0 || j == 2 || j == 4 || j == 6)
-                            {
-                                board[i][j].setBackground(white);
-                            }
-                            else
-                            {
-                                board[i][j].setBackground(black);
-                            }
-                        }
+                        dragClean(board, x1, y);
                         break;
 
                     case DragEvent.ACTION_DROP:
-                        i = x1;
-                        j = y;
-                        if (i == 0 || i == 2 || i == 4 || i == 6)
-                        {
-                            if (j == 0 || j == 2 || j == 4 || j == 6)
-                            {
-                                board[i][j].setBackground(black);
-                            }
-                            else
-                            {
-                                board[i][j].setBackground(white);
-                            }
-                        }
-                        else
-                        {
-                            if (j == 0 || j == 2 || j == 4 || j == 6)
-                            {
-                                board[i][j].setBackground(white);
-                            }
-                            else
-                            {
-                                board[i][j].setBackground(black);
-                            }
-                        }
+                        dragClean(board, x1, y);
                         whiteEnPShit(board, positions, x, x1);
                         break;
                 }
-
                 return true;
             }
-
         });
     }
 
@@ -5229,8 +2985,7 @@ public class MainActivity extends AppCompatActivity
         addToRoster(board, positions, x1, y);
         positions[x1][y1] = positions[x][y];
         positions[x][y] = new Empty();
-
-        updateImage(board, positions, x1, y1);
+        board[x1][y1].setImageResource(positions[x1][y1].getResID());
         board[x1][y1].setRotation(board[x][y].getRotation());
         board[x][y].setRotation(0);
         board[x][y].setImageResource(android.R.color.transparent);
@@ -5352,74 +3107,23 @@ public class MainActivity extends AppCompatActivity
             {
 
                 int dragEvent = event.getAction();
-                //TextView dropText = (TextView) v;
-                BitmapDrawable black = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.drawable.black, 10, 10));
-                BitmapDrawable white = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.drawable.white, 10, 10));
-                switch (dragEvent)
+               switch (dragEvent)
                 {
                     case DragEvent.ACTION_DRAG_ENTERED:
                         board[x1][y].setBackgroundColor(0xFFFF7F7F);
                         break;
 
                     case DragEvent.ACTION_DRAG_EXITED:
-                        int i = x1;
-                        int j = y;
-                        if (i == 0 || i == 2 || i == 4 || i == 6)
-                        {
-                            if (j == 0 || j == 2 || j == 4 || j == 6)
-                            {
-                                board[i][j].setBackground(black);
-                            }
-                            else
-                            {
-                                board[i][j].setBackground(white);
-                            }
-                        }
-                        else
-                        {
-                            if (j == 0 || j == 2 || j == 4 || j == 6)
-                            {
-                                board[i][j].setBackground(white);
-                            }
-                            else
-                            {
-                                board[i][j].setBackground(black);
-                            }
-                        }
+                        dragClean(board,x1,y);
                         break;
 
                     case DragEvent.ACTION_DROP:
-                        i = x1;
-                        j = y;
-                        if (i == 0 || i == 2 || i == 4 || i == 6)
-                        {
-                            if (j == 0 || j == 2 || j == 4 || j == 6)
-                            {
-                                board[i][j].setBackground(black);
-                            }
-                            else
-                            {
-                                board[i][j].setBackground(white);
-                            }
-                        }
-                        else
-                        {
-                            if (j == 0 || j == 2 || j == 4 || j == 6)
-                            {
-                                board[i][j].setBackground(white);
-                            }
-                            else
-                            {
-                                board[i][j].setBackground(black);
-                            }
-                        }
+                        dragClean(board,x1,y);
                         blackEnPShit(board, positions, x, x1);
                         break;
                 }
-
                 return true;
             }
-
         });
     }
 
@@ -5454,8 +3158,7 @@ public class MainActivity extends AppCompatActivity
         addToRoster(board, positions, x1, y);
         positions[x1][y1] = positions[x][y];
         positions[x][y] = new Empty();
-
-        updateImage(board, positions, x1, y1);
+        board[x1][y1].setImageResource(positions[x1][y1].getResID());
         board[x1][y1].setRotation(board[x][y].getRotation());
         board[x][y].setRotation(0);
         board[x][y].setImageResource(android.R.color.transparent);
@@ -5923,32 +3626,6 @@ public class MainActivity extends AppCompatActivity
 
     private void turnChange(final ImageView[][] board, final Piece[][] positions, final int x, final int y)
     {
-
-        //IDK WHAT THIS IS FOR, WAS COMMENTED OUT IN THE OLD VERSION
-//        if (gameState == 2)
-//        {
-//            new Thread(new Runnable()
-//            {
-//                @Override
-//                public void run()
-//                {
-//                    while (gameState == 2)
-//                    {
-//                        try
-//                        {
-//                            Thread.sleep(1);
-//                        } catch (InterruptedException e)
-//                        {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//
-//
-//                }
-//            }).start();
-//        }
-
-
         if (board(board, positions) == 1)
         {
             if (positions[x][y].color.equals("white"))
@@ -7042,6 +4719,37 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    private void dragClean(ImageView[][] board, int x1, int y1)
+    {
+        BitmapDrawable black = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.drawable.black, 10, 10));
+        BitmapDrawable white = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.drawable.white, 10, 10));
+
+        int i = x1;
+        int j = y1;
+        if (i == 0 || i == 2 || i == 4 || i == 6)
+        {
+            if (j == 0 || j == 2 || j == 4 || j == 6)
+            {
+                board[i][j].setBackground(black);
+            }
+            else
+            {
+                board[i][j].setBackground(white);
+            }
+        }
+        else
+        {
+            if (j == 0 || j == 2 || j == 4 || j == 6)
+            {
+                board[i][j].setBackground(white);
+            }
+            else
+            {
+                board[i][j].setBackground(black);
+            }
+        }
+    }
+
     public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight)
     {
         // Raw height and width of image
@@ -7232,5 +4940,4 @@ public class MainActivity extends AppCompatActivity
 
         mInterstitialAd.loadAd(adRequest);
     }
-
 }

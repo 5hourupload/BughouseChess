@@ -24,7 +24,7 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:orientation="vertical"
-            android:visibility="visible"
+            android:visibility="gone"
             android:id="@+id/mainboard"
             android:background="#1E1E1E">
 
@@ -2258,7 +2258,7 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:id="@+id/finishScreen"
-            android:visibility="invisible"
+            android:visibility="gone"
             android:orientation="vertical"
             android:background="#1aFFFFFF">
 
@@ -2380,7 +2380,7 @@
             android:orientation="vertical"
             android:id="@+id/optionsmenu"
             android:background="@color/options_background_color"
-            android:visibility="invisible">
+            android:visibility="gone">
 
             <RelativeLayout
                 android:layout_width="fill_parent"
@@ -2657,7 +2657,7 @@
             android:layout_height="fill_parent"
             android:orientation="vertical"
             android:id="@+id/rules"
-            android:visibility="invisible"
+            android:visibility="gone"
             android:background="#1E1E1E"
             >
 
@@ -2738,7 +2738,7 @@
             android:layout_height="fill_parent"
             android:orientation="vertical"
             android:id="@+id/mainmenu"
-            android:visibility="invisible"
+            android:visibility="visible"
             android:background="#1e1e1e"
             >
             <LinearLayout
@@ -2799,13 +2799,13 @@
                         android:textSize="@dimen/main_menu_font"
                         android:textColor="@drawable/main_menu_text"
                         android:id="@+id/play"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="sync devices"
-                        android:textSize="60dp"
-                        android:textColor="@drawable/main_menu_text"
-                        android:id="@+id/connect"/>
+                    <!--<TextView-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:text="sync devices"-->
+                        <!--android:textSize="60dp"-->
+                        <!--android:textColor="@drawable/main_menu_text"-->
+                        <!--android:id="@+id/connect"/>-->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
