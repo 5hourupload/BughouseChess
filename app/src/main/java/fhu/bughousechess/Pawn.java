@@ -60,14 +60,14 @@ public class Pawn extends Piece
                     {
                         if (enP[x + 1][1].substring(0, 1).equals("1") && enP[x + 1][1].substring(1, enP[x + 1][1].length()).equals(Integer.toString(board1Turn)))
                         {
-                            moves.add(new Move(board, positions, x, -1, x + 1, -1, "whiteEnP"));
+                            moves.add(new Move(board, positions, x, 4, x + 1, 4, "whiteEnP"));
                         }
                     }
                     if (board(board, positions) == 2)
                     {
                         if (enP[x + 1][3].substring(0, 1).equals("1") && enP[x + 1][3].substring(1, enP[x + 1][3].length()).equals(Integer.toString(board2Turn)))
                         {
-                            moves.add(new Move(board, positions, x, -1, x + 1, -1, "whiteEnP"));
+                            moves.add(new Move(board, positions, x, 4, x + 1, 4, "whiteEnP"));
                         }
                     }
                 }
@@ -84,14 +84,14 @@ public class Pawn extends Piece
                     {
                         if (enP[x - 1][1].substring(0, 1).equals("1") && enP[x - 1][1].substring(1, enP[x - 1][1].length()).equals(Integer.toString(board1Turn)))
                         {
-                            moves.add(new Move(board, positions, x, -1, x - 1, -1, "whiteEnP"));
+                            moves.add(new Move(board, positions, x, 4, x - 1, 4, "whiteEnP"));
                         }
                     }
                     if (board(board, positions) == 2)
                     {
                         if (enP[x - 1][3].substring(0, 1).equals("1") && enP[x - 1][3].substring(1, enP[x - 1][3].length()).equals(Integer.toString(board2Turn)))
                         {
-                            moves.add(new Move(board, positions, x, -1, x - 1, -1, "whiteEnP"));
+                            moves.add(new Move(board, positions, x, 4, x - 1, 4, "whiteEnP"));
                         }
                     }
                 }
@@ -125,14 +125,14 @@ public class Pawn extends Piece
                     {
                         if (enP[x + 1][0].substring(0, 1).equals("1") && enP[x + 1][0].substring(1, enP[x + 1][0].length()).equals(Integer.toString(board1Turn)))
                         {
-                            moves.add(new Move(board, positions, x, -1, x + 1, -1, "blackEnP"));
+                            moves.add(new Move(board, positions, x, 3, x + 1, 3, "blackEnP"));
                         }
                     }
                     if (board(board, positions) == 2)
                     {
                         if (enP[x + 1][2].substring(0, 1).equals("1") && enP[x + 1][2].substring(1, enP[x + 1][2].length()).equals(Integer.toString(board2Turn)))
                         {
-                            moves.add(new Move(board, positions, x, -1, x + 1, -1, "blackEnP"));
+                            moves.add(new Move(board, positions, x, 3, x + 1, 3, "blackEnP"));
                         }
                     }
                 }
@@ -149,14 +149,14 @@ public class Pawn extends Piece
                     {
                         if (enP[x - 1][0].substring(0, 1).equals("1") && enP[x - 1][0].substring(1, enP[x - 1][0].length()).equals(Integer.toString(board1Turn)))
                         {
-                            moves.add(new Move(board, positions, x, -1, x - 1,-1 , "blackEnP"));
+                            moves.add(new Move(board, positions, x, 3, x - 1,3, "blackEnP"));
                         }
                     }
                     if (board(board, positions) == 2)
                     {
                         if (enP[x - 1][2].substring(0, 1).equals("1") && enP[x - 1][2].substring(1, enP[x - 1][2].length()).equals(Integer.toString(board2Turn)))
                         {
-                            moves.add(new Move(board, positions, x, -1, x - 1, -1, "blackEnP"));
+                            moves.add(new Move(board, positions, x, 3, x - 1, 3, "blackEnP"));
                         }
                     }
                 }

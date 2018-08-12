@@ -1,15 +1,18 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    compileSdkVersion 26
+    buildToolsVersion "24.0.0"
 
     defaultConfig {
         applicationId "fhu.bughousechess"
-        minSdkVersion 16
-        targetSdkVersion 23
+        minSdkVersion 24
+        targetSdkVersion 26
         versionCode 16
         versionName "8.3.16"
+        jackOptions {
+            enabled true
+        }
     }
 
     buildTypes {
@@ -19,12 +22,16 @@ android {
         }
     }
 
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.4.0'
+    compile 'com.android.support:appcompat-v7:26.0.0'
     compile 'com.google.android.gms:play-services-ads:9.2.1'
-    compile 'com.android.support:support-v4:23.4.0'
+    compile 'com.android.support:support-v4:26.0.0'
 }

@@ -45,7 +45,7 @@ public class Queen extends Piece
                     moves.add(new Move(board, positions, x ,y, x ,i,"move"));
                 }
             }
-            if (positions[x][i].color.equals("black"))
+            if (positions[x][i].isOpposite(this))
             {
                 if (!inbetween)
                 {
