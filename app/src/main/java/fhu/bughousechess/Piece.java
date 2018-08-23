@@ -2,6 +2,7 @@ package fhu.bughousechess;
 
 import android.widget.ImageView;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public abstract class Piece
@@ -11,6 +12,7 @@ public abstract class Piece
     public boolean wasPawn;
     public String backgroundColor;
     public boolean empty = true;
+    public boolean onRoster = false;
 
     public abstract int getResID();
     public abstract Set<Move> getMoves(ImageView[][] board, Piece[][] positions, int x, int y);
@@ -22,6 +24,21 @@ public abstract class Piece
             return piece.color.equals("white");
         return false;
 
+    }
+    public Set<Move> getRosterMoves(ImageView[][] board, Piece[][] positions, ImageView[] roster, Piece[] rosterp, int i)
+    {
+        Set<Move> moves = new HashSet<>();
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                if (positions[x][y].empty)
+                {
+                    moves.add(new Move(board, positions, roster, rosterp, i, x, y));
+                }
+            }
+        }
+        return  moves;
     }
 
 

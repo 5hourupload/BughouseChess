@@ -34,6 +34,10 @@ public class SettingsActivity extends PreferenceActivity
         getFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragment()).commit();
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        //temp
+        System.out.println(prefs.getString("player1", "0"));
+
         listener = new SharedPreferences.OnSharedPreferenceChangeListener()
         {
             public void onSharedPreferenceChanged(SharedPreferences prefs, String key)

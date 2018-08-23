@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static fhu.bughousechess.MainActivity.board;
-import static fhu.bughousechess.MainActivity.checkCheck;
+import static fhu.bughousechess.MainActivity.castleCheckCheck;
 import static fhu.bughousechess.MainActivity.whiteCastleKing1;
 import static fhu.bughousechess.MainActivity.whiteCastleKing2;
 import static fhu.bughousechess.MainActivity.whiteCastleQueen1;
@@ -48,14 +48,14 @@ public class King extends Piece
                     positions[6][0].color = "white";
                     if (board(board, positions) == 1)
                     {
-                        if (whiteCastleKing1 && positions[6][0].empty && !checkCheck(board, positions, 4, 0) && !checkCheck(board, positions, 5, 0) && !checkCheck(board, positions, 6, 0))
+                        if (whiteCastleKing1 && positions[6][0].empty && !castleCheckCheck(board, positions, 4, 0) && !castleCheckCheck(board, positions, 5, 0) && !castleCheckCheck(board, positions, 6, 0))
                         {
                             moves.add(new Move(board, positions, x, y, 6, 0, "whiteKingCastle"));
                         }
                     }
                     else
                     {
-                        if (whiteCastleKing2 && positions[6][0].empty && !checkCheck(board, positions, 4, 0) && !checkCheck(board, positions, 5, 0) && !checkCheck(board, positions, 6, 0))
+                        if (whiteCastleKing2 && positions[6][0].empty && !castleCheckCheck(board, positions, 4, 0) && !castleCheckCheck(board, positions, 5, 0) && !castleCheckCheck(board, positions, 6, 0))
                         {
                             moves.add(new Move(board, positions, x, y, 6, 0, "whiteKingCastle"));
 
@@ -72,14 +72,14 @@ public class King extends Piece
                     positions[6][7].color = "black";
                     if (board(board, positions) == 1)
                     {
-                        if (whiteCastleKing1 && positions[6][7].empty && !checkCheck(board, positions, 4, 7) && !checkCheck(board, positions, 5, 7) && !checkCheck(board, positions, 6, 7))
+                        if (whiteCastleKing1 && positions[6][7].empty && !castleCheckCheck(board, positions, 4, 7) && !castleCheckCheck(board, positions, 5, 7) && !castleCheckCheck(board, positions, 6, 7))
                         {
                             moves.add(new Move(board, positions, x, y, 6, 7, "blackKingCastle"));
                         }
                     }
                     else
                     {
-                        if (whiteCastleKing2 && positions[6][7].empty && !checkCheck(board, positions, 4, 7) && !checkCheck(board, positions, 5, 7) && !checkCheck(board, positions, 6, 7))
+                        if (whiteCastleKing2 && positions[6][7].empty && !castleCheckCheck(board, positions, 4, 7) && !castleCheckCheck(board, positions, 5, 7) && !castleCheckCheck(board, positions, 6, 7))
                         {
                             moves.add(new Move(board, positions, x, y, 6, 7, "blackKingCastle"));
 
@@ -129,7 +129,7 @@ public class King extends Piece
                     if (board(board, positions) == 1)
                     {
 
-                        if (whiteCastleQueen1 && positions[2][0].empty && !checkCheck(board, positions, 1, 0) && !checkCheck(board, positions, 2, 0) && !checkCheck(board, positions, 3, 0) && !checkCheck(board, positions, 4, 0))
+                        if (whiteCastleQueen1 && positions[2][0].empty && !castleCheckCheck(board, positions, 1, 0) && !castleCheckCheck(board, positions, 2, 0) && !castleCheckCheck(board, positions, 3, 0) && !castleCheckCheck(board, positions, 4, 0))
                         {
                             positions[1][0].color = "";
                             positions[2][0].color = "";
@@ -139,7 +139,7 @@ public class King extends Piece
                     }
                     else
                     {
-                        if (whiteCastleQueen2 && positions[2][0].empty && !checkCheck(board, positions, 1, 0) && !checkCheck(board, positions, 2, 0) && !checkCheck(board, positions, 3, 0) && !checkCheck(board, positions, 4, 0))
+                        if (whiteCastleQueen2 && positions[2][0].empty && !castleCheckCheck(board, positions, 1, 0) && !castleCheckCheck(board, positions, 2, 0) && !castleCheckCheck(board, positions, 3, 0) && !castleCheckCheck(board, positions, 4, 0))
                         {
                             positions[1][0] .color = "";
                             positions[2][0].color = "";
@@ -159,7 +159,7 @@ public class King extends Piece
                     if (board(board, positions) == 1)
                     {
 
-                        if (whiteCastleQueen1 && positions[2][7].empty && !checkCheck(board, positions, 1, 7) && !checkCheck(board, positions, 2, 7) && !checkCheck(board, positions, 3, 7) && !checkCheck(board, positions, 4, 7))
+                        if (whiteCastleQueen1 && positions[2][7].empty && !castleCheckCheck(board, positions, 1, 7) && !castleCheckCheck(board, positions, 2, 7) && !castleCheckCheck(board, positions, 3, 7) && !castleCheckCheck(board, positions, 4, 7))
                         {
                             positions[1][7].color = "";
                             positions[2][7].color = "";
@@ -169,7 +169,7 @@ public class King extends Piece
                     }
                     else
                     {
-                        if (whiteCastleQueen2 && positions[2][7].empty && !checkCheck(board, positions, 1, 7) && !checkCheck(board, positions, 2, 7) && !checkCheck(board, positions, 3, 7) && !checkCheck(board, positions, 4, 7))
+                        if (whiteCastleQueen2 && positions[2][7].empty && !castleCheckCheck(board, positions, 1, 7) && !castleCheckCheck(board, positions, 2, 7) && !castleCheckCheck(board, positions, 3, 7) && !castleCheckCheck(board, positions, 4, 7))
                         {
                             positions[1][7].color = "";
                             positions[2][7].color = "";

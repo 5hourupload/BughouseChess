@@ -164,4 +164,47 @@ public class Pawn extends Piece
         }
         return moves;
     }
+    public Set<Move> getRosterMoves(ImageView[][] board, Piece[][] positions, ImageView[] roster, Piece[] rosterp, int i)
+    {
+        Set<Move> moves = new HashSet<>();
+
+        for (int x = 0; x < 8; x++)
+        {
+            if (MainActivity.firstrank)
+            {
+                if (rosterp[i].color.equals("white"))
+                {
+                    for (int y = 0; y < 7; y++)
+                    {
+                        if (positions[x][y].empty)
+                        {
+                            moves.add(new Move(board, positions, roster, rosterp, i, x, y));
+                        }
+                    }
+                }
+                if (rosterp[i].color.equals("black"))
+                {
+                    for (int y = 1; y < 8; y++)
+                    {
+                        if (positions[x][y].empty)
+                        {
+                            moves.add(new Move(board, positions, roster, rosterp, i, x, y));
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (int y = 1; y < 7; y++)
+                {
+                    if (positions[x][y].empty)
+                    {
+                        moves.add(new Move(board, positions, roster, rosterp, i, x, y));
+                    }
+                }
+            }
+        }
+
+        return  moves;
+    }
 }

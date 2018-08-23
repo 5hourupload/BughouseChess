@@ -864,7 +864,13 @@ public class MainActivity extends AppCompatActivity
             {
                 while (menu_code == 0)
                 {
-
+                    try
+                    {
+                        Thread.sleep(1);
+                    } catch (InterruptedException e)
+                    {
+                        e.printStackTrace();
+                    }
                 }
                 final LinearLayout mainmenu = findViewById(R.id.mainmenu);
                 final TextView timer1 = findViewById(R.id.timer1);
@@ -1520,93 +1526,102 @@ public class MainActivity extends AppCompatActivity
             setActions(board, positions);
         }
 
-        if (board(board, positions) == 1 && searchingForCheckmate1)
-        {
-            for (int x = 0; x < 8; x++)
-            {
-                for (int y = 0; y < 8; y++)
-                {
-                    if (positions[x][y].empty)
-                    {
-                        moveRoster(board, positions, roster, rosterp, i, x, y);
-                    }
-                }
-            }
-            return;
-        }
+
+        //I dont think this is needed? if searching, then going through with them oves should work anyway
+//        if (board(board, positions) == 1 && searchingForCheckmate1)
+//        {
+//            for (int x = 0; x < 8; x++)
+//            {
+//                for (int y = 0; y < 8; y++)
+//                {
+//                    if (positions[x][y].empty)
+//                    {
+//                        moveRoster(board, positions, roster, rosterp, i, x, y);
+//                    }
+//                }
+//            }
+//            return;
+//        }
+//
+//
+//        if (board(board, positions) == 2 && searchingForCheckmate2)
+//        {
+//            for (int x = 0; x < 8; x++)
+//            {
+//                for (int y = 0; y < 8; y++)
+//                {
+//                    if (positions[x][y].empty)
+//                    {
+//                        moveRoster(board, positions, roster, rosterp, i, x, y);
+//                    }
+//                }
+//            }
+//            return;
+//        }
 
 
-        if (board(board, positions) == 2 && searchingForCheckmate2)
+//        if (rosterp[i].type.equals("pawn"))
+//        {
+//            for (int x = 0; x < 8; x++)
+//            {
+//                if (firstrank)
+//                {
+//                    if (rosterp[i].color.equals("white"))
+//                    {
+//                        for (int y = 0; y < 7; y++)
+//                        {
+//                            if (positions[x][y].empty)
+//                            {
+//                                moveRoster(board, positions, roster, rosterp, i, x, y);
+//                            }
+//                        }
+//                    }
+//                    if (rosterp[i].color.equals("black"))
+//                    {
+//                        for (int y = 1; y < 8; y++)
+//                        {
+//                            if (positions[x][y].empty)
+//                            {
+//                                moveRoster(board, positions, roster, rosterp, i, x, y);
+//                            }
+//                        }
+//                    }
+//
+//                }
+//                else
+//                {
+//                    for (int y = 1; y < 7; y++)
+//                    {
+//                        if (positions[x][y].empty)
+//                        {
+//                            moveRoster(board, positions, roster, rosterp, i, x, y);
+//                        }
+//                    }
+//                }
+//
+//            }
+//        }
+//        else
+//        {
+//            for (int x = 0; x < 8; x++)
+//            {
+//                for (int y = 0; y < 8; y++)
+//                {
+//                    if (positions[x][y].empty)
+//                    {
+//                        moveRoster(board, positions, roster, rosterp, i, x, y);
+//                    }
+//                }
+//            }
+//        }
+        Set<Move> moves = rosterp[i].getRosterMoves(board, positions, roster, rosterp, i);
+        for (Move m : moves)
         {
-            for (int x = 0; x < 8; x++)
-            {
-                for (int y = 0; y < 8; y++)
-                {
-                    if (positions[x][y].empty)
-                    {
-                        moveRoster(board, positions, roster, rosterp, i, x, y);
-                    }
-                }
-            }
-            return;
-        }
-        if (rosterp[i].type.equals("pawn"))
-        {
-            for (int x = 0; x < 8; x++)
-            {
-                if (firstrank)
-                {
-                    if (rosterp[i].color.equals("white"))
-                    {
-                        for (int y = 0; y < 7; y++)
-                        {
-                            if (positions[x][y].empty)
-                            {
-                                moveRoster(board, positions, roster, rosterp, i, x, y);
-                            }
-                        }
-                    }
-                    if (rosterp[i].color.equals("black"))
-                    {
-                        for (int y = 1; y < 8; y++)
-                        {
-                            if (positions[x][y].empty)
-                            {
-                                moveRoster(board, positions, roster, rosterp, i, x, y);
-                            }
-                        }
-                    }
-
-                }
-                else
-                {
-                    for (int y = 1; y < 7; y++)
-                    {
-                        if (positions[x][y].empty)
-                        {
-                            moveRoster(board, positions, roster, rosterp, i, x, y);
-                        }
-                    }
-                }
-
-            }
-        }
-        else
-        {
-            for (int x = 0; x < 8; x++)
-            {
-                for (int y = 0; y < 8; y++)
-                {
-                    if (positions[x][y].empty)
-                    {
-                        moveRoster(board, positions, roster, rosterp, i, x, y);
-                    }
-                }
-            }
+            setPotentialRosterMove(m.board, m.positions, m.roster, m.rosterp, m.i, m.x1, m.y1);
         }
     }
 
-    private void moveRoster(final ImageView[][] board, final Piece[][] positions, final ImageView[] roster, final Piece[] rosterp, final int i, final int x, final int y)
+    private void setPotentialRosterMove(final ImageView[][] board, final Piece[][] positions, final ImageView[] roster, final Piece[] rosterp, final int i, final int x, final int y)
     {
         if (!placing)
         {
@@ -1723,7 +1738,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onTouch(View v, MotionEvent event)
             {
-                rosterShit(board, positions, roster, rosterp, i, x, y);
+                performRosterMove(board, positions, roster, rosterp, i, x, y);
                 return true;
             }
         });
@@ -1732,7 +1747,6 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onDrag(View v, DragEvent event)
             {
-
                 int dragEvent = event.getAction();
                 switch (dragEvent)
                 {
@@ -1746,7 +1760,7 @@ public class MainActivity extends AppCompatActivity
 
                     case DragEvent.ACTION_DROP:
                         dragClean(board, x, y);
-                        rosterShit(board, positions, roster, rosterp, i, x, y);
+                        performRosterMove(board, positions, roster, rosterp, i, x, y);
                         break;
                 }
                 return true;
@@ -1754,7 +1768,7 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    private void rosterShit(ImageView[][] board, Piece[][] positions, ImageView[] roster, Piece[] rosterp, int i, int x, int y)
+    private void performRosterMove(ImageView[][] board, Piece[][] positions, ImageView[] roster, Piece[] rosterp, int i, int x, int y)
     {
         if (rosterp[i].empty)
         {
@@ -1787,7 +1801,6 @@ public class MainActivity extends AppCompatActivity
                 {
                     whiteTurn1 = 1;
                 }
-
             }
             board1Turn++;
         }
@@ -1841,6 +1854,7 @@ public class MainActivity extends AppCompatActivity
             setActions(board, positions);
         }
 
+        System.out.println(positions[x][y].type);
         Set<Move> moves = positions[x][y].getMoves(board, positions, x, y);
         for (Move m : moves)
         {
@@ -1988,7 +2002,7 @@ public class MainActivity extends AppCompatActivity
         setActions(board, positions);
     }
 
-    private void switchPositions(String moveType, Piece[][] positions, int x, int y, int x1, int y1)
+    public static void switchPositions(String moveType, Piece[][] positions, int x, int y, int x1, int y1)
     {
         if (moveType.equals("whiteKingCastle"))
         {
@@ -2122,28 +2136,28 @@ public class MainActivity extends AppCompatActivity
         {
             if (positions[x1][y1].color.equals("white"))
             {
-                addToRosterShit(board, positions, roster4, roster4p, x1, y1, 270);
+                addToRosterShit(positions, roster4, roster4p, x1, y1, 270);
             }
             if (positions[x1][y1].color.equals("black"))
             {
-                addToRosterShit(board, positions, roster3, roster3p, x1, y1, 90);
+                addToRosterShit(positions, roster3, roster3p, x1, y1, 90);
             }
         }
         else
         {
             if (positions[x1][y1].color.equals("white"))
             {
-                addToRosterShit(board, positions, roster1, roster1p, x1, y1, 90);
+                addToRosterShit(positions, roster1, roster1p, x1, y1, 90);
             }
             if (positions[x1][y1].color.equals("black"))
             {
-                addToRosterShit(board, positions, roster2, roster2p, x1, y1, 270);
+                addToRosterShit(positions, roster2, roster2p, x1, y1, 270);
             }
         }
 
     }
 
-    private void addToRosterShit(final ImageView[][] board, final Piece[][] positions, ImageView[] roster, Piece[] rosterp, int x1, int y1, int rotation)
+    private void addToRosterShit(final Piece[][] positions, ImageView[] roster, Piece[] rosterp, int x1, int y1, int rotation)
     {
         for (int i = 0; i < 30; i++)
         {
@@ -2813,6 +2827,41 @@ public class MainActivity extends AppCompatActivity
         return false;
     }
 
+    /**
+     * This method is just for checking if kings can castle
+     * If we use the regular check checking method, then there will be a stack overflow
+     * king's get moves call check check, which ends up calling king's get moves, etc
+     * I think it is extremely unlikely that an opposing king would prevent castling
+     *
+     * @param board
+     * @param positions
+     * @param x
+     * @param y
+     * @return
+     */
+    public static boolean castleCheckCheck(ImageView[][] board, Piece[][] positions, int x, int y)
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                if (positions[i][j].isOpposite(positions[x][y]))
+                {
+                    if (!positions[i][j].type.equals("king"))
+                    {
+                        Set<Move> moves = positions[i][j].getMoves(board, positions, i, j);
+                        for (Move m : moves)
+                        {
+                            if (m.type.equals("take") && m.x1 == x && m.y1 == y) return true;
+                        }
+                    }
+
+                }
+            }
+        }
+        return false;
+    }
+
     private void setWhiteCheckConditions(ImageView[][] board, Piece[][] positions)
     {
         if (checking)
@@ -3046,6 +3095,12 @@ public class MainActivity extends AppCompatActivity
                                 public void run()
                                 {
                                     //make the move
+                                    AIMinimax ai = new AIMinimax("white", board1, positions1, roster1p, roster2p);
+                                    Move bestMove = ai.getBestMove();
+                                    System.out.println(bestMove.x + " " + bestMove.y);
+                                    System.out.println(bestMove.x1 + " " + bestMove.y1);
+                                    System.out.println(positions1[0][1].empty);
+                                    performMove(bestMove.type, board1, positions1, bestMove.x, bestMove.y, bestMove.x1, bestMove.y1);
                                 }
                             });
                         }
