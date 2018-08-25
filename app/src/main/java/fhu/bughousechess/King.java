@@ -44,49 +44,40 @@ public class King extends Piece
                 {
                     //setting those empty positions to "white" so that they can be checked whether
                     //they are in check or not
-                    positions[5][0].color = "white";
-                    positions[6][0].color = "white";
                     if (board(board, positions) == 1)
                     {
-                        if (whiteCastleKing1 && positions[6][0].empty && !castleCheckCheck(board, positions, 4, 0) && !castleCheckCheck(board, positions, 5, 0) && !castleCheckCheck(board, positions, 6, 0))
+                        if (whiteCastleKing1 && positions[6][0].empty && !castleCheckCheck("white",board, positions, 4, 0) && !castleCheckCheck("white",board, positions, 5, 0) && !castleCheckCheck("white",board, positions, 6, 0))
                         {
                             moves.add(new Move(board, positions, x, y, 6, 0, "whiteKingCastle"));
                         }
                     }
                     else
                     {
-                        if (whiteCastleKing2 && positions[6][0].empty && !castleCheckCheck(board, positions, 4, 0) && !castleCheckCheck(board, positions, 5, 0) && !castleCheckCheck(board, positions, 6, 0))
+                        if (whiteCastleKing2 && positions[6][0].empty && !castleCheckCheck("white",board, positions, 4, 0) && !castleCheckCheck("white",board, positions, 5, 0) && !castleCheckCheck("white",board, positions, 6, 0))
                         {
                             moves.add(new Move(board, positions, x, y, 6, 0, "whiteKingCastle"));
 
                         }
                     }
-                    positions[5][0].color = "";
-                    positions[6][0].color = "";
                 }
                 if (positions[6][7].empty && positions[4][7].type.equals("king") && positions[4][7].color.equals("black"))
                 {
                     //setting those empty positions to "white" so that they can be checked whether
                     //they are in check or not
-                    positions[5][7].color = "black";
-                    positions[6][7].color = "black";
                     if (board(board, positions) == 1)
                     {
-                        if (whiteCastleKing1 && positions[6][7].empty && !castleCheckCheck(board, positions, 4, 7) && !castleCheckCheck(board, positions, 5, 7) && !castleCheckCheck(board, positions, 6, 7))
+                        if (whiteCastleKing1 && positions[6][7].empty && !castleCheckCheck("black",board, positions, 4, 7) && !castleCheckCheck("black",board, positions, 5, 7) && !castleCheckCheck("black",board, positions, 6, 7))
                         {
                             moves.add(new Move(board, positions, x, y, 6, 7, "blackKingCastle"));
                         }
                     }
                     else
                     {
-                        if (whiteCastleKing2 && positions[6][7].empty && !castleCheckCheck(board, positions, 4, 7) && !castleCheckCheck(board, positions, 5, 7) && !castleCheckCheck(board, positions, 6, 7))
+                        if (whiteCastleKing2 && positions[6][7].empty && !castleCheckCheck("black",board, positions, 4, 7) && !castleCheckCheck("black",board, positions, 5, 7) && !castleCheckCheck("black",board, positions, 6, 7))
                         {
                             moves.add(new Move(board, positions, x, y, 6, 7, "blackKingCastle"));
-
                         }
                     }
-                    positions[5][7].color = "";
-                    positions[6][7].color = "";
                 }
             }
             if (positions[x + 1][y].isOpposite(this))
@@ -123,63 +114,38 @@ public class King extends Piece
                 moves.add(new Move(board, positions, x, y, x - 1, y,"move"));
                 if (positions[2][0].empty && positions[1][0].empty && positions[4][0].type.equals("king"))
                 {
-                    positions[1][0].color = "white";
-                    positions[2][0].color = "white";
-                    positions[3][0].color = "white";
                     if (board(board, positions) == 1)
                     {
 
-                        if (whiteCastleQueen1 && positions[2][0].empty && !castleCheckCheck(board, positions, 1, 0) && !castleCheckCheck(board, positions, 2, 0) && !castleCheckCheck(board, positions, 3, 0) && !castleCheckCheck(board, positions, 4, 0))
+                        if (whiteCastleQueen1 && positions[2][0].empty && !castleCheckCheck("white",board, positions, 1, 0) && !castleCheckCheck("white",board, positions, 2, 0) && !castleCheckCheck("white",board, positions, 3, 0) && !castleCheckCheck("white",board, positions, 4, 0))
                         {
-                            positions[1][0].color = "";
-                            positions[2][0].color = "";
-                            positions[3][0].color = "";
                             moves.add(new Move(board, positions, x, y, 2, 0,"whiteQueenCastle"));
                         }
                     }
                     else
                     {
-                        if (whiteCastleQueen2 && positions[2][0].empty && !castleCheckCheck(board, positions, 1, 0) && !castleCheckCheck(board, positions, 2, 0) && !castleCheckCheck(board, positions, 3, 0) && !castleCheckCheck(board, positions, 4, 0))
+                        if (whiteCastleQueen2 && positions[2][0].empty && !castleCheckCheck("white",board, positions, 1, 0) && !castleCheckCheck("white",board, positions, 2, 0) && !castleCheckCheck("white",board, positions, 3, 0) && !castleCheckCheck("white",board, positions, 4, 0))
                         {
-                            positions[1][0] .color = "";
-                            positions[2][0].color = "";
-                            positions[3][0].color = "";
                             moves.add(new Move(board, positions, x, y, 2, 0,"whiteQueenCastle"));
                         }
                     }
-                    positions[1][0].color = "";
-                    positions[2][0].color = "";
-                    positions[3][0].color = "";
                 }
                 if (positions[2][7].empty && positions[1][7].empty && positions[4][7].type.equals("king"))
                 {
-                    positions[1][7].color = "black";
-                    positions[2][7].color = "black";
-                    positions[3][7].color = "black";
                     if (board(board, positions) == 1)
                     {
-
-                        if (whiteCastleQueen1 && positions[2][7].empty && !castleCheckCheck(board, positions, 1, 7) && !castleCheckCheck(board, positions, 2, 7) && !castleCheckCheck(board, positions, 3, 7) && !castleCheckCheck(board, positions, 4, 7))
+                        if (whiteCastleQueen1 && positions[2][7].empty && !castleCheckCheck("black",board, positions, 1, 7) && !castleCheckCheck("black",board, positions, 2, 7) && !castleCheckCheck("black",board, positions, 3, 7) && !castleCheckCheck("black",board, positions, 4, 7))
                         {
-                            positions[1][7].color = "";
-                            positions[2][7].color = "";
-                            positions[3][7].color = "";
                             moves.add(new Move(board, positions, x, y, 2, 7,"blackQueenCastle"));
                         }
                     }
                     else
                     {
-                        if (whiteCastleQueen2 && positions[2][7].empty && !castleCheckCheck(board, positions, 1, 7) && !castleCheckCheck(board, positions, 2, 7) && !castleCheckCheck(board, positions, 3, 7) && !castleCheckCheck(board, positions, 4, 7))
+                        if (whiteCastleQueen2 && positions[2][7].empty && !castleCheckCheck("black",board, positions, 1, 7) && !castleCheckCheck("black",board, positions, 2, 7) && !castleCheckCheck("black",board, positions, 3, 7) && !castleCheckCheck("black",board, positions, 4, 7))
                         {
-                            positions[1][7].color = "";
-                            positions[2][7].color = "";
-                            positions[3][7].color = "";
                             moves.add(new Move(board, positions, x, y, 2, 7,"blackQueenCastle"));
                         }
                     }
-                    positions[1][7].color = "";
-                    positions[2][7].color = "";
-                    positions[3][7].color = "";
                 }
             }
             if (positions[x - 1][y].isOpposite(this))

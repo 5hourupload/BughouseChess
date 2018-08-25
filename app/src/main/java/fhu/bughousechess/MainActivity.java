@@ -1853,8 +1853,6 @@ public class MainActivity extends AppCompatActivity
         {
             setActions(board, positions);
         }
-
-        System.out.println(positions[x][y].type);
         Set<Move> moves = positions[x][y].getMoves(board, positions, x, y);
         for (Move m : moves)
         {
@@ -2281,7 +2279,7 @@ public class MainActivity extends AppCompatActivity
                 for (int i = 0; i < 8; i++)
                 {
                     final int x = i;
-                    if (positions[i][7].color.equals("white") && positions[i][7].color.equals("pawn"))
+                    if (positions[i][7].color.equals("white") && positions[i][7].type.equals("pawn"))
                     {
                         whiteTurn1 = 3;
                         nuke(board, positions);
@@ -2375,7 +2373,7 @@ public class MainActivity extends AppCompatActivity
                 for (int i = 0; i < 8; i++)
                 {
                     final int x = i;
-                    if (positions[i][0].color.equals("black") && positions[i][0].color.equals("pawn"))
+                    if (positions[i][0].color.equals("black") && positions[i][0].type.equals("pawn"))
                     {
                         whiteTurn1 = 3;
                         nuke(board, positions);
@@ -2469,7 +2467,7 @@ public class MainActivity extends AppCompatActivity
                 for (int i = 0; i < 8; i++)
                 {
                     final int x = i;
-                    if (positions[i][7].color.equals("white") && positions[i][7].color.equals("pawn"))
+                    if (positions[i][7].color.equals("white") && positions[i][7].type.equals("pawn"))
                     {
                         whiteTurn2 = 3;
                         nuke(board, positions);
@@ -2559,7 +2557,7 @@ public class MainActivity extends AppCompatActivity
                 for (int i = 0; i < 8; i++)
                 {
                     final int x = i;
-                    if (positions[i][0].color.equals("black") && positions[i][0].color.equals("pawn"))
+                    if (positions[i][0].color.equals("black") && positions[i][0].type.equals("pawn"))
                     {
                         whiteTurn2 = 3;
                         nuke(board, positions);
@@ -2776,7 +2774,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private boolean whiteInCheck(ImageView[][] board, Piece[][] positions)
+    public static boolean whiteInCheck(ImageView[][] board, Piece[][] positions)
     {
         for (int i = 0; i < 8; i++)
         {
@@ -2792,7 +2790,7 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private boolean blackInCheck(ImageView[][] board, Piece[][] positions)
+    public static boolean blackInCheck(ImageView[][] board, Piece[][] positions)
     {
         for (int i = 0; i < 8; i++)
         {
@@ -2839,13 +2837,15 @@ public class MainActivity extends AppCompatActivity
      * @param y
      * @return
      */
-    public static boolean castleCheckCheck(ImageView[][] board, Piece[][] positions, int x, int y)
+    public static boolean castleCheckCheck(String color, ImageView[][] board, Piece[][] positions, int x, int y)
     {
+        String oppositeColor = "black";
+        if (color.equals("black")) oppositeColor = "white";
         for (int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)
             {
-                if (positions[i][j].isOpposite(positions[x][y]))
+                if (positions[i][j].color.equals(oppositeColor))
                 {
                     if (!positions[i][j].type.equals("king"))
                     {
@@ -3089,17 +3089,27 @@ public class MainActivity extends AppCompatActivity
                         }
                         if (whiteTurn1 == 1)
                         {
+//                            runOnUiThread(new Runnable()
+//                            {
+//                                @Override
+//                                public void run()
+//                                {
+//                                    make the move
+//                                    AIMinimax ai = new AIMinimax("white", board1, getArrayClone(positions1),roster1, roster1p, roster2, roster2p);
+//                                    Move bestMove = ai.getBestMove();
+//                                    System.out.println(bestMove.type);
+//                                    System.out.println(bestMove.x + " " + bestMove.y);
+//                                    System.out.println(bestMove.x1 + " " + bestMove.y1);
+//                                    performMove(bestMove.type, board1, positions1, bestMove.x, bestMove.y, bestMove.x1, bestMove.y1);
+//                                }
+//                            });
+                            AIMinimax ai = new AIMinimax("white", board1, getArrayClone(positions1), roster1, roster1p, roster2, roster2p);
+                            Move bestMove = ai.getBestMove();
                             runOnUiThread(new Runnable()
                             {
                                 @Override
                                 public void run()
                                 {
-                                    //make the move
-                                    AIMinimax ai = new AIMinimax("white", board1, positions1, roster1p, roster2p);
-                                    Move bestMove = ai.getBestMove();
-                                    System.out.println(bestMove.x + " " + bestMove.y);
-                                    System.out.println(bestMove.x1 + " " + bestMove.y1);
-                                    System.out.println(positions1[0][1].empty);
                                     performMove(bestMove.type, board1, positions1, bestMove.x, bestMove.y, bestMove.x1, bestMove.y1);
                                 }
                             });
@@ -3144,12 +3154,14 @@ public class MainActivity extends AppCompatActivity
                         }
                         if (whiteTurn1 == 2)
                         {
+                            AIMinimax ai = new AIMinimax("black", board1, getArrayClone(positions1), roster1, roster1p, roster2, roster2p);
+                            Move bestMove = ai.getBestMove();
                             runOnUiThread(new Runnable()
                             {
                                 @Override
                                 public void run()
                                 {
-                                    //make the move
+                                    performMove(bestMove.type, board1, positions1, bestMove.x, bestMove.y, bestMove.x1, bestMove.y1);
                                 }
                             });
                         }
@@ -3649,5 +3661,33 @@ public class MainActivity extends AppCompatActivity
                 .build();
 
         mInterstitialAd.loadAd(adRequest);
+    }
+
+
+    private Piece[][] getArrayClone(Piece[][] positions)
+    {
+        Piece[] temp1 = positions[0].clone();
+        Piece[] temp2 = positions[1].clone();
+        Piece[] temp3 = positions[2].clone();
+        Piece[] temp4 = positions[3].clone();
+        Piece[] temp5 = positions[4].clone();
+        Piece[] temp6 = positions[5].clone();
+        Piece[] temp7 = positions[6].clone();
+        Piece[] temp8 = positions[7].clone();
+        Piece[][] tempPositions = {temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8};
+        return tempPositions;
+
+    }
+
+    private void printPositions(Piece[][] positions)
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                System.out.print(positions[i][j].type);
+            }
+            System.out.println(" ");
+        }
     }
 }
