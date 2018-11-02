@@ -25,7 +25,7 @@ public class Move
         this.y1 = y1;
         this.type = type;
     }
-    public Move(ImageView[][] board, Piece[][] positions, ImageView[] roster, Piece[] rosterp, int i, int x1, int y1)
+    public Move(ImageView[][] board, Piece[][] positions, ImageView[] roster, Piece[] rosterp, int i, int x1, int y1, String type)
     {
         this.board = board;
         this.positions = positions;
@@ -34,5 +34,6 @@ public class Move
         this.i = i;
         this.x1 = x1;
         this.y1 = y1;
+        this.type = type;
     }
 }

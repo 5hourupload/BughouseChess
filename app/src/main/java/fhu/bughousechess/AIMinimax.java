@@ -1,4 +1,5 @@
 package fhu.bughousechess;
+
 import android.widget.ImageView;
 
 import java.util.HashMap;
@@ -35,17 +36,17 @@ public class AIMinimax
             {
                 if (positions[i][j].color.equals(color))
                 {
-                    regMoves.addAll(positions[i][j].getMoves(board,positions,i,j));
+                    regMoves.addAll(positions[i][j].getMoves(board, positions, i, j));
                 }
             }
         }
-//        for (int i = 0; i < 30; i++)
-//        {
-//            if (!roster1p[i].empty)
-//            {
-//                rosterMoves.addAll(roster1p[i].getRosterMoves(board, positions,roster1, roster1p,i));
-//            }
-//        }
+        for (int i = 0; i < 30; i++)
+        {
+            if (!roster1p[i].empty)
+            {
+                rosterMoves.addAll(roster1p[i].getRosterMoves(board, positions, roster1, roster1p, i));
+            }
+        }
         for (Move m : regMoves)
         {
             String moveType = m.type;
@@ -59,74 +60,79 @@ public class AIMinimax
             {
                 if (color.equals("white"))
                 {
-                    if (whiteInCheck(board,tempPositions)) continue;
+                    if (whiteInCheck(board, tempPositions)) continue;
                 }
                 if (color.equals("black"))
                 {
-                    if (blackInCheck(board,tempPositions)) continue;
+                    if (blackInCheck(board, tempPositions)) continue;
                 }
             }
 
-            double value = findMax(color,board,tempPositions,0);
+            double value = findMin(color, board, tempPositions, roster1, roster1p, roster2, roster2p, 0);
             if (value > highestValue)
             {
                 highestValue = value;
                 bestMove = m;
             }
         }
-//        for (Move m : rosterMoves)
-//        {
-//            Piece[][] tempPositions = getArrayClone(positions);
-//            int x = m.x;
-//            int x1 = m.x1;
-//            int y1 = m.y1;
-//            Piece[] tempRoster = roster1p.clone();
-//            tempPositions[x1][y1] = tempRoster[x];
-//            tempRoster[x] = new Empty();
-//            if (checking)
-//            {
-//                if (color.equals("white"))
-//                {
-//                    if (whiteInCheck(board,tempPositions)) continue;
-//                }
-//                if (color.equals("black"))
-//                {
-//                    if (blackInCheck(board,tempPositions)) continue;
-//                }
-//            }
-//
-//            int value = findMinOrMax(color,board,tempPositions,roster1p,roster2p,0);
-//            if (value > highestValue)
-//            {
-//                highestValue = value;
-//                bestMove = m;
-//            }
-//        }
-//        MainActivity.switchPositions(bestMove.type, positions, bestMove.x, bestMove.y, bestMove.x1, bestMove.y1);
-//
-//        int score = findMinOrMax(oppositeColor, board, positions,roster1,roster2,depth+1);
-//
-//        findMinOrMax(color, board, position, roster1,roster2,0);
+        for (Move m : rosterMoves)
+        {
+            Piece[][] tempPositions = getArrayClone(positions);
+            Piece[] tempRoster = roster1p.clone();
+            int i = m.i;
+            int x1 = m.x1;
+            int y1 = m.y1;
+            tempPositions[x1][y1] = roster1p[i];
+            tempRoster[i] = new Empty();
+            if (checking)
+            {
+                if (color.equals("white"))
+                {
+                    if (whiteInCheck(board, tempPositions)) continue;
+                }
+                if (color.equals("black"))
+                {
+                    if (blackInCheck(board, tempPositions)) continue;
+                }
+            }
 
+            double value = findMin(color, board, tempPositions, roster1, tempRoster, roster2, roster2p, 0);
+            if (value > highestValue)
+            {
+                highestValue = value;
+                bestMove = m;
+            }
+        }
     }
-    private double findMax(String color, ImageView[][] board, Piece[][] positions, int depth)
+
+    private double findMax(String color, ImageView[][] board, Piece[][] positions, ImageView[] roster1,
+                           Piece[] roster1p, ImageView[] roster2, Piece[] roster2p, int depth)
     {
-        if (depth > 1) {
-            return getBoardValue(positions,color,getOppositeColor(color));
+        if (depth > 1)
+        {
+            return getBoardValue(positions, color, getOppositeColor(color));
         }
         double highest = -999;
-        Set<Move> allMoves = new HashSet<>();
+        Set<Move> regMoves = new HashSet<>();
         for (int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)
             {
                 if (positions[i][j].color.equals(color))
                 {
-                    allMoves.addAll(positions[i][j].getMoves(board,positions,i,j));
+                    regMoves.addAll(positions[i][j].getMoves(board, positions, i, j));
                 }
             }
         }
-        for (Move m : allMoves)
+        Set<Move> rosterMoves = new HashSet<>();
+        for (int i = 0; i < 30; i++)
+        {
+            if (!roster1p[i].empty)
+            {
+                rosterMoves.addAll(roster1p[i].getRosterMoves(board, positions, roster1, roster1p, i));
+            }
+        }
+        for (Move m : regMoves)
         {
             String moveType = m.type;
             Piece[][] tempPositions = getArrayClone(positions);
@@ -142,14 +148,42 @@ public class AIMinimax
             {
                 if (color.equals("white"))
                 {
-                    if (whiteInCheck(board,tempPositions)) continue;
+                    if (whiteInCheck(board, tempPositions)) continue;
                 }
                 if (color.equals("black"))
                 {
-                    if (blackInCheck(board,tempPositions)) continue;
+                    if (blackInCheck(board, tempPositions)) continue;
                 }
             }
-            double value = findMin(color, board, positions,depth+1);
+            double value = findMin(color, board, tempPositions, roster1, roster1p, roster2, roster2p, depth + 1);
+            if (value > highest)
+            {
+                highest = value;
+            }
+        }
+        for (Move m : rosterMoves)
+        {
+            Piece[][] tempPositions = getArrayClone(positions);
+            Piece[] tempRoster = roster1p.clone();
+            int i = m.i;
+            int x1 = m.x1;
+            int y1 = m.y1;
+            tempPositions[x1][y1] = roster1p[i];
+            tempRoster[i] = new Empty();
+            //only gonna check for checking in this first iteration, might be important
+            //do so in the recursive function?
+            if (checking)
+            {
+                if (color.equals("white"))
+                {
+                    if (whiteInCheck(board, tempPositions)) continue;
+                }
+                if (color.equals("black"))
+                {
+                    if (blackInCheck(board, tempPositions)) continue;
+                }
+            }
+            double value = findMin(color, board, tempPositions, roster1, tempRoster, roster2, roster2p, depth + 1);
             if (value > highest)
             {
                 highest = value;
@@ -158,25 +192,34 @@ public class AIMinimax
         return highest;
     }
 
-    private double findMin(String color, ImageView[][] board, Piece[][] positions, int depth)
+    private double findMin(String color, ImageView[][] board, Piece[][] positions, ImageView[] roster1,
+                           Piece[] roster1p, ImageView[] roster2, Piece[] roster2p, int depth)
     {
         if (depth > 1)
         {
             return getBoardValue(positions, color, getOppositeColor(color));
         }
         double lowest = 999;
-        Set<Move> allMoves = new HashSet<>();
+        Set<Move> regMoves = new HashSet<>();
         for (int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)
             {
-                if (positions[i][j].color.equals(color))
+                if (positions[i][j].color.equals(getOppositeColor(color)))
                 {
-                    allMoves.addAll(positions[i][j].getMoves(board,positions,i,j));
+                    regMoves.addAll(positions[i][j].getMoves(board, positions, i, j));
                 }
             }
         }
-        for (Move m : allMoves)
+        Set<Move> rosterMoves = new HashSet<>();
+        for (int i = 0; i < 30; i++)
+        {
+            if (!roster2p[i].empty)
+            {
+                rosterMoves.addAll(roster2p[i].getRosterMoves(board, positions, roster2, roster2p, i));
+            }
+        }
+        for (Move m : regMoves)
         {
             String moveType = m.type;
             Piece[][] tempPositions = getArrayClone(positions);
@@ -192,14 +235,43 @@ public class AIMinimax
             {
                 if (color.equals("white"))
                 {
-                    if (whiteInCheck(board,tempPositions)) continue;
+                    if (whiteInCheck(board, tempPositions)) continue;
                 }
                 if (color.equals("black"))
                 {
-                    if (blackInCheck(board,tempPositions)) continue;
+                    if (blackInCheck(board, tempPositions)) continue;
                 }
             }
-            double value = findMax(color, board, positions,depth+1);
+            double value = findMax(color, board, tempPositions,roster1, roster1p, roster2, roster2p, depth + 1);
+            if (value < lowest)
+            {
+                lowest = value;
+            }
+        }
+        for (Move m : rosterMoves)
+        {
+            Piece[][] tempPositions = getArrayClone(positions);
+            Piece[] tempRoster = roster2p.clone();
+            int i = m.x;
+            int x1 = m.x1;
+            int y1 = m.y1;
+
+            tempPositions[x1][y1] = roster2p[i];
+            tempRoster[i] = new Empty();
+            //only gonna check for checking in this first iteration, might be important
+            //do so in the recursive function?
+            if (checking)
+            {
+                if (color.equals("white"))
+                {
+                    if (whiteInCheck(board, tempPositions)) continue;
+                }
+                if (color.equals("black"))
+                {
+                    if (blackInCheck(board, tempPositions)) continue;
+                }
+            }
+            double value = findMax(color, board, tempPositions,roster1, roster1p, roster2, tempRoster, depth + 1);
             if (value < lowest)
             {
                 lowest = value;
@@ -219,13 +291,13 @@ public class AIMinimax
                 {
                     if (position[i][j].color.equals(posColor))
                     {
-                        total+=pieceValues.get(position[i][j].type);
-                        total+=(Math.abs(3.5-Math.hypot(i-3.5, j-3.5)))/100.0;
+                        total += pieceValues.get(position[i][j].type);
+                        total += (Math.abs(3.5 - Math.hypot(i - 3.5, j - 3.5))) / 100.0;
                     }
                     else if (position[i][j].color.equals(negColor))
                     {
-                        total-=pieceValues.get(position[i][j].type);
-                        total-=(Math.abs(3.5-Math.hypot(i-3.5, j-3.5)))/100.0;
+                        total -= pieceValues.get(position[i][j].type);
+                        total -= (Math.abs(3.5 - Math.hypot(i - 3.5, j - 3.5))) / 100.0;
                     }
                     else System.out.println("SHOULDNT BE HERE");
                 }
@@ -233,6 +305,7 @@ public class AIMinimax
         }
         return total;
     }
+
     private String getOppositeColor(String color)
     {
         String oppositeColor;
@@ -240,6 +313,7 @@ public class AIMinimax
         else oppositeColor = "white";
         return oppositeColor;
     }
+
     public Move getBestMove()
     {
         return bestMove;

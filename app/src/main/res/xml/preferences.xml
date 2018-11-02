@@ -2,7 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                   >
     <PreferenceCategory
-        android:title="Player Options (AI is a work in progress)"
+        android:title="Player/AI Options"
         android:key="pref_key_storage_settings">
         <ListPreference
             android:key="player1"

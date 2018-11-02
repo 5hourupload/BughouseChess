@@ -178,7 +178,7 @@ public class Pawn extends Piece
                     {
                         if (positions[x][y].empty)
                         {
-                            moves.add(new Move(board, positions, roster, rosterp, i, x, y));
+                            moves.add(new Move(board, positions, roster, rosterp, i, x, y,"roster"));
                         }
                     }
                 }
@@ -188,7 +188,7 @@ public class Pawn extends Piece
                     {
                         if (positions[x][y].empty)
                         {
-                            moves.add(new Move(board, positions, roster, rosterp, i, x, y));
+                            moves.add(new Move(board, positions, roster, rosterp, i, x, y,"roster"));
                         }
                     }
                 }
@@ -199,7 +199,7 @@ public class Pawn extends Piece
                 {
                     if (positions[x][y].empty)
                     {
-                        moves.add(new Move(board, positions, roster, rosterp, i, x, y));
+                        moves.add(new Move(board, positions, roster, rosterp, i, x, y, "roster"));
                     }
                 }
             }

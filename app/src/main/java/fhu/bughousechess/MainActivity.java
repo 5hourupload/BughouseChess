@@ -801,6 +801,10 @@ public class MainActivity extends AppCompatActivity
                     setPieces(board2, positions2);
                     setActions(board1, positions1);
                     setActions(board2, positions2);
+                    LinearLayout pawnOptions1 = findViewById(R.id.pawnOptions1);
+                    LinearLayout pawnOptions2 = findViewById(R.id.pawnOptions2);
+                    pawnOptions1.setVisibility(View.INVISIBLE);
+                    pawnOptions2.setVisibility(View.INVISIBLE);
                     startTimers();
                     start.setText("Pause");
                     gameState = 1;
@@ -849,6 +853,10 @@ public class MainActivity extends AppCompatActivity
                 timer4.setText(time);
             }
         });
+        LinearLayout pawnOptions1 = findViewById(R.id.pawnOptions1);
+        LinearLayout pawnOptions2 = findViewById(R.id.pawnOptions2);
+        pawnOptions1.setVisibility(View.INVISIBLE);
+        pawnOptions2.setVisibility(View.INVISIBLE);
     }
 
     private void startSettings()
@@ -2830,12 +2838,6 @@ public class MainActivity extends AppCompatActivity
      * If we use the regular check checking method, then there will be a stack overflow
      * king's get moves call check check, which ends up calling king's get moves, etc
      * I think it is extremely unlikely that an opposing king would prevent castling
-     *
-     * @param board
-     * @param positions
-     * @param x
-     * @param y
-     * @return
      */
     public static boolean castleCheckCheck(String color, ImageView[][] board, Piece[][] positions, int x, int y)
     {
@@ -3066,6 +3068,7 @@ public class MainActivity extends AppCompatActivity
                     {
                         if (gameState == 0 || gameState == 2)
                         {
+                            System.out.println("a false");
                             a = false;
                         }
                         Random rand = new Random();
@@ -3089,28 +3092,21 @@ public class MainActivity extends AppCompatActivity
                         }
                         if (whiteTurn1 == 1)
                         {
-//                            runOnUiThread(new Runnable()
-//                            {
-//                                @Override
-//                                public void run()
-//                                {
-//                                    make the move
-//                                    AIMinimax ai = new AIMinimax("white", board1, getArrayClone(positions1),roster1, roster1p, roster2, roster2p);
-//                                    Move bestMove = ai.getBestMove();
-//                                    System.out.println(bestMove.type);
-//                                    System.out.println(bestMove.x + " " + bestMove.y);
-//                                    System.out.println(bestMove.x1 + " " + bestMove.y1);
-//                                    performMove(bestMove.type, board1, positions1, bestMove.x, bestMove.y, bestMove.x1, bestMove.y1);
-//                                }
-//                            });
-                            AIMinimax ai = new AIMinimax("white", board1, getArrayClone(positions1), roster1, roster1p, roster2, roster2p);
+                            AIMinimax ai = new AIMinimax("white", board1, getArrayClone(positions1), roster1, roster1p.clone(), roster2, roster2p.clone());
                             Move bestMove = ai.getBestMove();
+                            if (bestMove == null)
+                            {
+                                continue;
+                            }
                             runOnUiThread(new Runnable()
                             {
                                 @Override
                                 public void run()
                                 {
-                                    performMove(bestMove.type, board1, positions1, bestMove.x, bestMove.y, bestMove.x1, bestMove.y1);
+                                    if (bestMove.type.equals("roster"))
+                                        performRosterMove(board1, positions1, roster1, roster1p, bestMove.i, bestMove.x, bestMove.y);
+                                    else
+                                        performMove(bestMove.type, board1, positions1, bestMove.x, bestMove.y, bestMove.x1, bestMove.y1);
                                 }
                             });
                         }
@@ -3118,7 +3114,6 @@ public class MainActivity extends AppCompatActivity
                 }
             }).start();
         }
-
         if (!position2)
         {
             new Thread(new Runnable()
@@ -3154,24 +3149,31 @@ public class MainActivity extends AppCompatActivity
                         }
                         if (whiteTurn1 == 2)
                         {
-                            AIMinimax ai = new AIMinimax("black", board1, getArrayClone(positions1), roster1, roster1p, roster2, roster2p);
+                            AIMinimax ai = new AIMinimax("black", board1, getArrayClone(positions1), roster2, roster2p.clone(), roster1, roster1p.clone());
                             Move bestMove = ai.getBestMove();
+                            if (bestMove == null)
+                            {
+                                continue;
+                            }
                             runOnUiThread(new Runnable()
                             {
                                 @Override
                                 public void run()
                                 {
-                                    performMove(bestMove.type, board1, positions1, bestMove.x, bestMove.y, bestMove.x1, bestMove.y1);
+                                    if (bestMove.type.equals("roster"))
+                                        performRosterMove(board1, positions1, roster2, roster2p, bestMove.i, bestMove.x, bestMove.y);
+                                    else
+                                        performMove(bestMove.type, board1, positions1, bestMove.x, bestMove.y, bestMove.x1, bestMove.y1);
                                 }
                             });
                         }
                     }
 
                 }
-            }).start();
+            }).
 
+                    start();
         }
-
         if (!position3)
         {
             new Thread(new Runnable()
@@ -3207,20 +3209,27 @@ public class MainActivity extends AppCompatActivity
                         }
                         if (whiteTurn2 == 2)
                         {
+                            AIMinimax ai = new AIMinimax("black", board2, getArrayClone(positions2), roster4, roster4p.clone(), roster3, roster3p.clone());
+                            Move bestMove = ai.getBestMove();
+                            if (bestMove == null)
+                            {
+                                continue;
+                            }
                             runOnUiThread(new Runnable()
                             {
                                 @Override
                                 public void run()
                                 {
-                                    //changeShit(board2, positions2, cpuX[2], cpuY[2], cpuX1[2], cpuY1[2]);
+                                    if (bestMove.type.equals("roster"))
+                                        performRosterMove(board2, positions2, roster4, roster4p, bestMove.i, bestMove.x, bestMove.y);
+                                    else
+                                        performMove(bestMove.type, board2, positions2, bestMove.x, bestMove.y, bestMove.x1, bestMove.y1);
                                 }
                             });
                         }
                     }
-
                 }
             }).start();
-
         }
         if (!position4)
         {
@@ -3257,20 +3266,27 @@ public class MainActivity extends AppCompatActivity
                         }
                         if (whiteTurn2 == 1)
                         {
+                            AIMinimax ai = new AIMinimax("white", board2, getArrayClone(positions2), roster3, roster3p.clone(), roster4, roster4p.clone());
+                            Move bestMove = ai.getBestMove();
+                            if (bestMove == null)
+                            {
+                                continue;
+                            }
                             runOnUiThread(new Runnable()
                             {
                                 @Override
                                 public void run()
                                 {
-                                    //changeShit(board2, positions2, cpuX[3], cpuY[3], cpuX1[3], cpuY1[3]);
+                                    if (bestMove.type.equals("roster"))
+                                        performRosterMove(board2, positions2, roster3, roster3p, bestMove.i, bestMove.x, bestMove.y);
+                                    else
+                                        performMove(bestMove.type, board2, positions2, bestMove.x, bestMove.y, bestMove.x1, bestMove.y1);
                                 }
                             });
                         }
                     }
-
                 }
             }).start();
-
         }
     }
 
@@ -3473,7 +3489,8 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight)
+    public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth,
+                                            int reqHeight)
     {
         // Raw height and width of image
         final int height = options.outHeight;
@@ -3498,7 +3515,8 @@ public class MainActivity extends AppCompatActivity
         return inSampleSize;
     }
 
-    public static Bitmap decodeSampledBitmapFromResource(Resources res, int resId, int reqWidth, int reqHeight)
+    public static Bitmap decodeSampledBitmapFromResource(Resources res, int resId, int reqWidth,
+                                                         int reqHeight)
     {
 
         // First decode with inJustDecodeBounds=true to check dimensions
@@ -3663,7 +3681,6 @@ public class MainActivity extends AppCompatActivity
         mInterstitialAd.loadAd(adRequest);
     }
 
-
     private Piece[][] getArrayClone(Piece[][] positions)
     {
         Piece[] temp1 = positions[0].clone();
@@ -3676,18 +3693,5 @@ public class MainActivity extends AppCompatActivity
         Piece[] temp8 = positions[7].clone();
         Piece[][] tempPositions = {temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8};
         return tempPositions;
-
-    }
-
-    private void printPositions(Piece[][] positions)
-    {
-        for (int i = 0; i < 8; i++)
-        {
-            for (int j = 0; j < 8; j++)
-            {
-                System.out.print(positions[i][j].type);
-            }
-            System.out.println(" ");
-        }
     }
 }
