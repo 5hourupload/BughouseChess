@@ -1,27 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion "24.0.0"
+    compileSdkVersion 30
+    buildToolsVersion "24.0.3"
 
     defaultConfig {
         applicationId "fhu.bughousechess"
         minSdkVersion 24
-        targetSdkVersion 26
+        targetSdkVersion 30
         versionCode 16
         versionName "8.3.16"
-        jackOptions {
-            enabled true
-        }
-    }
-    signingConfigs {
-        release {
-            storeFile file("myreleasekey.keystore")
-            storePassword "password"
-            keyAlias "MyReleaseKey"
-            keyPassword "password"
-            v2SigningEnabled false
-        }
     }
 
     buildTypes {
@@ -31,10 +19,6 @@ android {
         }
     }
 
-    compileOptions {
-        targetCompatibility 1.8
-        sourceCompatibility 1.8
-    }
 }
 
 dependencies {

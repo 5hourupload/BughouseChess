@@ -16,7 +16,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.CountDownTimer;
 import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
+//import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.DragEvent;
@@ -29,6 +29,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -1890,7 +1892,7 @@ public class MainActivity extends AppCompatActivity
         return 0;
     }
 
-    private void setPotentialMove(String moveType, final ImageView[][] board, final Piece[][] positions, final int x, final int y, final int x1, int y1)
+    private void setPotentialMove(final String moveType, final ImageView[][] board, final Piece[][] positions, final int x, final int y, final int x1, final int y1)
     {
         if (checking || searchingForCheckmate1 || searchingForCheckmate2)
         {
@@ -3093,7 +3095,7 @@ public class MainActivity extends AppCompatActivity
                         if (whiteTurn1 == 1)
                         {
                             AIMinimax ai = new AIMinimax("white", board1, getArrayClone(positions1), roster1, roster1p.clone(), roster2, roster2p.clone());
-                            Move bestMove = ai.getBestMove();
+                            final Move bestMove = ai.getBestMove();
                             if (bestMove == null)
                             {
                                 continue;
@@ -3150,7 +3152,7 @@ public class MainActivity extends AppCompatActivity
                         if (whiteTurn1 == 2)
                         {
                             AIMinimax ai = new AIMinimax("black", board1, getArrayClone(positions1), roster2, roster2p.clone(), roster1, roster1p.clone());
-                            Move bestMove = ai.getBestMove();
+                            final Move bestMove = ai.getBestMove();
                             if (bestMove == null)
                             {
                                 continue;
@@ -3210,7 +3212,7 @@ public class MainActivity extends AppCompatActivity
                         if (whiteTurn2 == 2)
                         {
                             AIMinimax ai = new AIMinimax("black", board2, getArrayClone(positions2), roster4, roster4p.clone(), roster3, roster3p.clone());
-                            Move bestMove = ai.getBestMove();
+                            final Move bestMove = ai.getBestMove();
                             if (bestMove == null)
                             {
                                 continue;
@@ -3267,7 +3269,7 @@ public class MainActivity extends AppCompatActivity
                         if (whiteTurn2 == 1)
                         {
                             AIMinimax ai = new AIMinimax("white", board2, getArrayClone(positions2), roster3, roster3p.clone(), roster4, roster4p.clone());
-                            Move bestMove = ai.getBestMove();
+                            final Move bestMove = ai.getBestMove();
                             if (bestMove == null)
                             {
                                 continue;
