@@ -1,8 +1,11 @@
-package fhu.bughousechess;
+package fhu.bughousechess.pieces;
 
 import android.widget.ImageView;
 
 import java.util.Set;
+
+import fhu.bughousechess.Move;
+import fhu.bughousechess.pieces.Piece;
 
 public class Empty extends Piece
 {

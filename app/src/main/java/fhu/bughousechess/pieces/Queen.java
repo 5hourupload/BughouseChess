@@ -1,9 +1,12 @@
-package fhu.bughousechess;
+package fhu.bughousechess.pieces;
 
 import android.widget.ImageView;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import fhu.bughousechess.Move;
+import fhu.bughousechess.R;
 
 public class Queen extends Piece
 {

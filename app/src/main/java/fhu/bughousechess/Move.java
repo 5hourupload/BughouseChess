@@ -2,6 +2,8 @@ package fhu.bughousechess;
 
 import android.widget.ImageView;
 
+import fhu.bughousechess.pieces.Piece;
+
 public class Move
 {
     ImageView[][] board;

@@ -7,6 +7,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import fhu.bughousechess.pieces.Empty;
+import fhu.bughousechess.pieces.Piece;
+
 import static fhu.bughousechess.MainActivity.blackInCheck;
 import static fhu.bughousechess.MainActivity.checking;
 import static fhu.bughousechess.MainActivity.whiteInCheck;

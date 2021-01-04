@@ -1,9 +1,11 @@
-package fhu.bughousechess;
+package fhu.bughousechess.pieces;
 
 import android.widget.ImageView;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import fhu.bughousechess.Move;
 
 public abstract class Piece
 {

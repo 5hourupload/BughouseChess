@@ -1,9 +1,13 @@
-package fhu.bughousechess;
+package fhu.bughousechess.pieces;
 
 import android.widget.ImageView;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import fhu.bughousechess.Move;
+import fhu.bughousechess.R;
+import fhu.bughousechess.pieces.Piece;
 
 public class Knight extends Piece
 {

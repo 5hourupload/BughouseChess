@@ -43,6 +43,15 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 
+import fhu.bughousechess.pieces.Bishop;
+import fhu.bughousechess.pieces.Empty;
+import fhu.bughousechess.pieces.King;
+import fhu.bughousechess.pieces.Knight;
+import fhu.bughousechess.pieces.Pawn;
+import fhu.bughousechess.pieces.Piece;
+import fhu.bughousechess.pieces.Queen;
+import fhu.bughousechess.pieces.Rook;
+
 public class MainActivity extends AppCompatActivity
 {
     static ImageView board1[][] = new ImageView[8][8];
@@ -62,21 +71,21 @@ public class MainActivity extends AppCompatActivity
     int whiteTurn1 = 1;
     int whiteTurn2 = 1;
 
-    static boolean whiteCastleQueen1 = true;
-    static boolean whiteCastleKing1 = true;
-    static boolean blackCastleQueen1 = true;
-    static boolean blackCastleKing1 = true;
-    static boolean whiteCastleQueen2 = true;
-    static boolean whiteCastleKing2 = true;
-    static boolean blackCastleQueen2 = true;
-    static boolean blackCastleKing2 = true;
+    public static boolean whiteCastleQueen1 = true;
+    public static boolean whiteCastleKing1 = true;
+    public static boolean blackCastleQueen1 = true;
+    public static boolean blackCastleKing1 = true;
+    public static boolean whiteCastleQueen2 = true;
+    public static boolean whiteCastleKing2 = true;
+    public static boolean blackCastleQueen2 = true;
+    public static boolean blackCastleKing2 = true;
 
     static int minute = 5;
     static int second = 0;
     static boolean checking = true;
     static boolean placing = true;
     static boolean reverting = true;
-    static boolean firstrank = false;
+    public static boolean firstrank = false;
 
 
     static int gameState = 0;
@@ -85,9 +94,9 @@ public class MainActivity extends AppCompatActivity
 
     static int milliseconds = 5 * 60 * 1000;
 
-    static String enP[][] = new String[8][4];
-    static int board1Turn = 0;
-    static int board2Turn = 0;
+    public static String enP[][] = new String[8][4];
+    public static int board1Turn = 0;
+    public static int board2Turn = 0;
     private int currentApiVersion;
     private SharedPreferences prefs;
 
