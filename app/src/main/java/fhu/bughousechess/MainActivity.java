@@ -33,7 +33,9 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.TimeZone;
@@ -42,6 +44,10 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.RequestConfiguration;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
 import fhu.bughousechess.pieces.Bishop;
 import fhu.bughousechess.pieces.Empty;
@@ -173,15 +179,18 @@ public class MainActivity extends AppCompatActivity
         }
 
 
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
+        });
+        List<String> testDeviceIds = Arrays.asList("B44AA3B40796998A36EAD9DE8930925E");
+        RequestConfiguration configuration =
+                new RequestConfiguration.Builder().setTestDeviceIds(testDeviceIds).build();
+        MobileAds.setRequestConfiguration(configuration);
+
         AdView mAdView = findViewById(R.id.adView);
-        //AdRequest adRequest = new AdRequest.Builder().build();
-        //mAdView.loadAd(adRequest);
-        AdRequest request = new AdRequest.Builder()
-                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)        // All emulators
-                .addTestDevice("261C12037B82A37B909C2E6BE482F9ED")  // An example device ID
-                .addTestDevice("AA47C911625C161A0D482E29715BB8D9")
-                .addTestDevice("46B3982AE175C2BBB3DB8E4E99C2A1C4")
-                .build();
+        AdRequest request = new AdRequest.Builder().build();
         mAdView.loadAd(request);
 
 
@@ -564,11 +573,9 @@ public class MainActivity extends AppCompatActivity
 
         board1[1][1].post(new Runnable()
         {
-
             @Override
             public void run()
             {
-
                 for (int i = 0; i < 8; i++)
                 {
                     for (int j = 0; j < 8; j++)
@@ -3650,11 +3657,7 @@ public class MainActivity extends AppCompatActivity
 
     private void requestNewInterstitial()
     {
-        AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
-                .addTestDevice("261C12037B82A37B909C2E6BE482F9ED")
-                .build();
-
+        AdRequest adRequest = new AdRequest.Builder().build();
         mInterstitialAd.loadAd(adRequest);
     }
 
