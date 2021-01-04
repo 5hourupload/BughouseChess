@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity
 
     static int milliseconds = 5 * 60 * 1000;
 
-    public static String enP[][] = new String[8][4];
+    public static String[][] enP = new String[8][4];
     public static int board1Turn = 0;
     public static int board2Turn = 0;
     private int currentApiVersion;
@@ -234,15 +234,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-//        final TextView connect = (TextView) findViewById(R.id.connect);
-//        connect.setOnClickListener(new View.OnClickListener()
-//        {
-//            @Override
-//            public void onClick(View v)
-//            {
-//                nsd();
-//            }
-//        });
 
         final TextView timer1 = findViewById(R.id.timer1);
         final TextView timer2 = findViewById(R.id.timer2);
@@ -568,7 +559,6 @@ public class MainActivity extends AppCompatActivity
         final ScrollView scroll2 = findViewById(R.id.scroll2);
         final ScrollView scroll4 = findViewById(R.id.scroll4);
 
-
         final Button start = findViewById(R.id.start);
 
 
@@ -585,19 +575,28 @@ public class MainActivity extends AppCompatActivity
                     {
                         board1[i][j].getLayoutParams().width = board1[i][j].getHeight();
                         board2[i][j].getLayoutParams().width = board2[i][j].getHeight();
+                        board1[i][j].requestLayout();
+                        board2[i][j].requestLayout();
                     }
                 }
                 timer1.getLayoutParams().width = timer1.getHeight() * 2;
                 timer2.getLayoutParams().width = timer2.getHeight() * 2;
                 timer3.getLayoutParams().width = timer3.getHeight() * 2;
                 timer4.getLayoutParams().width = timer4.getHeight() * 2;
+                timer1.requestLayout();
+                timer2.requestLayout();
+                timer3.requestLayout();
+                timer4.requestLayout();
                 start.getLayoutParams().width = timer1.getHeight() * 2;
+                start.requestLayout();
                 options.getLayoutParams().width = timer1.getHeight() * 2;
+                options.requestLayout();
                 scroll2.fullScroll(View.FOCUS_DOWN);
+                scroll2.requestLayout();
                 scroll4.fullScroll(View.FOCUS_DOWN);
+                scroll4.requestLayout();
             }
         });
-
 
         roster1[0] = findViewById(R.id.roster1_1);
         roster1[1] = findViewById(R.id.roster2_1);
@@ -660,7 +659,6 @@ public class MainActivity extends AppCompatActivity
         roster2[2] = findViewById(R.id.roster28_2);
         roster2[1] = findViewById(R.id.roster29_2);
         roster2[0] = findViewById(R.id.roster30_2);
-
 
         roster3[0] = findViewById(R.id.roster1_3);
         roster3[1] = findViewById(R.id.roster2_3);
@@ -726,21 +724,23 @@ public class MainActivity extends AppCompatActivity
 
         roster1[1].post(new Runnable()
         {
-
             @Override
             public void run()
             {
-
                 for (int i = 0; i < 30; i++)
                 {
                     roster1[i].getLayoutParams().height = board1[1][1].getHeight();
                     roster1[i].getLayoutParams().width = board1[1][1].getHeight();
+                    roster1[i].requestLayout();
                     roster2[i].getLayoutParams().height = board1[1][1].getHeight();
                     roster2[i].getLayoutParams().width = board1[1][1].getHeight();
+                    roster2[i].requestLayout();
                     roster3[i].getLayoutParams().height = board1[1][1].getHeight();
                     roster3[i].getLayoutParams().width = board1[1][1].getHeight();
+                    roster3[i].requestLayout();
                     roster4[i].getLayoutParams().height = board1[1][1].getHeight();
                     roster4[i].getLayoutParams().width = board1[1][1].getHeight();
+                    roster4[i].requestLayout();
                 }
             }
         });
@@ -823,7 +823,6 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
-
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         WindowManager wm = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE); // the results will be higher than using the activity context object or the getWindowManager() shortcut
@@ -3543,39 +3542,6 @@ public class MainActivity extends AppCompatActivity
         return BitmapFactory.decodeResource(res, resId, options);
     }
 
-    @SuppressLint("NewApi")
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus)
-    {
-        super.onWindowFocusChanged(hasFocus);
-        if (gameState == 1)
-        {
-            clean(board1, positions1);
-            clean(board2, positions2);
-            turnSave1 = whiteTurn1;
-            whiteTurn1 = 3;
-            turnSave2 = whiteTurn2;
-            whiteTurn2 = 3;
-            nuke(board1, positions1);
-            nuke(board2, positions2);
-            gameState = 2;
-            final Button start = findViewById(R.id.start);
-            start.setText("Resume");
-        }
-
-        if (currentApiVersion >= Build.VERSION_CODES.KITKAT && hasFocus)
-        {
-            getWindow().getDecorView().setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-        }
-
-
-    }
 
     private class MyShadowBuilder extends View.DragShadowBuilder
     {
