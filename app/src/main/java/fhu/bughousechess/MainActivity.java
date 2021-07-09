@@ -1805,7 +1805,7 @@ public class MainActivity extends AppCompatActivity
         clean(board, positions);
         if (board(board, positions) == 1)
         {
-            if (rosterp[i].equals("white"))
+            if (rosterp[i].color.equals("white"))
             {
                 if (gameState == 2)
                 {
