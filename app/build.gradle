@@ -8,8 +8,8 @@ android {
         applicationId "fhu.bughousechess"
         minSdkVersion 24
         targetSdkVersion 30
-        versionCode 16
-        versionName "8.3.16"
+        versionCode 17
+        versionName "1.3.21"
     }
 
     buildTypes {
