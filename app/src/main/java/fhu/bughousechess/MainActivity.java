@@ -3119,7 +3119,7 @@ public class MainActivity extends AppCompatActivity
                                 public void run()
                                 {
                                     if (bestMove.type.equals("roster"))
-                                        performRosterMove(board1, positions1, roster1, roster1p, bestMove.i, bestMove.x, bestMove.y);
+                                        performRosterMove(board1, positions1, roster1, roster1p, bestMove.i, bestMove.x1, bestMove.y1);
                                     else
                                         performMove(bestMove.type, board1, positions1, bestMove.x, bestMove.y, bestMove.x1, bestMove.y1);
                                 }
