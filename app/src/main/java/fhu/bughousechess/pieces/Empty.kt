@@ -1,32 +1,28 @@
-package fhu.bughousechess.pieces;
+package fhu.bughousechess.pieces
 
-import android.widget.ImageView;
+import android.R
+import android.widget.ImageView
+import fhu.bughousechess.Move
+import fhu.bughousechess.pieces.Piece
 
-import java.util.Set;
+class Empty : Piece() {
+    override val resID: Int
+        get() = R.color.transparent
 
-import fhu.bughousechess.Move;
-import fhu.bughousechess.pieces.Piece;
-
-public class Empty extends Piece
-{
-    public Empty()
-    {
-        color = "";
-        type = "";
-        wasPawn = false;
-        backgroundColor = "";
-        empty = true;
+    override fun getMoves(
+        board: Array<Array<ImageView?>?>?,
+        positions: Array<Array<Piece?>?>?,
+        x: Int,
+        y: Int
+    ): Set<Move?>? {
+        return null
     }
 
-    @Override
-    public int getResID()
-    {
-        return android.R.color.transparent;
-    }
-
-    @Override
-    public Set<Move> getMoves(ImageView[][] board, Piece[][] positions, int x, int y)
-    {
-        return null;
+    init {
+        color = ""
+        type = ""
+        wasPawn = false
+        backgroundColor = ""
+        empty = true
     }
 }

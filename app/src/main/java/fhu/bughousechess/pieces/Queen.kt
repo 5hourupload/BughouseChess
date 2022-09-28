@@ -1,265 +1,192 @@
-package fhu.bughousechess.pieces;
+package fhu.bughousechess.pieces
 
-import android.widget.ImageView;
+import android.widget.ImageView
+import fhu.bughousechess.Move
+import fhu.bughousechess.R
+import java.util.HashSet
 
-import java.util.HashSet;
-import java.util.Set;
+class Queen(color: String?) : Piece() {
+    override val resID: Int
+        get() = if (color == "white") R.mipmap.queen else R.mipmap.bqueen
 
-import fhu.bughousechess.Move;
-import fhu.bughousechess.R;
-
-public class Queen extends Piece
-{
-    public Queen(String color)
-    {
-        this.color = color;
-        type = "queen";
-        wasPawn = false;
-        backgroundColor = "";
-        empty = false;
+    override fun getMoves(
+        board: Array<Array<ImageView?>?>?,
+        positions: Array<Array<Piece?>?>?,
+        x: Int,
+        y: Int
+    ): Set<Move?>? {
+        val moves: MutableSet<Move?> = HashSet()
+        var inbetween = false
+        for (i in y + 1..7) {
+            for (j in y + 1 until i) {
+                if (!positions!![x]!![j]!!.empty) {
+                    inbetween = true
+                }
+            }
+            if (positions!![x]!![i]!!.empty) {
+                if (!inbetween) {
+                    moves.add(Move(board, positions, x, y, x, i, "move"))
+                }
+            }
+            if (positions[x]!![i]!!.isOpposite(this)) {
+                if (!inbetween) {
+                    moves.add(Move(board, positions, x, y, x, i, "take"))
+                }
+            }
+        }
+        inbetween = false
+        for (i in y - 1 downTo -1 + 1) {
+            for (j in y - 1 downTo i + 1) {
+                if (!positions!![x]!![j]!!.empty) {
+                    inbetween = true
+                }
+            }
+            if (positions!![x]!![i]!!.empty) {
+                if (!inbetween) {
+                    moves.add(Move(board, positions, x, y, x, i, "move"))
+                }
+            }
+            if (positions[x]!![i]!!.isOpposite(this)) {
+                if (!inbetween) {
+                    moves.add(Move(board, positions, x, y, x, i, "take"))
+                }
+            }
+        }
+        inbetween = false
+        for (i in x + 1..7) {
+            for (j in x + 1 until i) {
+                if (!positions!![j]!![y]!!.empty) {
+                    inbetween = true
+                }
+            }
+            if (positions!![i]!![y]!!.empty) {
+                if (!inbetween) {
+                    moves.add(Move(board, positions, x, y, i, y, "move"))
+                }
+            }
+            if (positions[i]!![y]!!.isOpposite(this)) {
+                if (!inbetween) {
+                    moves.add(Move(board, positions, x, y, i, y, "take"))
+                }
+            }
+        }
+        inbetween = false
+        for (i in x - 1 downTo -1 + 1) {
+            for (j in x - 1 downTo i + 1) {
+                if (!positions!![j]!![y]!!.empty) {
+                    inbetween = true
+                }
+            }
+            if (positions!![i]!![y]!!.empty) {
+                if (!inbetween) {
+                    moves.add(Move(board, positions, x, y, i, y, "move"))
+                }
+            }
+            if (positions[i]!![y]!!.isOpposite(this)) {
+                if (!inbetween) {
+                    moves.add(Move(board, positions, x, y, i, y, "take"))
+                }
+            }
+        }
+        inbetween = false
+        var z = x
+        if (y > x) {
+            z = y
+        }
+        for (i in 1 until 8 - z) {
+            for (j in 1 until i) {
+                if (!positions!![x + j]!![y + j]!!.empty) {
+                    inbetween = true
+                }
+            }
+            if (positions!![x + i]!![y + i]!!.empty) {
+                if (!inbetween) {
+                    moves.add(Move(board, positions, x, y, x + i, y + i, "move"))
+                }
+            }
+            if (positions[x + i]!![y + i]!!.isOpposite(this)) {
+                if (!inbetween) {
+                    moves.add(Move(board, positions, x, y, x + i, y + i, "take"))
+                }
+            }
+        }
+        inbetween = false
+        z = if (x < y) {
+            x
+        } else {
+            y
+        }
+        for (i in 1 until z + 1) {
+            for (j in 1 until i) {
+                if (!positions!![x - j]!![y - j]!!.empty) {
+                    inbetween = true
+                }
+            }
+            if (positions!![x - i]!![y - i]!!.empty) {
+                if (!inbetween) {
+                    moves.add(Move(board, positions, x, y, x - i, y - i, "move"))
+                }
+            }
+            if (positions[x - i]!![y - i]!!.isOpposite(this)) {
+                if (!inbetween) {
+                    moves.add(Move(board, positions, x, y, x - i, y - i, "take"))
+                }
+            }
+        }
+        inbetween = false
+        z = if (7 - x < y) {
+            7 - x
+        } else {
+            y
+        }
+        for (i in 1 until z + 1) {
+            for (j in 1 until i) {
+                if (!positions!![x + j]!![y - j]!!.empty) {
+                    inbetween = true
+                }
+            }
+            if (positions!![x + i]!![y - i]!!.empty) {
+                if (!inbetween) {
+                    moves.add(Move(board, positions, x, y, x + i, y - i, "move"))
+                }
+            }
+            if (positions[x + i]!![y - i]!!.isOpposite(this)) {
+                if (!inbetween) {
+                    moves.add(Move(board, positions, x, y, x + i, y - i, "take"))
+                }
+            }
+        }
+        inbetween = false
+        z = if (7 - y < x) {
+            7 - y
+        } else {
+            x
+        }
+        for (i in 1 until z + 1) {
+            for (j in 1 until i) {
+                if (!positions!![x - j]!![y + j]!!.empty) {
+                    inbetween = true
+                }
+            }
+            if (positions!![x - i]!![y + i]!!.empty) {
+                if (!inbetween) {
+                    moves.add(Move(board, positions, x, y, x - i, y + i, "move"))
+                }
+            }
+            if (positions[x - i]!![y + i]!!.isOpposite(this)) {
+                if (!inbetween) {
+                    moves.add(Move(board, positions, x, y, x - i, y + i, "take"))
+                }
+            }
+        }
+        return moves
     }
 
-    @Override
-    public int getResID()
-    {
-        if (color.equals("white"))
-            return R.mipmap.queen;
-        return R.mipmap.bqueen;
-    }
-
-    @Override
-    public Set<Move> getMoves(ImageView[][] board, Piece[][] positions, int x, int y)
-    {
-        Set<Move> moves = new HashSet<>();
-        boolean inbetween = false;
-        for (int i = y + 1; i < 8; i++)
-        {
-            for (int j = y + 1; j < i; j++)
-            {
-                if (!positions[x][j].empty)
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[x][i].empty)
-            {
-                if (!inbetween)
-                {
-                    moves.add(new Move(board, positions, x ,y, x ,i,"move"));
-                }
-            }
-            if (positions[x][i].isOpposite(this))
-            {
-                if (!inbetween)
-                {
-                    moves.add(new Move(board, positions, x ,y, x ,i,"take"));
-                }
-            }
-        }
-        inbetween = false;
-        for (int i = y - 1; i > -1; i--)
-        {
-            for (int j = y - 1; j > i; j--)
-            {
-                if (!positions[x][j].empty)
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[x][i].empty)
-            {
-                if (!inbetween)
-                {
-                    moves.add(new Move(board, positions, x ,y, x ,i,"move"));
-                }
-            }
-            if (positions[x][i].isOpposite(this))
-            {
-                if (!inbetween)
-                {
-                    moves.add(new Move(board, positions, x ,y, x ,i,"take"));
-                }
-            }
-        }
-        inbetween = false;
-        for (int i = x + 1; i < 8; i++)
-        {
-            for (int j = x + 1; j < i; j++)
-            {
-                if (!positions[j][y].empty)
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[i][y].empty)
-            {
-                if (!inbetween)
-                {
-                    moves.add(new Move(board, positions, x ,y, i ,y,"move"));
-                }
-            }
-            if (positions[i][y].isOpposite(this))
-            {
-                if (!inbetween)
-                {
-                    moves.add(new Move(board, positions, x ,y, i ,y,"take"));
-                }
-            }
-        }
-        inbetween = false;
-        for (int i = x - 1; i > -1; i--)
-        {
-            for (int j = x - 1; j > i; j--)
-            {
-                if (!positions[j][y].empty)
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[i][y].empty)
-            {
-                if (!inbetween)
-                {
-                    moves.add(new Move(board, positions, x ,y, i ,y,"move"));
-                }
-            }
-            if (positions[i][y].isOpposite(this))
-            {
-                if (!inbetween)
-                {
-                    moves.add(new Move(board, positions, x ,y, i ,y,"take"));
-                }
-            }
-        }
-        inbetween = false;
-        int z = x;
-        if (y > x)
-        {
-            z = y;
-        }
-        for (int i = 1; i < 8 - z; i++)
-        {
-            for (int j = 1; j < i; j++)
-            {
-                if (!positions[x + j][y + j].empty)
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[x + i][y + i].empty)
-            {
-                if (!inbetween)
-                {
-                    moves.add(new Move(board, positions, x, y, x + i, y + i,"move"));
-                }
-            }
-            if (positions[x + i][y + i].isOpposite(this))
-            {
-                if (!inbetween)
-                {
-                    moves.add(new Move(board, positions, x, y, x + i, y + i,"take"));
-                }
-            }
-        }
-        inbetween = false;
-        if (x < y)
-        {
-            z = x;
-        }
-        else
-        {
-            z = y;
-        }
-        for (int i = 1; i < z + 1; i++)
-        {
-            for (int j = 1; j < i; j++)
-            {
-                if (!positions[x - j][y - j].empty)
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[x - i][y - i].empty)
-            {
-                if (!inbetween)
-                {
-                    moves.add(new Move(board, positions, x, y, x - i, y - i,"move"));
-                }
-            }
-            if (positions[x - i][y - i].isOpposite(this))
-            {
-                if (!inbetween)
-                {
-                    moves.add(new Move(board, positions, x, y, x - i, y - i,"take"));
-                }
-            }
-        }
-        inbetween = false;
-        if (7 - x < y)
-        {
-            z = 7 - x;
-        }
-        else
-        {
-            z = y;
-        }
-        for (int i = 1; i < z + 1; i++)
-        {
-            for (int j = 1; j < i; j++)
-            {
-                if (!positions[x + j][y - j].empty)
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[x + i][y - i].empty)
-            {
-                if (!inbetween)
-                {
-                    moves.add(new Move(board, positions, x, y, x + i, y - i,"move"));
-                }
-            }
-            if (positions[x + i][y - i].isOpposite(this))
-            {
-                if (!inbetween)
-                {
-                    moves.add(new Move(board, positions, x, y, x + i, y - i,"take"));
-                }
-            }
-        }
-        inbetween = false;
-        if (7 - y < x)
-        {
-            z = 7 - y;
-        }
-        else
-        {
-            z = x;
-        }
-        for (int i = 1; i < z + 1; i++)
-        {
-            for (int j = 1; j < i; j++)
-            {
-                if (!positions[x - j][y + j].empty)
-                {
-                    inbetween = true;
-                }
-            }
-            if (positions[x - i][y + i].empty)
-            {
-                if (!inbetween)
-                {
-                    moves.add(new Move(board, positions, x, y, x - i, y + i,"move"));
-                }
-            }
-            if (positions[x - i][y + i].isOpposite(this))
-            {
-                if (!inbetween)
-                {
-                    moves.add(new Move(board, positions, x, y, x - i, y + i,"take"));
-                }
-            }
-        }
-        return moves;
+    init {
+        this.color = color
+        type = "queen"
+        wasPawn = false
+        backgroundColor = ""
+        empty = false
     }
 }
