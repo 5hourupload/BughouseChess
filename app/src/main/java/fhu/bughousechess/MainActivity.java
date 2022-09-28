@@ -41,11 +41,12 @@ import java.util.TimeZone;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.InterstitialAd;
+
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.RequestConfiguration;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
 
 import fhu.bughousechess.pieces.Bishop;
 import fhu.bughousechess.pieces.Empty;
@@ -192,18 +193,18 @@ public class MainActivity extends AppCompatActivity
         mAdView.loadAd(request);
 
 
-        mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-9794567752193168/1898888810");
-
-        mInterstitialAd.setAdListener(new AdListener()
-        {
-            @Override
-            public void onAdClosed()
-            {
-                requestNewInterstitial();
-            }
-
-        });
+//        mInterstitialAd = new InterstitialAd(this);
+//        mInterstitialAd.setAdUnitId("ca-app-pub-9794567752193168/1898888810");
+//
+//        mInterstitialAd.setAdListener(new AdListener()
+//        {
+//            @Override
+//            public void onAdClosed()
+//            {
+//                requestNewInterstitial();
+//            }
+//
+//        });
 
         requestNewInterstitial();
 
@@ -3434,10 +3435,10 @@ public class MainActivity extends AppCompatActivity
                     public void onClick(View v)
                     {
                         finishScreen.setVisibility(View.INVISIBLE);
-                        if (mInterstitialAd.isLoaded())
-                        {
-                            mInterstitialAd.show();
-                        }
+//                        if (mInterstitialAd.isLoaded())
+//                        {
+//                            mInterstitialAd.show();
+//                        }
                     }
                 });
             }
@@ -3656,7 +3657,7 @@ public class MainActivity extends AppCompatActivity
     private void requestNewInterstitial()
     {
         AdRequest adRequest = new AdRequest.Builder().build();
-        mInterstitialAd.loadAd(adRequest);
+       // mInterstitialAd.loadAd(adRequest);
     }
 
     private Piece[][] getArrayClone(Piece[][] positions)

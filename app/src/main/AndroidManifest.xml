@@ -23,7 +23,8 @@
             android:value="ca-app-pub-9794567752193168~3713699213"/>
         <activity
             android:name=".MainActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
