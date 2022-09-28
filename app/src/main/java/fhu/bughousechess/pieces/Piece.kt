@@ -1,45 +1,50 @@
-package fhu.bughousechess.pieces;
+package fhu.bughousechess.pieces
 
-import android.widget.ImageView;
+import android.widget.ImageView
+import fhu.bughousechess.Move
+import fhu.bughousechess.pieces.Piece
+import java.util.HashSet
 
-import java.util.HashSet;
-import java.util.Set;
+abstract class Piece {
+    @JvmField
+    var color: String? = null
+    @JvmField
+    var type: String? = null
+    @JvmField
+    var wasPawn = false
+    @JvmField
+    var backgroundColor: String? = null
+    @JvmField
+    var empty = true
+    var onRoster = false
+    abstract val resID: Int
+    abstract fun getMoves(
+        board: Array<Array<ImageView?>?>?,
+        positions: Array<Array<Piece?>?>?,
+        x: Int,
+        y: Int
+    ): Set<Move?>?
 
-import fhu.bughousechess.Move;
-
-public abstract class Piece
-{
-    public String color;
-    public String type;
-    public boolean wasPawn;
-    public String backgroundColor;
-    public boolean empty = true;
-    public boolean onRoster = false;
-
-    public abstract int getResID();
-    public abstract Set<Move> getMoves(ImageView[][] board, Piece[][] positions, int x, int y);
-    public boolean isOpposite(Piece piece)
-    {
-        if (color.equals("white"))
-        return piece.color.equals("black");
-        if (color.equals("black"))
-            return piece.color.equals("white");
-        return false;
-
+    fun isOpposite(piece: Piece): Boolean {
+        if (color == "white") return piece.color == "black"
+        return if (color == "black") piece.color == "white" else false
     }
-    public Set<Move> getRosterMoves(ImageView[][] board, Piece[][] positions, ImageView[] roster, Piece[] rosterp, int i)
-    {
-        Set<Move> moves = new HashSet<>();
-        for (int x = 0; x < 8; x++)
-        {
-            for (int y = 0; y < 8; y++)
-            {
-                if (positions[x][y].empty)
-                {
-                    moves.add(new Move(board, positions, roster, rosterp, i, x, y, "roster"));
+
+    open fun getRosterMoves(
+        board: Array<Array<ImageView?>?>?,
+        positions: Array<Array<Piece>>,
+        roster: Array<ImageView?>?,
+        rosterp: Array<Piece?>?,
+        i: Int
+    ): Set<Move>? {
+        val moves: MutableSet<Move> = HashSet()
+        for (x in 0..7) {
+            for (y in 0..7) {
+                if (positions[x][y].empty) {
+                    moves.add(Move(board, positions, roster, rosterp, i, x, y, "roster"))
                 }
             }
         }
-        return  moves;
+        return moves
     }
 }
