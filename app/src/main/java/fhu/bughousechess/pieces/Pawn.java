@@ -5,14 +5,14 @@ import android.widget.ImageView;
 import java.util.HashSet;
 import java.util.Set;
 
-import fhu.bughousechess.MainActivity;
+import fhu.bughousechess.GameActivity;
 import fhu.bughousechess.Move;
 import fhu.bughousechess.R;
 
-import static fhu.bughousechess.MainActivity.board;
-import static fhu.bughousechess.MainActivity.board1Turn;
-import static fhu.bughousechess.MainActivity.board2Turn;
-import static fhu.bughousechess.MainActivity.enP;
+import static fhu.bughousechess.GameActivity.board;
+import static fhu.bughousechess.GameActivity.board1Turn;
+import static fhu.bughousechess.GameActivity.board2Turn;
+import static fhu.bughousechess.GameActivity.enP;
 
 public class Pawn extends Piece
 {
@@ -174,7 +174,7 @@ public class Pawn extends Piece
 
         for (int x = 0; x < 8; x++)
         {
-            if (MainActivity.firstrank)
+            if (GameActivity.firstrank)
             {
                 if (rosterp[i].color.equals("white"))
                 {

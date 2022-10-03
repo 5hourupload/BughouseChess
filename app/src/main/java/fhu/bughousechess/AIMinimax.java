@@ -10,9 +10,9 @@ import java.util.Set;
 import fhu.bughousechess.pieces.Empty;
 import fhu.bughousechess.pieces.Piece;
 
-import static fhu.bughousechess.MainActivity.blackInCheck;
-import static fhu.bughousechess.MainActivity.checking;
-import static fhu.bughousechess.MainActivity.whiteInCheck;
+import static fhu.bughousechess.GameActivity.blackInCheck;
+import static fhu.bughousechess.GameActivity.checking;
+import static fhu.bughousechess.GameActivity.whiteInCheck;
 
 public class AIMinimax
 {
@@ -58,7 +58,7 @@ public class AIMinimax
             int y = m.y;
             int x1 = m.x1;
             int y1 = m.y1;
-            MainActivity.switchPositions(moveType, tempPositions, x, y, x1, y1);
+            GameActivity.switchPositions(moveType, tempPositions, x, y, x1, y1);
             if (checking)
             {
                 if (color.equals("white"))
@@ -144,7 +144,7 @@ public class AIMinimax
             int x1 = m.x1;
             int y1 = m.y1;
 
-            MainActivity.switchPositions(moveType, tempPositions, x, y, x1, y1);
+            GameActivity.switchPositions(moveType, tempPositions, x, y, x1, y1);
             //only gonna check for checking in this first iteration, might be important
             //do so in the recursive function?
             if (checking)
@@ -231,7 +231,7 @@ public class AIMinimax
             int x1 = m.x1;
             int y1 = m.y1;
 
-            MainActivity.switchPositions(moveType, tempPositions, x, y, x1, y1);
+            GameActivity.switchPositions(moveType, tempPositions, x, y, x1, y1);
             //only gonna check for checking in this first iteration, might be important
             //do so in the recursive function?
             if (checking)

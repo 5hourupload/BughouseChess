@@ -52,71 +52,71 @@ public class SettingsActivity extends PreferenceActivity
                 {
                     if (prefs.getString("player1", "0").equals("0"))
                     {
-                        MainActivity.position1 = true;
+                        GameActivity.position1 = true;
                     }
                     else
                     {
-                        MainActivity.cpuLevel[0] = Integer.parseInt(prefs.getString("player1", "0")) - 1;
-                        MainActivity.position1 = false;
+                        GameActivity.cpuLevel[0] = Integer.parseInt(prefs.getString("player1", "0")) - 1;
+                        GameActivity.position1 = false;
                     }
                 }
                 if(key.equals("player2"))
                 {
                     if (prefs.getString("player2", "0").equals("0"))
                     {
-                        MainActivity.position2 = true;
+                        GameActivity.position2 = true;
                     }
                     else
                     {
-                        MainActivity.cpuLevel[1] = Integer.parseInt(prefs.getString("player2", "0")) - 1;
-                        MainActivity.position2 = false;
+                        GameActivity.cpuLevel[1] = Integer.parseInt(prefs.getString("player2", "0")) - 1;
+                        GameActivity.position2 = false;
                     }
                 }
                 if(key.equals("player3"))
                 {
                     if (prefs.getString("player3", "0").equals("0"))
                     {
-                        MainActivity.position3 = true;
+                        GameActivity.position3 = true;
                     }
                     else
                     {
-                        MainActivity.cpuLevel[2] = Integer.parseInt(prefs.getString("player3", "0")) - 1;
-                        MainActivity.position3 = false;
+                        GameActivity.cpuLevel[2] = Integer.parseInt(prefs.getString("player3", "0")) - 1;
+                        GameActivity.position3 = false;
                     }
                 }
                 if(key.equals("player4"))
                 {
                     if (prefs.getString("player4", "0").equals("0"))
                     {
-                        MainActivity.position4 = true;
+                        GameActivity.position4 = true;
                     }
                     else
                     {
-                        MainActivity.cpuLevel[3] = Integer.parseInt(prefs.getString("player4", "0")) - 1;
-                        MainActivity.position4 = false;
+                        GameActivity.cpuLevel[3] = Integer.parseInt(prefs.getString("player4", "0")) - 1;
+                        GameActivity.position4 = false;
                     }
                 }
                 if(key.equals("time1") || key.equals("time2"))
                 {
-                    MainActivity.minute = prefs.getInt("time1", MainActivity.minute);
-                    MainActivity.second = prefs.getInt("time2", MainActivity.second);
-                    MainActivity.milliseconds = ((MainActivity.minute * 60) + MainActivity.second) * 1000;
+                    GameActivity.minute = prefs.getInt("time1", GameActivity.minute);
+                    GameActivity.second = prefs.getInt("time2", GameActivity.second);
+                    GameActivity.milliseconds = ((GameActivity.minute * 60) + GameActivity.second) * 1000;
                 }
                 if(key.equals("checking"))
                 {
-                    MainActivity.checking = prefs.getBoolean("checking", MainActivity.checking);
+                    GameActivity.checking = prefs.getBoolean("checking", GameActivity.checking);
                 }
                 if(key.equals("placing"))
                 {
-                    MainActivity.placing = prefs.getBoolean("placing", MainActivity.placing);
+                    GameActivity.placing = prefs.getBoolean("placing", GameActivity.placing);
                 }
                 if(key.equals("reverting"))
                 {
-                    MainActivity.reverting = prefs.getBoolean("reverting", MainActivity.reverting);
+                    GameActivity.reverting = prefs.getBoolean("reverting", GameActivity.reverting);
                 }
                 if(key.equals("firstrank"))
                 {
-                    MainActivity.firstrank = prefs.getBoolean("firstrank", MainActivity.firstrank);
+                    GameActivity.firstrank = prefs.getBoolean("firstrank", GameActivity.firstrank);
                 }
             }
         };

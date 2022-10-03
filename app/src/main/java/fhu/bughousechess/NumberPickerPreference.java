@@ -64,8 +64,8 @@ public class NumberPickerPreference extends DialogPreference {
         dialogView.addView(picker2);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.getContext());
-        setValue(prefs.getInt("time1", MainActivity.minute), 1);
-        setValue(prefs.getInt("time2", MainActivity.second), 2);
+        setValue(prefs.getInt("time1", GameActivity.minute), 1);
+        setValue(prefs.getInt("time2", GameActivity.second), 2);
 
         return dialogView;
     }
@@ -129,8 +129,8 @@ public class NumberPickerPreference extends DialogPreference {
     {
         //setValue(restorePersistedValue ? getPersistedInt(MIN_VALUE) : (Integer) defaultValue, 1);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.getContext());
-        setValue(prefs.getInt("time1", MainActivity.minute), 1);
-        setValue(prefs.getInt("time2", MainActivity.second), 2);
+        setValue(prefs.getInt("time1", GameActivity.minute), 1);
+        setValue(prefs.getInt("time2", GameActivity.second), 2);
     }
 
     public void setValue(int value, int spinner)

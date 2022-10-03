@@ -9,12 +9,12 @@ import fhu.bughousechess.Move;
 import fhu.bughousechess.R;
 import fhu.bughousechess.pieces.Piece;
 
-import static fhu.bughousechess.MainActivity.board;
-import static fhu.bughousechess.MainActivity.castleCheckCheck;
-import static fhu.bughousechess.MainActivity.whiteCastleKing1;
-import static fhu.bughousechess.MainActivity.whiteCastleKing2;
-import static fhu.bughousechess.MainActivity.whiteCastleQueen1;
-import static fhu.bughousechess.MainActivity.whiteCastleQueen2;
+import static fhu.bughousechess.GameActivity.board;
+import static fhu.bughousechess.GameActivity.castleCheckCheck;
+import static fhu.bughousechess.GameActivity.whiteCastleKing1;
+import static fhu.bughousechess.GameActivity.whiteCastleKing2;
+import static fhu.bughousechess.GameActivity.whiteCastleQueen1;
+import static fhu.bughousechess.GameActivity.whiteCastleQueen2;
 
 public class King extends Piece
 {
