@@ -28,7 +28,7 @@ public class Bishop extends Piece
     }
 
     @Override
-    public Set<Move> getMoves(ImageView[][] board, Piece[][] positions, int x, int y)
+    public Set<Move> getMoves(Piece[][] positions, int x, int y, int boardNumber)
     {
         Set<Move> moves = new HashSet<>();
         boolean inbetween = false;
@@ -50,14 +50,14 @@ public class Bishop extends Piece
             {
                 if (!inbetween)
                 {
-                    moves.add(new Move(board, positions, x, y, x + i, y + i,"move"));
+                    moves.add(new Move(positions, x, y, x + i, y + i,"move"));
                 }
             }
             if (positions[x + i][y + i].isOpposite(this))
             {
                 if (!inbetween)
                 {
-                    moves.add(new Move(board, positions, x, y, x + i, y + i,"take"));
+                    moves.add(new Move(positions, x, y, x + i, y + i,"take"));
                 }
             }
         }
@@ -83,14 +83,14 @@ public class Bishop extends Piece
             {
                 if (!inbetween)
                 {
-                    moves.add(new Move(board, positions, x, y, x - i, y - i,"move"));
+                    moves.add(new Move(positions, x, y, x - i, y - i,"move"));
                 }
             }
             if (positions[x - i][y - i].isOpposite(this))
             {
                 if (!inbetween)
                 {
-                    moves.add(new Move(board, positions, x, y, x - i, y - i,"take"));
+                    moves.add(new Move(positions, x, y, x - i, y - i,"take"));
                 }
             }
         }
@@ -116,14 +116,14 @@ public class Bishop extends Piece
             {
                 if (!inbetween)
                 {
-                    moves.add(new Move(board, positions, x, y, x + i, y - i,"move"));
+                    moves.add(new Move(positions, x, y, x + i, y - i,"move"));
                 }
             }
             if (positions[x + i][y - i].isOpposite(this))
             {
                 if (!inbetween)
                 {
-                    moves.add(new Move(board, positions, x, y, x + i, y - i,"take"));
+                    moves.add(new Move(positions, x, y, x + i, y - i,"take"));
                 }
             }
         }
@@ -149,14 +149,14 @@ public class Bishop extends Piece
             {
                 if (!inbetween)
                 {
-                    moves.add(new Move(board, positions, x, y, x - i, y + i,"move"));
+                    moves.add(new Move(positions, x, y, x - i, y + i,"move"));
                 }
             }
             if (positions[x - i][y + i].isOpposite(this))
             {
                 if (!inbetween)
                 {
-                    moves.add(new Move(board, positions, x, y, x - i, y + i,"take"));
+                    moves.add(new Move(positions, x, y, x - i, y + i,"take"));
                 }
             }
         }

@@ -17,17 +17,17 @@ public abstract class Piece
     public boolean onRoster = false;
 
     public abstract int getResID();
-    public abstract Set<Move> getMoves(ImageView[][] board, Piece[][] positions, int x, int y);
+    public abstract Set<Move> getMoves(Piece[][] positions, int x, int y, int boardNumber);
     public boolean isOpposite(Piece piece)
     {
         if (color.equals("white"))
-        return piece.color.equals("black");
+            return piece.color.equals("black");
         if (color.equals("black"))
             return piece.color.equals("white");
         return false;
 
     }
-    public Set<Move> getRosterMoves(ImageView[][] board, Piece[][] positions, ImageView[] roster, Piece[] rosterp, int i)
+    public Set<Move> getRosterMoves(Piece[][] positions, Piece[] rosterp, int i)
     {
         Set<Move> moves = new HashSet<>();
         for (int x = 0; x < 8; x++)
@@ -36,7 +36,7 @@ public abstract class Piece
             {
                 if (positions[x][y].empty)
                 {
-                    moves.add(new Move(board, positions, roster, rosterp, i, x, y, "roster"));
+                    moves.add(new Move(positions, rosterp, i, x, y, "roster"));
                 }
             }
         }

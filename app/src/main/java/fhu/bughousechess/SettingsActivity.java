@@ -52,48 +52,48 @@ public class SettingsActivity extends PreferenceActivity
                 {
                     if (prefs.getString("player1", "0").equals("0"))
                     {
-                        GameActivity.position1 = true;
+                        GameStateManager.position1 = true;
                     }
                     else
                     {
                         GameActivity.cpuLevel[0] = Integer.parseInt(prefs.getString("player1", "0")) - 1;
-                        GameActivity.position1 = false;
+                        GameStateManager.position1 = false;
                     }
                 }
                 if(key.equals("player2"))
                 {
                     if (prefs.getString("player2", "0").equals("0"))
                     {
-                        GameActivity.position2 = true;
+                        GameStateManager.position2 = true;
                     }
                     else
                     {
                         GameActivity.cpuLevel[1] = Integer.parseInt(prefs.getString("player2", "0")) - 1;
-                        GameActivity.position2 = false;
+                        GameStateManager.position2 = false;
                     }
                 }
                 if(key.equals("player3"))
                 {
                     if (prefs.getString("player3", "0").equals("0"))
                     {
-                        GameActivity.position3 = true;
+                        GameStateManager.position3 = true;
                     }
                     else
                     {
                         GameActivity.cpuLevel[2] = Integer.parseInt(prefs.getString("player3", "0")) - 1;
-                        GameActivity.position3 = false;
+                        GameStateManager.position3 = false;
                     }
                 }
                 if(key.equals("player4"))
                 {
                     if (prefs.getString("player4", "0").equals("0"))
                     {
-                        GameActivity.position4 = true;
+                        GameStateManager.position4 = true;
                     }
                     else
                     {
                         GameActivity.cpuLevel[3] = Integer.parseInt(prefs.getString("player4", "0")) - 1;
-                        GameActivity.position4 = false;
+                        GameStateManager.position4 = false;
                     }
                 }
                 if(key.equals("time1") || key.equals("time2"))
@@ -104,19 +104,19 @@ public class SettingsActivity extends PreferenceActivity
                 }
                 if(key.equals("checking"))
                 {
-                    GameActivity.checking = prefs.getBoolean("checking", GameActivity.checking);
+                    GameStateManager.checking = prefs.getBoolean("checking", GameStateManager.checking);
                 }
                 if(key.equals("placing"))
                 {
-                    GameActivity.placing = prefs.getBoolean("placing", GameActivity.placing);
+                    GameStateManager.placing = prefs.getBoolean("placing", GameStateManager.placing);
                 }
                 if(key.equals("reverting"))
                 {
-                    GameActivity.reverting = prefs.getBoolean("reverting", GameActivity.reverting);
+                    GameStateManager.reverting = prefs.getBoolean("reverting", GameStateManager.reverting);
                 }
                 if(key.equals("firstrank"))
                 {
-                    GameActivity.firstrank = prefs.getBoolean("firstrank", GameActivity.firstrank);
+                    GameStateManager.firstrank = prefs.getBoolean("firstrank", GameStateManager.firstrank);
                 }
             }
         };

@@ -9,12 +9,11 @@ import fhu.bughousechess.Move;
 import fhu.bughousechess.R;
 import fhu.bughousechess.pieces.Piece;
 
-import static fhu.bughousechess.GameActivity.board;
-import static fhu.bughousechess.GameActivity.castleCheckCheck;
-import static fhu.bughousechess.GameActivity.whiteCastleKing1;
-import static fhu.bughousechess.GameActivity.whiteCastleKing2;
-import static fhu.bughousechess.GameActivity.whiteCastleQueen1;
-import static fhu.bughousechess.GameActivity.whiteCastleQueen2;
+import static fhu.bughousechess.GameStateManager.castleCheckCheck;
+import static fhu.bughousechess.GameStateManager.whiteCastleKing1;
+import static fhu.bughousechess.GameStateManager.whiteCastleKing2;
+import static fhu.bughousechess.GameStateManager.whiteCastleQueen1;
+import static fhu.bughousechess.GameStateManager.whiteCastleQueen2;
 
 public class King extends Piece
 {
@@ -36,30 +35,30 @@ public class King extends Piece
     }
 
     @Override
-    public Set<Move> getMoves(ImageView[][] board, Piece[][] positions, int x, int y)
+    public Set<Move> getMoves(Piece[][] positions, int x, int y, int boardNumber)
     {
         Set<Move> moves = new HashSet<>();
         if (x + 1 < 8)
         {
             if (positions[x + 1][y].empty)
             {
-                moves.add(new Move(board, positions, x, y, x + 1, y,"move"));
+                moves.add(new Move(positions, x, y, x + 1, y,"move"));
                 if (positions[6][0].empty && positions[4][0].type.equals("king") && positions[4][0].color.equals("white"))
                 {
                     //setting those empty positions to "white" so that they can be checked whether
                     //they are in check or not
-                    if (board(board, positions) == 1)
+                    if (boardNumber == 0)
                     {
-                        if (whiteCastleKing1 && positions[6][0].empty && !castleCheckCheck("white",board, positions, 4, 0) && !castleCheckCheck("white",board, positions, 5, 0) && !castleCheckCheck("white",board, positions, 6, 0))
+                        if (whiteCastleKing1 && positions[6][0].empty && !castleCheckCheck("white", positions, 4, 0, boardNumber) && !castleCheckCheck("white",positions, 5, 0, boardNumber) && !castleCheckCheck("white",positions, 6, 0, boardNumber))
                         {
-                            moves.add(new Move(board, positions, x, y, 6, 0, "whiteKingCastle"));
+                            moves.add(new Move(positions, x, y, 6, 0, "whiteKingCastle"));
                         }
                     }
                     else
                     {
-                        if (whiteCastleKing2 && positions[6][0].empty && !castleCheckCheck("white",board, positions, 4, 0) && !castleCheckCheck("white",board, positions, 5, 0) && !castleCheckCheck("white",board, positions, 6, 0))
+                        if (whiteCastleKing2 && positions[6][0].empty && !castleCheckCheck("white", positions, 4, 0, boardNumber) && !castleCheckCheck("white",positions, 5, 0, boardNumber) && !castleCheckCheck("white",positions, 6, 0, boardNumber))
                         {
-                            moves.add(new Move(board, positions, x, y, 6, 0, "whiteKingCastle"));
+                            moves.add(new Move(positions, x, y, 6, 0, "whiteKingCastle"));
 
                         }
                     }
@@ -68,46 +67,46 @@ public class King extends Piece
                 {
                     //setting those empty positions to "white" so that they can be checked whether
                     //they are in check or not
-                    if (board(board, positions) == 1)
+                    if (boardNumber == 0)
                     {
-                        if (whiteCastleKing1 && positions[6][7].empty && !castleCheckCheck("black",board, positions, 4, 7) && !castleCheckCheck("black",board, positions, 5, 7) && !castleCheckCheck("black",board, positions, 6, 7))
+                        if (whiteCastleKing1 && positions[6][7].empty && !castleCheckCheck("black",positions, 4, 7, boardNumber) && !castleCheckCheck("black",positions, 5, 7, boardNumber) && !castleCheckCheck("black",positions, 6, 7, boardNumber))
                         {
-                            moves.add(new Move(board, positions, x, y, 6, 7, "blackKingCastle"));
+                            moves.add(new Move(positions, x, y, 6, 7, "blackKingCastle"));
                         }
                     }
                     else
                     {
-                        if (whiteCastleKing2 && positions[6][7].empty && !castleCheckCheck("black",board, positions, 4, 7) && !castleCheckCheck("black",board, positions, 5, 7) && !castleCheckCheck("black",board, positions, 6, 7))
+                        if (whiteCastleKing2 && positions[6][7].empty && !castleCheckCheck("black",positions, 4, 7, boardNumber) && !castleCheckCheck("black",positions, 5, 7, boardNumber) && !castleCheckCheck("black",positions, 6, 7, boardNumber))
                         {
-                            moves.add(new Move(board, positions, x, y, 6, 7, "blackKingCastle"));
+                            moves.add(new Move(positions, x, y, 6, 7, "blackKingCastle"));
                         }
                     }
                 }
             }
             if (positions[x + 1][y].isOpposite(this))
             {
-                moves.add(new Move(board, positions, x, y, x + 1, y, "take"));
+                moves.add(new Move(positions, x, y, x + 1, y, "take"));
             }
             if (y + 1 < 8)
             {
                 if (positions[x + 1][y + 1].empty)
                 {
-                    moves.add(new Move(board, positions, x, y, x + 1, y + 1, "move"));
+                    moves.add(new Move(positions, x, y, x + 1, y + 1, "move"));
                 }
                 if (positions[x + 1][y + 1].isOpposite(this))
                 {
-                    moves.add(new Move(board, positions, x, y, x + 1, y + 1,"take"));
+                    moves.add(new Move(positions, x, y, x + 1, y + 1,"take"));
                 }
             }
             if (y - 1 > -1)
             {
                 if (positions[x + 1][y - 1].empty)
                 {
-                    moves.add(new Move(board, positions, x, y, x + 1, y - 1,"move"));
+                    moves.add(new Move(positions, x, y, x + 1, y - 1,"move"));
                 }
                 if (positions[x + 1][y - 1].isOpposite(this))
                 {
-                    moves.add(new Move(board, positions, x, y, x + 1, y - 1,"take"));
+                    moves.add(new Move(positions, x, y, x + 1, y - 1,"take"));
                 }
             }
         }
@@ -115,67 +114,67 @@ public class King extends Piece
         {
             if (positions[x - 1][y].empty)
             {
-                moves.add(new Move(board, positions, x, y, x - 1, y,"move"));
+                moves.add(new Move(positions, x, y, x - 1, y,"move"));
                 if (positions[2][0].empty && positions[1][0].empty && positions[4][0].type.equals("king"))
                 {
-                    if (board(board, positions) == 1)
+                    if (boardNumber == 0)
                     {
 
-                        if (whiteCastleQueen1 && positions[2][0].empty && !castleCheckCheck("white",board, positions, 1, 0) && !castleCheckCheck("white",board, positions, 2, 0) && !castleCheckCheck("white",board, positions, 3, 0) && !castleCheckCheck("white",board, positions, 4, 0))
+                        if (whiteCastleQueen1 && positions[2][0].empty && !castleCheckCheck("white",positions, 1, 0, boardNumber) && !castleCheckCheck("white",positions, 2, 0, boardNumber) && !castleCheckCheck("white",positions, 3, 0, boardNumber) && !castleCheckCheck("white",positions, 4, 0, boardNumber))
                         {
-                            moves.add(new Move(board, positions, x, y, 2, 0,"whiteQueenCastle"));
+                            moves.add(new Move(positions, x, y, 2, 0,"whiteQueenCastle"));
                         }
                     }
                     else
                     {
-                        if (whiteCastleQueen2 && positions[2][0].empty && !castleCheckCheck("white",board, positions, 1, 0) && !castleCheckCheck("white",board, positions, 2, 0) && !castleCheckCheck("white",board, positions, 3, 0) && !castleCheckCheck("white",board, positions, 4, 0))
+                        if (whiteCastleQueen2 && positions[2][0].empty && !castleCheckCheck("white",positions, 1, 0, boardNumber) && !castleCheckCheck("white",positions, 2, 0, boardNumber) && !castleCheckCheck("white",positions, 3, 0, boardNumber) && !castleCheckCheck("white",positions, 4, 0, boardNumber))
                         {
-                            moves.add(new Move(board, positions, x, y, 2, 0,"whiteQueenCastle"));
+                            moves.add(new Move(positions, x, y, 2, 0,"whiteQueenCastle"));
                         }
                     }
                 }
                 if (positions[2][7].empty && positions[1][7].empty && positions[4][7].type.equals("king"))
                 {
-                    if (board(board, positions) == 1)
+                    if (boardNumber == 0)
                     {
-                        if (whiteCastleQueen1 && positions[2][7].empty && !castleCheckCheck("black",board, positions, 1, 7) && !castleCheckCheck("black",board, positions, 2, 7) && !castleCheckCheck("black",board, positions, 3, 7) && !castleCheckCheck("black",board, positions, 4, 7))
+                        if (whiteCastleQueen1 && positions[2][7].empty && !castleCheckCheck("black",positions, 1, 7, boardNumber) && !castleCheckCheck("black",positions, 2, 7, boardNumber) && !castleCheckCheck("black",positions, 3, 7, boardNumber) && !castleCheckCheck("black",positions, 4, 7, boardNumber))
                         {
-                            moves.add(new Move(board, positions, x, y, 2, 7,"blackQueenCastle"));
+                            moves.add(new Move(positions, x, y, 2, 7,"blackQueenCastle"));
                         }
                     }
                     else
                     {
-                        if (whiteCastleQueen2 && positions[2][7].empty && !castleCheckCheck("black",board, positions, 1, 7) && !castleCheckCheck("black",board, positions, 2, 7) && !castleCheckCheck("black",board, positions, 3, 7) && !castleCheckCheck("black",board, positions, 4, 7))
+                        if (whiteCastleQueen2 && positions[2][7].empty && !castleCheckCheck("black",positions, 1, 7, boardNumber) && !castleCheckCheck("black",positions, 2, 7, boardNumber) && !castleCheckCheck("black",positions, 3, 7, boardNumber) && !castleCheckCheck("black",positions, 4, 7, boardNumber))
                         {
-                            moves.add(new Move(board, positions, x, y, 2, 7,"blackQueenCastle"));
+                            moves.add(new Move(positions, x, y, 2, 7,"blackQueenCastle"));
                         }
                     }
                 }
             }
             if (positions[x - 1][y].isOpposite(this))
             {
-                moves.add(new Move(board, positions, x, y, x - 1, y, "take"));
+                moves.add(new Move(positions, x, y, x - 1, y, "take"));
             }
             if (y + 1 < 8)
             {
                 if (positions[x - 1][y + 1].empty)
                 {
-                    moves.add(new Move(board, positions, x, y, x - 1, y + 1,"move"));
+                    moves.add(new Move(positions, x, y, x - 1, y + 1,"move"));
                 }
                 if (positions[x - 1][y + 1].isOpposite(this))
                 {
-                    moves.add(new Move(board, positions, x, y, x - 1, y + 1,"take"));
+                    moves.add(new Move(positions, x, y, x - 1, y + 1,"take"));
                 }
             }
             if (y - 1 > -1)
             {
                 if (positions[x - 1][y - 1].empty)
                 {
-                    moves.add(new Move(board, positions, x, y, x - 1, y - 1,"move"));
+                    moves.add(new Move(positions, x, y, x - 1, y - 1,"move"));
                 }
                 if (positions[x - 1][y - 1].isOpposite(this))
                 {
-                    moves.add(new Move(board, positions, x, y, x - 1, y - 1, "take"));
+                    moves.add(new Move(positions, x, y, x - 1, y - 1, "take"));
                 }
             }
         }
@@ -183,22 +182,22 @@ public class King extends Piece
         {
             if (positions[x][y + 1].empty)
             {
-                moves.add(new Move(board, positions, x, y, x, y + 1,"move"));
+                moves.add(new Move(positions, x, y, x, y + 1,"move"));
             }
             if (positions[x][y + 1].isOpposite(this))
             {
-                moves.add(new Move(board, positions, x, y, x, y + 1,"take"));
+                moves.add(new Move(positions, x, y, x, y + 1,"take"));
             }
         }
         if (y - 1 > -1)
         {
             if (positions[x][y - 1].empty)
             {
-                moves.add(new Move(board, positions, x, y, x, y - 1, "move"));
+                moves.add(new Move(positions, x, y, x, y - 1, "move"));
             }
             if (positions[x][y - 1].isOpposite(this))
             {
-                moves.add(new Move(board, positions, x, y, x, y - 1,"take"));
+                moves.add(new Move(positions, x, y, x, y - 1,"take"));
             }
         }
         return moves;

@@ -6,13 +6,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 import fhu.bughousechess.GameActivity;
+import fhu.bughousechess.GameStateManager;
 import fhu.bughousechess.Move;
 import fhu.bughousechess.R;
 
-import static fhu.bughousechess.GameActivity.board;
-import static fhu.bughousechess.GameActivity.board1Turn;
-import static fhu.bughousechess.GameActivity.board2Turn;
-import static fhu.bughousechess.GameActivity.enP;
+import static fhu.bughousechess.GameStateManager.board1Turn;
+import static fhu.bughousechess.GameStateManager.board2Turn;
+import static fhu.bughousechess.GameStateManager.enP;
 
 public class Pawn extends Piece
 {
@@ -33,7 +33,7 @@ public class Pawn extends Piece
     }
 
     @Override
-    public Set<Move> getMoves(ImageView[][] board, Piece[][] positions, int x, int y)
+    public Set<Move> getMoves(Piece[][] positions, int x, int y, int boardNumber)
     {
         Set<Move> moves = new HashSet<>();
         if (this.color.equals("white"))
@@ -42,12 +42,12 @@ public class Pawn extends Piece
             {
                 if (positions[x][y + 1].empty)
                 {
-                    moves.add(new Move(board, positions, x, y, x, y + 1, "move"));
+                    moves.add(new Move(positions, x, y, x, y + 1, "move"));
                     if (y == 1)
                     {
                         if (positions[x][y + 2].empty)
                         {
-                            moves.add(new Move(board, positions, x, y, x, y + 2, "move"));
+                            moves.add(new Move(positions, x, y, x, y + 2, "move"));
                         }
                     }
                 }
@@ -56,22 +56,22 @@ public class Pawn extends Piece
             {
                 if (positions[x + 1][y + 1].isOpposite(this))
                 {
-                    moves.add(new Move(board, positions, x, y, x + 1, y + 1, "take"));
+                    moves.add(new Move(positions, x, y, x + 1, y + 1, "take"));
                 }
                 if (y == 4 && positions[x + 1][y].color.equals("black") && positions[x + 1][y].type.equals("pawn"))
                 {
-                    if (board(board, positions) == 1)
+                    if (boardNumber == 0)
                     {
                         if (enP[x + 1][1].substring(0, 1).equals("1") && enP[x + 1][1].substring(1, enP[x + 1][1].length()).equals(Integer.toString(board1Turn)))
                         {
-                            moves.add(new Move(board, positions, x, 4, x + 1, 4, "whiteEnP"));
+                            moves.add(new Move(positions, x, 4, x + 1, 4, "whiteEnP"));
                         }
                     }
-                    if (board(board, positions) == 2)
+                    if (boardNumber == 1)
                     {
                         if (enP[x + 1][3].substring(0, 1).equals("1") && enP[x + 1][3].substring(1, enP[x + 1][3].length()).equals(Integer.toString(board2Turn)))
                         {
-                            moves.add(new Move(board, positions, x, 4, x + 1, 4, "whiteEnP"));
+                            moves.add(new Move(positions, x, 4, x + 1, 4, "whiteEnP"));
                         }
                     }
                 }
@@ -80,22 +80,22 @@ public class Pawn extends Piece
             {
                 if (positions[x - 1][y + 1].isOpposite(this))
                 {
-                    moves.add(new Move(board, positions, x, y, x - 1, y + 1, "take"));
+                    moves.add(new Move(positions, x, y, x - 1, y + 1, "take"));
                 }
                 if (y == 4 && positions[x - 1][y].color.equals("black") && positions[x - 1][y].type.equals("pawn"))
                 {
-                    if (board(board, positions) == 1)
+                    if (boardNumber == 0)
                     {
                         if (enP[x - 1][1].substring(0, 1).equals("1") && enP[x - 1][1].substring(1, enP[x - 1][1].length()).equals(Integer.toString(board1Turn)))
                         {
-                            moves.add(new Move(board, positions, x, 4, x - 1, 4, "whiteEnP"));
+                            moves.add(new Move(positions, x, 4, x - 1, 4, "whiteEnP"));
                         }
                     }
-                    if (board(board, positions) == 2)
+                    if (boardNumber == 1)
                     {
                         if (enP[x - 1][3].substring(0, 1).equals("1") && enP[x - 1][3].substring(1, enP[x - 1][3].length()).equals(Integer.toString(board2Turn)))
                         {
-                            moves.add(new Move(board, positions, x, 4, x - 1, 4, "whiteEnP"));
+                            moves.add(new Move(positions, x, 4, x - 1, 4, "whiteEnP"));
                         }
                     }
                 }
@@ -107,12 +107,12 @@ public class Pawn extends Piece
             {
                 if (positions[x][y - 1].empty)
                 {
-                    moves.add(new Move(board, positions, x, y, x, y - 1, "move"));
+                    moves.add(new Move(positions, x, y, x, y - 1, "move"));
                     if (y == 6)
                     {
                         if (positions[x][y - 2].empty)
                         {
-                            moves.add(new Move(board, positions, x, y, x, y - 2, "move"));
+                            moves.add(new Move(positions, x, y, x, y - 2, "move"));
                         }
                     }
                 }
@@ -121,22 +121,22 @@ public class Pawn extends Piece
             {
                 if (positions[x + 1][y - 1].isOpposite(this))
                 {
-                    moves.add(new Move(board, positions, x, y, x + 1, y - 1, "take"));
+                    moves.add(new Move(positions, x, y, x + 1, y - 1, "take"));
                 }
                 if (y == 3 && positions[x + 1][y].color.equals("white") && positions[x + 1][y].type.equals("pawn"))
                 {
-                    if (board(board, positions) == 1)
+                    if (boardNumber == 0)
                     {
                         if (enP[x + 1][0].substring(0, 1).equals("1") && enP[x + 1][0].substring(1, enP[x + 1][0].length()).equals(Integer.toString(board1Turn)))
                         {
-                            moves.add(new Move(board, positions, x, 3, x + 1, 3, "blackEnP"));
+                            moves.add(new Move(positions, x, 3, x + 1, 3, "blackEnP"));
                         }
                     }
-                    if (board(board, positions) == 2)
+                    if (boardNumber == 1)
                     {
                         if (enP[x + 1][2].substring(0, 1).equals("1") && enP[x + 1][2].substring(1, enP[x + 1][2].length()).equals(Integer.toString(board2Turn)))
                         {
-                            moves.add(new Move(board, positions, x, 3, x + 1, 3, "blackEnP"));
+                            moves.add(new Move(positions, x, 3, x + 1, 3, "blackEnP"));
                         }
                     }
                 }
@@ -145,22 +145,22 @@ public class Pawn extends Piece
             {
                 if (positions[x - 1][y - 1].isOpposite(this))
                 {
-                    moves.add(new Move(board, positions, x, y, x - 1, y - 1, "take"));
+                    moves.add(new Move(positions, x, y, x - 1, y - 1, "take"));
                 }
                 if (y == 3 && positions[x - 1][y].color.equals("white")&& positions[x - 1][y].type.equals("pawn"))
                 {
-                    if (board(board, positions) == 1)
+                    if (boardNumber == 0)
                     {
                         if (enP[x - 1][0].substring(0, 1).equals("1") && enP[x - 1][0].substring(1, enP[x - 1][0].length()).equals(Integer.toString(board1Turn)))
                         {
-                            moves.add(new Move(board, positions, x, 3, x - 1,3, "blackEnP"));
+                            moves.add(new Move(positions, x, 3, x - 1,3, "blackEnP"));
                         }
                     }
-                    if (board(board, positions) == 2)
+                    if (boardNumber == 1)
                     {
                         if (enP[x - 1][2].substring(0, 1).equals("1") && enP[x - 1][2].substring(1, enP[x - 1][2].length()).equals(Integer.toString(board2Turn)))
                         {
-                            moves.add(new Move(board, positions, x, 3, x - 1, 3, "blackEnP"));
+                            moves.add(new Move(positions, x, 3, x - 1, 3, "blackEnP"));
                         }
                     }
                 }
@@ -174,7 +174,7 @@ public class Pawn extends Piece
 
         for (int x = 0; x < 8; x++)
         {
-            if (GameActivity.firstrank)
+            if (GameStateManager.firstrank)
             {
                 if (rosterp[i].color.equals("white"))
                 {
@@ -182,7 +182,7 @@ public class Pawn extends Piece
                     {
                         if (positions[x][y].empty)
                         {
-                            moves.add(new Move(board, positions, roster, rosterp, i, x, y,"roster"));
+                            moves.add(new Move(positions, rosterp, i, x, y,"roster"));
                         }
                     }
                 }
@@ -192,7 +192,7 @@ public class Pawn extends Piece
                     {
                         if (positions[x][y].empty)
                         {
-                            moves.add(new Move(board, positions, roster, rosterp, i, x, y,"roster"));
+                            moves.add(new Move(positions, rosterp, i, x, y,"roster"));
                         }
                     }
                 }
@@ -203,7 +203,7 @@ public class Pawn extends Piece
                 {
                     if (positions[x][y].empty)
                     {
-                        moves.add(new Move(board, positions, roster, rosterp, i, x, y, "roster"));
+                        moves.add(new Move(positions, rosterp, i, x, y, "roster"));
                     }
                 }
             }
