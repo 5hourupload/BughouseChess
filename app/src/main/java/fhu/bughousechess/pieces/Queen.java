@@ -15,7 +15,6 @@ public class Queen extends Piece
         this.color = color;
         type = "queen";
         wasPawn = false;
-        backgroundColor = "";
         empty = false;
     }
 

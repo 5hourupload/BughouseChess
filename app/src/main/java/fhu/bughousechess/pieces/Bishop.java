@@ -15,7 +15,6 @@ public class Bishop extends Piece
         this.color = color;
         type = "bishop";
         wasPawn = false;
-        backgroundColor = "";
         empty = false;
     }
 

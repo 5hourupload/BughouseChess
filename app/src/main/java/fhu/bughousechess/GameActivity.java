@@ -27,9 +27,12 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
 import java.util.Set;
@@ -37,7 +40,6 @@ import java.util.TimeZone;
 
 import fhu.bughousechess.pieces.Bishop;
 import fhu.bughousechess.pieces.Knight;
-import fhu.bughousechess.pieces.Pawn;
 import fhu.bughousechess.pieces.Piece;
 import fhu.bughousechess.pieces.Queen;
 import fhu.bughousechess.pieces.Rook;
@@ -46,11 +48,14 @@ public class GameActivity extends AppCompatActivity {
 
     static int milliseconds = 5 * 60 * 1000;
 
-    static ImageView board[][][] = new ImageView[2][8][8];
-    static ImageView roster1[] = new ImageView[30];
-    static ImageView roster2[] = new ImageView[30];
-    static ImageView roster3[] = new ImageView[30];
-    static ImageView roster4[] = new ImageView[30];
+    private ImageView board[][][] = new ImageView[2][8][8];
+    private ImageView baseBoard[][] = new ImageView[8][8];
+    private ImageView roster1[] = new ImageView[30];
+    private ImageView roster2[] = new ImageView[30];
+    private ImageView roster3[] = new ImageView[30];
+    private ImageView roster4[] = new ImageView[30];
+
+    private LinearLayout[] pawnOptions = new LinearLayout[2];
 
     static int minute = 5;
     static int second = 0;
@@ -78,7 +83,12 @@ public class GameActivity extends AppCompatActivity {
     ScrollView scroll1 = null;
     ScrollView scroll3 = null;
     ScrollView scroll2 = null;
-    ScrollView scroll4;
+    ScrollView scroll4 = null;
+
+    // Keeps track of cosmetic changes to erase
+    ArrayList<Integer>[] dots = new ArrayList[2];
+    ArrayList<Integer>[] alteredBackgrounds = new ArrayList[2];
+    ArrayList<Integer>[] alteredRosterBackgrounds = new ArrayList[4];
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -87,8 +97,6 @@ public class GameActivity extends AppCompatActivity {
         getSupportActionBar().hide();
 
         connectViews();
-
-
 
         MainActivity.currentApiVersion = android.os.Build.VERSION.SDK_INT;
 
@@ -122,25 +130,45 @@ public class GameActivity extends AppCompatActivity {
             });
         }
 
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId("ca-app-pub-9794567752193168/1898888810");
 
+        mInterstitialAd.setAdListener(new AdListener()
+        {
+            @Override
+            public void onAdClosed()
+            {
+                requestNewInterstitial();
+            }
+
+        });
+
+        requestNewInterstitial();
 
         game = new GameStateManager();
 
         setBoardBackground();
         setStartingPiecesUI();
-
         getPrefs();
-
-
-        resizeRosterViews();
-
-        setStartButton();
-
+        prepareUIElements();
+        setControlButtons();
     }
-
 
     private void connectViews()
     {
+        timer1 = findViewById(R.id.timer1);
+        timer2 = findViewById(R.id.timer2);
+        timer3 = findViewById(R.id.timer3);
+        timer4 = findViewById(R.id.timer4);
+        options = findViewById(R.id.options);
+        scroll1 = findViewById(R.id.scroll1);
+        scroll3 = findViewById(R.id.scroll3);
+        scroll2 = findViewById(R.id.scroll2);
+        scroll4 = findViewById(R.id.scroll4);
+        start = findViewById(R.id.start);
+
+        pawnOptions[0] = findViewById(R.id.pawnOptions1);
+        pawnOptions[1] = findViewById(R.id.pawnOptions2);
 
         board[0][0][0] = findViewById(R.id.a1_1);
         board[0][0][1] = findViewById(R.id.a2_1);
@@ -411,11 +439,17 @@ public class GameActivity extends AppCompatActivity {
         roster4[1] = findViewById(R.id.roster29_4);
         roster4[0] = findViewById(R.id.roster30_4);
 
-
     }
 
-    private void resizeRosterViews()
+    private void prepareUIElements()
     {
+        for (int i = 0; i < 30; i++)
+        {
+            roster1[i].setRotation(90);
+            roster2[i].setRotation(270);
+            roster3[i].setRotation(90);
+            roster4[i].setRotation(270);
+        }
         roster1[1].post(new Runnable()
         {
             @Override
@@ -439,21 +473,8 @@ public class GameActivity extends AppCompatActivity {
             }
         });
 
-        timer1 = findViewById(R.id.timer1);
-        timer2 = findViewById(R.id.timer2);
-        timer3 = findViewById(R.id.timer3);
-        timer4 = findViewById(R.id.timer4);
-        options = findViewById(R.id.options);
-        scroll1 = findViewById(R.id.scroll1);
         scroll1.setVerticalScrollbarPosition(View.SCROLLBAR_POSITION_LEFT);
-        scroll3 = findViewById(R.id.scroll3);
         scroll3.setVerticalScrollbarPosition(View.SCROLLBAR_POSITION_LEFT);
-
-        scroll2 = findViewById(R.id.scroll2);
-        scroll4 = findViewById(R.id.scroll4);
-
-        start = findViewById(R.id.start);
-
 
         board[0][1][1].post(new Runnable()
         {
@@ -497,35 +518,11 @@ public class GameActivity extends AppCompatActivity {
         timer4.setTextColor(0xFF848484);
 
 
-
-        options.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                if (game.gameState == 1)
-                {
-                    Button start = findViewById(R.id.start);
-                    game.clean();
-                    clean(board[0],0);
-                    clean(board[1],1);
-                    game.turnSave1 = game.whiteTurn1;
-                    game.whiteTurn1 = 3;
-                    game.turnSave2 = game.whiteTurn2;
-                    game.whiteTurn2 = 3;
-                    nukeListeners(board[0], 0);
-                    nukeListeners(board[1], 1);
-                    game.gameState = 2;
-                    start.setText("Resume");
-                }
-                startSettings();
-            }
-        });
         TimeZone tz = TimeZone.getTimeZone("UTC");
         SimpleDateFormat df = new SimpleDateFormat("m:ss");
         df.setTimeZone(tz);
         final String time = df.format(new Date(milliseconds));
-        if (game.gameState == 0)
+        if (game.gameState == GameStateManager.GameState.PREGAME)
         {
             runOnUiThread(new Runnable()
             {
@@ -606,11 +603,15 @@ public class GameActivity extends AppCompatActivity {
                     {
                         board[0][i][j].setBackground(black);
                         board[1][i][j].setBackground(black);
+                        baseBoard[i][j] = new ImageView(this);
+                        baseBoard[i][j].setBackground(black);
                     }
                     else
                     {
                         board[0][i][j].setBackground(white);
                         board[1][i][j].setBackground(white);
+                        baseBoard[i][j] = new ImageView(this);
+                        baseBoard[i][j].setBackground(white);
                     }
                 }
                 else
@@ -619,15 +620,27 @@ public class GameActivity extends AppCompatActivity {
                     {
                         board[0][i][j].setBackground(white);
                         board[1][i][j].setBackground(white);
+                        baseBoard[i][j] = new ImageView(this);
+                        baseBoard[i][j].setBackground(white);
                     }
                     else
                     {
                         board[0][i][j].setBackground(black);
                         board[1][i][j].setBackground(black);
+                        baseBoard[i][j] = new ImageView(this);
+                        baseBoard[i][j].setBackground(black);
                     }
                 }
             }
         }
+        dots[0] = new ArrayList<>();
+        dots[1] = new ArrayList<>();
+        alteredBackgrounds[0] = new ArrayList<>();
+        alteredBackgrounds[1] = new ArrayList<>();
+        alteredRosterBackgrounds[0] = new ArrayList<>();
+        alteredRosterBackgrounds[1] = new ArrayList<>();
+        alteredRosterBackgrounds[2] = new ArrayList<>();
+        alteredRosterBackgrounds[3] = new ArrayList<>();
     }
 
     private void setStartingPiecesUI()
@@ -638,7 +651,7 @@ public class GameActivity extends AppCompatActivity {
             {
                 for (int j = 0; j < 8; j++)
                 {
-                    board[b][i][j].setImageResource(game.positions[b][i][j].getResID());
+                    board[b][i][j].setImageResource(game.getPositions(b)[i][j].getResID());
                 }
             }
         }
@@ -664,39 +677,33 @@ public class GameActivity extends AppCompatActivity {
 
     }
 
-    private void setStartButton() {
+    private void setControlButtons() {
         start.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                if (game.gameState == 2)
+                if (game.gameState == GameStateManager.GameState.PAUSED)
                 {
-                    game.whiteTurn1 = game.turnSave1;
-                    game.whiteTurn2 = game.turnSave2;
-                    setInitialSquareListeners(board[0], 0);
-                    setInitialSquareListeners(board[1], 1);
-                    game.gameState = 1;
+                    game.resume();
+                    setInitialSquareListeners(0);
+                    setInitialSquareListeners(1);
                     start.setText("Pause");
                     startAI();
                     return;
                 }
-                if (game.gameState == 1)
+                if (game.gameState == GameStateManager.GameState.PLAYING)
                 {
-                    game.clean();
-                    clean(board[0], 0);
-                    clean(board[1], 1);
-                    game.turnSave1 = game.whiteTurn1;
-                    game.whiteTurn1 = 3;
-                    game.turnSave2 = game.whiteTurn2;
-                    game.whiteTurn2 = 3;
-                    nukeListeners(board[0], 0);
-                    nukeListeners(board[1], 1);
-                    game.gameState = 2;
+                    clean(0);
+                    clean(1);
+                    game.pause();
+                    nukeListeners(0);
+                    nukeListeners(1);
                     start.setText("Resume");
                 }
-                if (game.gameState == 0)
+                if (game.gameState == GameStateManager.GameState.PREGAME)
                 {
+                    newGame();
                     scroll1.post(new Runnable()
                     {
                         @Override
@@ -708,28 +715,38 @@ public class GameActivity extends AppCompatActivity {
                             scroll4.fullScroll(View.FOCUS_DOWN);
                         }
                     });
-                    game.resetBooleans();
-                    clean(board[0],0);
-                    clean(board[1],1);
-                    game.clean();
 
-                    setStartingPiecesUI();
+                    game.start();
+                    setInitialSquareListeners(0);
+                    setInitialSquareListeners(1);
 
-                    setInitialSquareListeners(board[0], 0);
-                    setInitialSquareListeners(board[1], 1);
-                    LinearLayout pawnOptions1 = findViewById(R.id.pawnOptions1);
-                    LinearLayout pawnOptions2 = findViewById(R.id.pawnOptions2);
-                    pawnOptions1.setVisibility(View.INVISIBLE);
-                    pawnOptions2.setVisibility(View.INVISIBLE);
                     startTimers();
                     start.setText("Pause");
-                    game.gameState = 1;
                     startAI();
                 }
             }
         });
-    }
 
+        options.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                if (game.gameState == GameStateManager.GameState.PLAYING)
+                {
+                    Button start = findViewById(R.id.start);
+                    clean(0);
+                    clean(1);
+                    game.pause();
+
+                    nukeListeners(0);
+                    nukeListeners(1);
+                    start.setText("Resume");
+                }
+                startSettings();
+            }
+        });
+    }
 
     private void startTimers()
     {
@@ -752,7 +769,7 @@ public class GameActivity extends AppCompatActivity {
                     SimpleDateFormat df = new SimpleDateFormat("m:ss");
                     df.setTimeZone(tz);
                     String time = df.format(new Date(millis));
-                    if (game.whiteTurn1 == 1)
+                    if (game.turn[0] == 1)
                     {
                         timer1.setText(time);
                         saved = saved - 100;
@@ -768,7 +785,7 @@ public class GameActivity extends AppCompatActivity {
                         timer1.setBackgroundColor(0x00FFFFFF);
                         timer1.setTextColor(0xFF848484);
                     }
-                    if (game.gameState == 0)
+                    if (game.gameState == GameStateManager.GameState.PREGAME)
                     {
                         gameEnded = true;
                         timer1.setBackgroundColor(0x00FFFFFF);
@@ -796,7 +813,7 @@ public class GameActivity extends AppCompatActivity {
                     SimpleDateFormat df = new SimpleDateFormat("m:ss");
                     df.setTimeZone(tz);
                     String time = df.format(new Date(millis));
-                    if (game.whiteTurn1 == 2)
+                    if (game.turn[0] == 2)
                     {
                         timer2.setText(time);
                         saved = saved - 100;
@@ -812,7 +829,7 @@ public class GameActivity extends AppCompatActivity {
                         timer2.setBackgroundColor(0x00FFFFFF);
                         timer2.setTextColor(0xFF848484);
                     }
-                    if (game.gameState == 0)
+                    if (game.gameState == GameStateManager.GameState.PREGAME)
                     {
                         gameEnded = true;
                         timer2.setBackgroundColor(0x00FFFFFF);
@@ -840,7 +857,7 @@ public class GameActivity extends AppCompatActivity {
                     SimpleDateFormat df = new SimpleDateFormat("m:ss");
                     df.setTimeZone(tz);
                     String time = df.format(new Date(millis));
-                    if (game.whiteTurn2 == 1)
+                    if (game.turn[1] == 1)
                     {
                         timer4.setText(time);
                         saved = saved - 100;
@@ -856,7 +873,7 @@ public class GameActivity extends AppCompatActivity {
                         timer4.setBackgroundColor(0x00FFFFFF);
                         timer4.setTextColor(0xFF848484);
                     }
-                    if (game.gameState == 0)
+                    if (game.gameState == GameStateManager.GameState.PREGAME)
                     {
                         gameEnded = true;
                         timer4.setBackgroundColor(0x00FFFFFF);
@@ -884,7 +901,7 @@ public class GameActivity extends AppCompatActivity {
                     SimpleDateFormat df = new SimpleDateFormat("m:ss");
                     df.setTimeZone(tz);
                     String time = df.format(new Date(millis));
-                    if (game.whiteTurn2 == 2)
+                    if (game.turn[1] == 2)
                     {
                         timer3.setText(time);
                         saved = saved - 100;
@@ -900,7 +917,7 @@ public class GameActivity extends AppCompatActivity {
                         timer3.setBackgroundColor(0x00FFFFFF);
                         timer3.setTextColor(0xFF848484);
                     }
-                    if (game.gameState == 0)
+                    if (game.gameState == GameStateManager.GameState.PREGAME)
                     {
                         gameEnded = true;
                         timer3.setBackgroundColor(0x00FFFFFF);
@@ -917,10 +934,28 @@ public class GameActivity extends AppCompatActivity {
 
     }
 
-    private void clean(ImageView[][] board, int boardNumber)
+    private void clean(int boardNumber)
     {
+        ImageView[][] board = this.board[boardNumber];
         BitmapDrawable black = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.drawable.black, 10, 10));
         BitmapDrawable white = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.drawable.white, 10, 10));
+
+        for (int i = 0; i < dots[boardNumber].size(); i++)
+        {
+            int x = dots[boardNumber].get(i) / 8;
+            int y = dots[boardNumber].get(i) % 8;
+            board[x][y].setImageResource(android.R.color.transparent);
+        }
+        dots[boardNumber].clear();
+
+        for (int i = 0; i < alteredBackgrounds[boardNumber].size(); i++)
+        {
+            int x = alteredBackgrounds[boardNumber].get(i) / 8;
+            int y = alteredBackgrounds[boardNumber].get(i) % 8;
+            board[x][y].setBackground(baseBoard[x][y].getBackground());
+        }
+        alteredBackgrounds[boardNumber].clear();
+
         for (int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)
@@ -933,158 +968,59 @@ public class GameActivity extends AppCompatActivity {
                         return false;
                     }
                 });
-                if (game.positions[boardNumber][i][j].backgroundColor.equals("D"))
-                {
-                    board[i][j].setImageResource(android.R.color.transparent);
-                }
-                if (game.positions[boardNumber][i][j].backgroundColor.equals("Y"))
-                {
-                    if (i == 0 || i == 2 || i == 4 || i == 6)
-                    {
-                        if (j == 0 || j == 2 || j == 4 || j == 6)
-                        {
-                            board[i][j].setBackground(black);
-                        }
-                        else
-                        {
-                            board[i][j].setBackground(white);
-                        }
-                    }
-                    else
-                    {
-                        if (j == 0 || j == 2 || j == 4 || j == 6)
-                        {
-                            board[i][j].setBackground(white);
-                        }
-                        else
-                        {
-                            board[i][j].setBackground(black);
-                        }
-                    }
-
-                }
-                if (game.positions[boardNumber][i][j].backgroundColor.equals("R"))
-                {
-                    if (i == 0 || i == 2 || i == 4 || i == 6)
-                    {
-                        if (j == 0 || j == 2 || j == 4 || j == 6)
-                        {
-                            board[i][j].setBackground(black);
-                        }
-                        else
-                        {
-                            board[i][j].setBackground(white);
-                        }
-                    }
-                    else
-                    {
-                        if (j == 0 || j == 2 || j == 4 || j == 6)
-                        {
-                            board[i][j].setBackground(white);
-                        }
-                        else
-                        {
-                            board[i][j].setBackground(black);
-                        }
-                    }
-                }
-                if (game.positions[boardNumber][i][j].backgroundColor.equals("B"))
-                {
-                    if (i == 0 || i == 2 || i == 4 || i == 6)
-                    {
-                        if (j == 0 || j == 2 || j == 4 || j == 6)
-                        {
-                            board[i][j].setBackground(black);
-                        }
-                        else
-                        {
-                            board[i][j].setBackground(white);
-                        }
-                    }
-                    else
-                    {
-                        if (j == 0 || j == 2 || j == 4 || j == 6)
-                        {
-                            board[i][j].setBackground(white);
-                        }
-                        else
-                        {
-                            board[i][j].setBackground(black);
-                        }
-                    }
-                }
             }
         }
+
         int light = 0x80B0B0B0;
         int dark = 0x808E8E8E;
-        for (int i = 0; i < 30; i++)
+
+        if (boardNumber == 0)
         {
-            if (boardNumber == 0)
+            for (int i = 0; i < alteredRosterBackgrounds[0].size(); i++)
             {
-                if (game.roster1p[i].backgroundColor.equals("Y"))
-                {
-                    if (i % 2 == 0)
-                    {
-                        roster1[i].setBackgroundColor(light);
-                    }
-                    else
-                    {
-                        roster1[i].setBackgroundColor(dark);
-                    }
-                }
-                if (game.roster2p[i].backgroundColor.equals("Y"))
-                {
-                    if (i % 2 == 0)
-                    {
-                        roster2[i].setBackgroundColor(light);
-                    }
-                    else
-                    {
-                        roster2[i].setBackgroundColor(dark);
-                    }
-                }
+                int index = alteredRosterBackgrounds[0].get(i);
+                roster1[index].setBackgroundColor(index % 2 == 0 ? light : dark);
             }
-            else
+            alteredRosterBackgrounds[0].clear();
+            for (int i = 0; i < alteredRosterBackgrounds[1].size(); i++)
             {
-                if (game.roster3p[i].backgroundColor.equals("Y"))
-                {
-                    if (i % 2 == 0)
-                    {
-                        roster3[i].setBackgroundColor(light);
-                    }
-                    else
-                    {
-                        roster3[i].setBackgroundColor(dark);
-                    }
-                }
-                if (game.roster4p[i].backgroundColor.equals("Y"))
-                {
-                    if (i % 2 == 0)
-                    {
-                        roster4[i].setBackgroundColor(light);
-                    }
-                    else
-                    {
-                        roster4[i].setBackgroundColor(dark);
-                    }
-                }
+                int index = alteredRosterBackgrounds[1].get(i);
+                roster2[index].setBackgroundColor(index % 2 == 0 ? light : dark);
             }
+            alteredRosterBackgrounds[1].clear();
         }
+        if (boardNumber == 1)
+        {
+            for (int i = 0; i < alteredRosterBackgrounds[2].size(); i++)
+            {
+                int index = alteredRosterBackgrounds[2].get(i);
+                roster3[index].setBackgroundColor(index % 2 == 0 ? light : dark);
+            }
+            alteredRosterBackgrounds[2].clear();
+            for (int i = 0; i < alteredRosterBackgrounds[3].size(); i++)
+            {
+                int index = alteredRosterBackgrounds[3].get(i);
+                roster4[index].setBackgroundColor(index % 2 == 0 ? light : dark);
+            }
+            alteredRosterBackgrounds[3].clear();
+        }
+
 
     }
 
-    private void setInitialSquareListeners(final ImageView[][] board, int boardNumber)
+    /**
+     * Despite boardNumber, all rosters should be set because a capture on one board effects the rosters on the other
+     */
+    private void setInitialSquareListeners(int boardNumber)
     {
-        clean(board, boardNumber);
-        game.updateLegalCastlingVariables(boardNumber);
-        game.checkIfKingsStillStanding(boardNumber);
-        if (game.whiteInCheck(game.positions[boardNumber], boardNumber))
+        clean(boardNumber);
+        if (game.checking && game.whiteInCheck(game.getPositions(boardNumber), boardNumber))
         {
-            setWhiteCheckConditions(board, boardNumber);
+            setWhiteCheckConditions(boardNumber);
         }
-        if (game.blackInCheck(game.positions[boardNumber], boardNumber))
+        if (game.checking && game.blackInCheck(game.getPositions(boardNumber), boardNumber))
         {
-            setBlackCheckConditions(board, boardNumber);
+            setBlackCheckConditions(boardNumber);
         }
 
         for (int i = 0; i < 8; i++)
@@ -1093,7 +1029,7 @@ public class GameActivity extends AppCompatActivity {
             {
                 final int x = i;
                 final int y = j;
-                board[i][j].setOnTouchListener(new View.OnTouchListener()
+                board[boardNumber][i][j].setOnTouchListener(new View.OnTouchListener()
                 {
                     @Override
                     public boolean onTouch(View view, MotionEvent motionEvent)
@@ -1101,39 +1037,39 @@ public class GameActivity extends AppCompatActivity {
                         String ID = "00";
                         if (boardNumber == 0)
                         {
-                            if (game.whiteTurn1 == 1 && game.position1)
+                            if (game.turn[0] == 1 && game.position1)
                             {
-                                if (game.positions[boardNumber][x][y].color.equals("white"))
+                                if (game.getPositions(boardNumber)[x][y].color.equals("white"))
                                 {
-                                    setPiecePotentialMoves(board, x, y, boardNumber);
-                                    ID = game.positions[boardNumber][x][y].type + "1";
+                                    setPiecePotentialMoves(x, y, boardNumber);
+                                    ID = game.getPositions(boardNumber)[x][y].type + "1";
                                 }
                             }
-                            if (game.whiteTurn1 == 2 && game.position2)
+                            if (game.turn[0] == 2 && game.position2)
                             {
-                                if (game.positions[boardNumber][x][y].color.equals("black"))
+                                if (game.getPositions(boardNumber)[x][y].color.equals("black"))
                                 {
-                                    setPiecePotentialMoves(board, x, y, boardNumber);
-                                    ID = game.positions[boardNumber][x][y].type + "2";
+                                    setPiecePotentialMoves(x, y, boardNumber);
+                                    ID = game.getPositions(boardNumber)[x][y].type + "2";
                                 }
                             }
                         }
                         if (boardNumber == 1)
                         {
-                            if (game.whiteTurn2 == 1 && game.position4)
+                            if (game.turn[1] == 1 && game.position4)
                             {
-                                if (game.positions[boardNumber][x][y].color.equals("white"))
+                                if (game.getPositions(boardNumber)[x][y].color.equals("white"))
                                 {
-                                    setPiecePotentialMoves(board, x, y, boardNumber);
-                                    ID = game.positions[boardNumber][x][y].type + "3";
+                                    setPiecePotentialMoves(x, y, boardNumber);
+                                    ID = game.getPositions(boardNumber)[x][y].type + "3";
                                 }
                             }
-                            if (game.whiteTurn2 == 2 && game.position3)
+                            if (game.turn[1] == 2 && game.position3)
                             {
-                                if (game.positions[boardNumber][x][y].color.equals("black"))
+                                if (game.getPositions(boardNumber)[x][y].color.equals("black"))
                                 {
-                                    setPiecePotentialMoves(board, x, y, boardNumber);
-                                    ID = game.positions[boardNumber][x][y].type + "4";
+                                    setPiecePotentialMoves(x, y, boardNumber);
+                                    ID = game.getPositions(boardNumber)[x][y].type + "4";
                                 }
                             }
                         }
@@ -1161,9 +1097,9 @@ public class GameActivity extends AppCompatActivity {
                 public boolean onTouch(View view, MotionEvent motionEvent)
                 {
                     String ID = "00";
-                    if (game.whiteTurn1 == 1 && !game.roster1p[j].empty && game.position1)
+                    if (game.turn[0] == 1 && !game.roster1p[j].empty && game.position1)
                     {
-                        setRosterPiecePotentialMoves(board, roster1, j, 0);
+                        setRosterPiecePotentialMoves(j, 0);
                         ID = game.roster1p[j].type + "1";
                     }
 
@@ -1183,9 +1119,9 @@ public class GameActivity extends AppCompatActivity {
                 public boolean onTouch(View view, MotionEvent motionEvent)
                 {
                     String ID = "00";
-                    if (!game.roster2p[j].empty && game.whiteTurn1 == 2 && game.position2)
+                    if (!game.roster2p[j].empty && game.turn[0] == 2 && game.position2)
                     {
-                        setRosterPiecePotentialMoves(board, roster2, j, 0);
+                        setRosterPiecePotentialMoves(j, 0);
                         ID = game.roster2p[j].type + "2";
                     }
                     if (motionEvent.getAction() == MotionEvent.ACTION_MOVE && !ID.equals("00"))
@@ -1204,9 +1140,9 @@ public class GameActivity extends AppCompatActivity {
                 public boolean onTouch(View view, MotionEvent motionEvent)
                 {
                     String ID = "00";
-                    if (game.whiteTurn2 == 2 && !game.roster3p[j].empty && game.position3)
+                    if (game.turn[1] == 2 && !game.roster3p[j].empty && game.position3)
                     {
-                        setRosterPiecePotentialMoves(board, roster3, j ,1);
+                        setRosterPiecePotentialMoves(j ,1);
                         ID = game.roster3p[j].type + "4";
                     }
                     if (motionEvent.getAction() == MotionEvent.ACTION_MOVE && !ID.equals("00"))
@@ -1225,9 +1161,9 @@ public class GameActivity extends AppCompatActivity {
                 public boolean onTouch(View view, MotionEvent motionEvent)
                 {
                     String ID = "00";
-                    if (!game.roster4p[j].empty && game.whiteTurn2 == 1 && game.position4)
+                    if (!game.roster4p[j].empty && game.turn[1] == 1 && game.position4)
                     {
-                        setRosterPiecePotentialMoves(board, roster4, j, 1);
+                        setRosterPiecePotentialMoves(j, 1);
                         ID = game.roster4p[j].type + "3";
                     }
                     if (motionEvent.getAction() == MotionEvent.ACTION_MOVE && !ID.equals("00"))
@@ -1242,7 +1178,6 @@ public class GameActivity extends AppCompatActivity {
             });
         }
     }
-
 
     public static Bitmap decodeSampledBitmapFromResource(Resources res, int resId, int reqWidth,
                                                          int reqHeight)
@@ -1286,72 +1221,61 @@ public class GameActivity extends AppCompatActivity {
         return inSampleSize;
     }
 
-
-    private void setWhiteCheckConditions(ImageView[][] board, int boardNumber)
+    private void setWhiteCheckConditions(int boardNumber)
     {
-        if (game.checking)
+        for (int i = 0; i < 8; i++)
         {
-            for (int i = 0; i < 8; i++)
+            for (int j = 0; j < 8; j++)
             {
-                for (int j = 0; j < 8; j++)
+                if (game.getPositions(boardNumber)[i][j].color.equals("white") && game.getPositions(boardNumber)[i][j].type.equals("king"))
                 {
-                    if (game.positions[boardNumber][i][j].color.equals("white") && game.positions[boardNumber][i][j].type.equals("king"))
-                    {
-                        board[i][j].setBackgroundColor(Color.BLUE);
-                        game.positions[boardNumber][i][j].backgroundColor = "B";
-                    }
+                    board[boardNumber][i][j].setBackgroundColor(Color.BLUE);
+                    alteredBackgrounds[boardNumber].add(i*8+j);
                 }
             }
         }
-        game.checkForCheckmate("white", boardNumber);
     }
 
-    private void setBlackCheckConditions(ImageView[][] board, int boardNumber)
+    private void setBlackCheckConditions(int boardNumber)
     {
-        if (game.checking)
+        for (int i = 0; i < 8; i++)
         {
-            for (int i = 0; i < 8; i++)
+            for (int j = 0; j < 8; j++)
             {
-                for (int j = 0; j < 8; j++)
+                if (game.getPositions(boardNumber)[i][j].color.equals("black") && game.getPositions(boardNumber)[i][j].type.equals("king"))
                 {
-                    if (game.positions[boardNumber][i][j].color.equals("black") && game.positions[boardNumber][i][j].type.equals("king"))
-                    {
-                        board[i][j].setBackgroundColor(Color.BLUE);
-                        game.positions[boardNumber][i][j].backgroundColor = "B";
-
-                    }
+                    board[boardNumber][i][j].setBackgroundColor(Color.BLUE);
+                    alteredBackgrounds[boardNumber].add(i*8+j);
                 }
             }
         }
-        game.checkForCheckmate("black", boardNumber);
     }
 
-
-
-    private void setRosterPiecePotentialMoves(ImageView[][] board, ImageView[] roster, int i, int boardNumber)
+    private void setRosterPiecePotentialMoves(int i, int boardNumber)
     {
-        setInitialSquareListeners(board, boardNumber);
+        setInitialSquareListeners(boardNumber);
         Piece[] rosterArray = game.getCurrentRosterArray(boardNumber);
-        Set<Move> moves = rosterArray[i].getRosterMoves(game.positions[boardNumber], rosterArray, i);
+        Set<Move> moves = rosterArray[i].getRosterMoves(game.getPositions(boardNumber), rosterArray, i);
         for (Move m : moves)
         {
-            setPotentialRosterMove(board, roster, m.i, m.x1, m.y1, boardNumber);
+            setPotentialRosterMove(m.i, m.x1, m.y1, boardNumber);
         }
     }
 
-    private void setPotentialRosterMove(final ImageView[][] board, final ImageView[] roster, final int i, final int x, final int y, int boardNumber)
+    private void setPotentialRosterMove(final int i, final int x, final int y, int boardNumber)
     {
+        ImageView[][] board = this.board[boardNumber];
+
+        ImageView[] roster = getRosterImageViewArray(boardNumber, game.getCurrentRosterArray(boardNumber)[i].color);
         Piece[] rosterArray = game.getCurrentRosterArray(boardNumber);
 
         if (!game.rosterMoveIsLegal(rosterArray[i],x, y, boardNumber)) return;
 
         roster[i].setBackgroundColor(Color.YELLOW);
-        if (!rosterArray[i].backgroundColor.equals("Y"))
-        {
-            rosterArray[i].backgroundColor = ("Y");
-        }
+        alteredRosterBackgrounds[getRosterNum(boardNumber)-1].add(i);
+
         board[x][y].setImageResource(R.mipmap.dot);
-        game.positions[boardNumber][x][y].backgroundColor = ("D");
+        dots[boardNumber].add(x*8+y);
 
 
         board[x][y].setOnTouchListener(new View.OnTouchListener()
@@ -1359,7 +1283,7 @@ public class GameActivity extends AppCompatActivity {
             @Override
             public boolean onTouch(View v, MotionEvent event)
             {
-                performRosterMove(board, roster, i, x, y, boardNumber);
+                performRosterMove(i, x, y, boardNumber);
                 return true;
             }
         });
@@ -1381,7 +1305,7 @@ public class GameActivity extends AppCompatActivity {
 
                     case DragEvent.ACTION_DROP:
                         dragClean(board, x, y);
-                        performRosterMove(board, roster, i, x, y, boardNumber);
+                        performRosterMove(i, x, y, boardNumber);
                         break;
                 }
                 return true;
@@ -1389,48 +1313,52 @@ public class GameActivity extends AppCompatActivity {
         });
     }
 
-    private void performRosterMove(ImageView[][] board, ImageView[] roster, int i, int x, int y, int boardNumber)
+    private void performRosterMove(int i, int x, int y, int boardNumber)
     {
+        clean(boardNumber);
+
         game.performRosterMove(i, x, y, boardNumber);
-        clean(board, boardNumber);
-        board[x][y].setImageResource(game.positions[boardNumber][x][y].getResID());
-        board[x][y].setRotation(roster[i].getRotation());
-        roster[i].setRotation(0);
-        roster[i].setImageResource(android.R.color.transparent);
-        pawnCheck(board, game.positions[boardNumber], boardNumber);
-        setInitialSquareListeners(board, boardNumber);
+
+        switchRosterImages(i, x, y, boardNumber);
+
+
+
+        pawnCheck(boardNumber);
+        if (game.gameOver) {
+            gameEndProcedures(game.gameOverSide, game.gameOverType);
+            return;
+        }
+        setInitialSquareListeners(boardNumber);
     }
 
-    private void setPiecePotentialMoves(ImageView[][] board, int x, int y, int boardNumber)
+    private void setPiecePotentialMoves(int x, int y, int boardNumber)
     {
-        setInitialSquareListeners(board, boardNumber);
+        setInitialSquareListeners(boardNumber);
 
-        Set<Move> moves = game.positions[boardNumber][x][y].getMoves(game.positions[boardNumber], x, y, boardNumber);
+        Set<Move> moves = game.getPositions(boardNumber)[x][y].getMoves(game.getPositions(boardNumber), x, y, boardNumber);
         for (Move m : moves)
         {
-            setPotentialMove(m.type, board, m.x, m.y, m.x1, m.y1, boardNumber);
+            setPotentialMove(m.type, m.x, m.y, m.x1, m.y1, boardNumber);
         }
     }
 
-
-    private void setPotentialMove(final String moveType, final ImageView[][] board, final int x, final int y, final int x1, final int y1, int boardNumber)
+    private void setPotentialMove(String moveType, int x, int y, int x1, int y1, int boardNumber)
     {
+        ImageView[][] board = this.board[boardNumber];
         if (game.checkIfMoveResultsInCheck(moveType,x,y,x1,y1,boardNumber)) return;
 
         board[x][y].setBackgroundColor(Color.YELLOW);
-        if (!game.positions[boardNumber][x][y].backgroundColor.equals("Y"))
-        {
-            game.positions[boardNumber][x][y].backgroundColor = "Y";
-        }
+        alteredBackgrounds[boardNumber].add(x*8+y);
+
         if (moveType.equals("take") || moveType.equals("whiteEnP") || moveType.equals("blackEnP"))
         {
             board[x1][y1].setBackgroundColor(Color.RED);
-            game.positions[boardNumber][x1][y1].backgroundColor = "R";
+            alteredBackgrounds[boardNumber].add(x1*8+y1);
         }
         else
         {
             board[x1][y1].setImageResource(R.mipmap.dot);
-            game.positions[boardNumber][x1][y1].backgroundColor = "D";
+            dots[boardNumber].add(x1*8+y1);
         }
 
         board[x1][y1].setOnTouchListener(new View.OnTouchListener()
@@ -1438,7 +1366,7 @@ public class GameActivity extends AppCompatActivity {
             @Override
             public boolean onTouch(View v, MotionEvent event)
             {
-                performMove(moveType, board, x, y, x1, y1, boardNumber);
+                performMove(moveType, x, y, x1, y1, boardNumber);
                 return true;
             }
         });
@@ -1460,7 +1388,7 @@ public class GameActivity extends AppCompatActivity {
 
                     case DragEvent.ACTION_DROP:
                         dragClean(board, x1, y1);
-                        performMove(moveType, board, x, y, x1, y1, boardNumber);
+                        performMove(moveType, x, y, x1, y1, boardNumber);
                         break;
                 }
                 return true;
@@ -1468,25 +1396,31 @@ public class GameActivity extends AppCompatActivity {
         });
     }
 
-
-    private void performMove(String moveType, final ImageView[][] board, int x, int y, final int x1, final int y1, int boardNumber)
+    private void performMove(String moveType, int x, int y, int x1, int y1, int boardNumber)
     {
+        clean(boardNumber);
         game.performMove(moveType,x,y,x1,y1,boardNumber);
-        clean(board, boardNumber);
 
-        if (moveType.equals("take") || moveType.equals("whiteEnP") || moveType.equals("blackEnP"))
-            addToRoster(game.positions[boardNumber], x1, y1, boardNumber);
+        switchBoardImages(moveType, x, y, x1, y1, boardNumber);
+        if (moveType.equals("take") || moveType.equals("whiteEnP") || moveType.equals("blackEnP")) {
+            updateRosterUI(boardNumber);
+        }
 
 
-        switchBoardImages(moveType, board, x, y, x1, y1, boardNumber);
-        pawnCheck(board, game.positions[boardNumber], boardNumber);
-        setInitialSquareListeners(board, boardNumber);
+        pawnCheck(boardNumber);
+        if (game.gameOver) {
+            gameEndProcedures(game.gameOverSide, game.gameOverType);
+            return;
+        }
+        setInitialSquareListeners(boardNumber);
     }
 
-
-
-    private void switchBoardImages(String moveType, ImageView[][] board, int x, int y, int x1, int y1, int boardNumber)
+    /**
+     * Should happen after the game.positions is updated
+     */
+    private void switchBoardImages(String moveType, int x, int y, int x1, int y1, int boardNumber)
     {
+        ImageView[][] board = this.board[boardNumber];
         if (moveType.equals("whiteKingCastle"))
         {
             board[x1][y1].setImageResource(R.mipmap.king);
@@ -1539,7 +1473,7 @@ public class GameActivity extends AppCompatActivity {
         {
             board[x1][y].setRotation(0);
             board[x1][y].setImageResource(android.R.color.transparent);
-            board[x1][5].setImageResource(game.positions[boardNumber][x1][5].getResID());
+            board[x1][5].setImageResource(game.getPositions(boardNumber)[x1][5].getResID());
             board[x1][5].setRotation(board[x][y].getRotation());
             board[x][y].setRotation(0);
             board[x][y].setImageResource(android.R.color.transparent);
@@ -1549,467 +1483,146 @@ public class GameActivity extends AppCompatActivity {
         {
             board[x1][y].setRotation(0);
             board[x1][y].setImageResource(android.R.color.transparent);
-            board[x1][2].setImageResource(game.positions[boardNumber][x1][2].getResID());
+            board[x1][2].setImageResource(game.getPositions(boardNumber)[x1][2].getResID());
             board[x1][2].setRotation(board[x][y].getRotation());
             board[x][y].setRotation(0);
             board[x][y].setImageResource(android.R.color.transparent);
             return;
         }
-        board[x1][y1].setImageResource(game.positions[boardNumber][x1][y1].getResID());
+        board[x1][y1].setImageResource(game.getPositions(boardNumber)[x1][y1].getResID());
         board[x1][y1].setRotation(board[x][y].getRotation());
         board[x][y].setRotation(0);
         board[x][y].setImageResource(android.R.color.transparent);
     }
 
-    private void addToRoster(Piece[][] positions, int x1, int y1, int boardNumber)
+    /**
+     * This function is called after the turn has changed
+     * @param boardNumber
+     */
+    private void updateRosterUI(int boardNumber)
     {
-        if (boardNumber == 0)
-        {
-            if (positions[x1][y1].color.equals("white"))
-            {
-                addToRosterShit(positions, roster4, game.roster4p, x1, y1, 270);
-            }
-            if (positions[x1][y1].color.equals("black"))
-            {
-                addToRosterShit(positions, roster3, game.roster3p, x1, y1, 90);
-            }
-        }
-        else
-        {
-            if (positions[x1][y1].color.equals("white"))
-            {
-                addToRosterShit(positions, roster1, game.roster1p, x1, y1, 90);
-            }
-            if (positions[x1][y1].color.equals("black"))
-            {
-                addToRosterShit(positions, roster2, game.roster2p, x1, y1, 270);
-            }
-        }
+        Piece[] rosterp = null;
+        ImageView[] roster = null;
 
-    }
+        if (boardNumber == 0 && game.turn[boardNumber] == 1) rosterp = game.roster4p;
+        if (boardNumber == 0 && game.turn[boardNumber] == 2) rosterp = game.roster3p;
+        if (boardNumber == 1 && game.turn[boardNumber] == 1) rosterp = game.roster1p;
+        if (boardNumber == 1 && game.turn[boardNumber] == 2) rosterp = game.roster2p;
 
-    private void addToRosterShit(final Piece[][] positions, ImageView[] roster, Piece[] rosterp, int x1, int y1, int rotation)
-    {
-        for (int i = 0; i < 30; i++)
+        if (boardNumber == 0 && game.turn[boardNumber] == 1) roster = roster4;
+        if (boardNumber == 0 && game.turn[boardNumber] == 2) roster = roster3;
+        if (boardNumber == 1 && game.turn[boardNumber] == 1) roster = roster1;
+        if (boardNumber == 1 && game.turn[boardNumber] == 2) roster = roster2;
+
+        for (int i = 1; i < 30; i++)
         {
             if (rosterp[i].empty)
             {
-                if (game.reverting)
-                {
-                    if (positions[x1][y1].wasPawn)
-                    {
-                        if (positions[x1][y1].color.equals("white"))
-                        {
-                            roster[i].setImageResource(R.mipmap.pawn);
-                            roster[i].setRotation(rotation);
-                            rosterp[i] = new Pawn("white");
-                            break;
-                        }
-                        if (positions[x1][y1].color.equals("black"))
-                        {
-                            roster[i].setImageResource(R.mipmap.bpawn);
-                            roster[i].setRotation(rotation);
-                            rosterp[i] = new Pawn("black");
-                            break;
-                        }
-                    }
-                }
-                roster[i].setImageResource(positions[x1][y1].getResID());
-                roster[i].setRotation(rotation);
-                rosterp[i] = positions[x1][y1];
+                roster[i-1].setImageResource(rosterp[i-1].getResID());
                 break;
             }
         }
     }
 
-
-
-    private void pawnCheck(final ImageView[][] board, final Piece[][] positions, int boardNumber)
+    private void pawnCheck(int boardNumber)
     {
-        final LinearLayout pawnOptions1 = findViewById(R.id.pawnOptions1);
-        final LinearLayout pawnOptions2 = findViewById(R.id.pawnOptions2);
-        final Button queen1 = findViewById(R.id.queen1);
-        Button queen2 = findViewById(R.id.queen2);
-        Button rook1 = findViewById(R.id.rook1);
-        Button rook2 = findViewById(R.id.rook2);
-        Button bishop1 = findViewById(R.id.bishop1);
-        Button bishop2 = findViewById(R.id.bishop2);
-        Button knight1 = findViewById(R.id.knight1);
-        Button knight2 = findViewById(R.id.knight2);
+        Button[] queen = {findViewById(R.id.queen1), findViewById(R.id.queen2)};
+        Button[] rook = {findViewById(R.id.rook1),findViewById(R.id.rook2)};
+        Button[] bishop = {findViewById(R.id.bishop1), findViewById(R.id.bishop2)};
+        Button[] knight = {findViewById(R.id.knight1), findViewById(R.id.knight2)};
 
         final ImageView square = findViewById(R.id.a1_1);
         int width = square.getWidth();
 
-        pawnOptions1.getLayoutParams().width = width * 8;
-        pawnOptions1.getLayoutParams().height = width * 8;
-        pawnOptions2.getLayoutParams().width = width * 8;
-        pawnOptions2.getLayoutParams().height = width * 8;
+        pawnOptions[0].getLayoutParams().width = width * 8;
+        pawnOptions[0].getLayoutParams().height = width * 8;
+        pawnOptions[0].setRotation(game.turn[0] == 1 ? 270 : 90);
+        pawnOptions[1].getLayoutParams().width = width * 8;
+        pawnOptions[1].getLayoutParams().height = width * 8;
+        pawnOptions[1].setRotation(game.turn[1] == 1 ? 90 : 270);
 
-        if (boardNumber == 0)
+        int nextTurn = game.turn[boardNumber];
+        int y = nextTurn == 2 ? 7 : 0;
+        String color = nextTurn == 2 ? "white" : "black";
+        for (int i = 0; i < 8; i++)
         {
-            if (game.whiteTurn1 == 2)
+            final int x = i;
+            if (game.getPositions(boardNumber)[i][y].color.equals(color) && game.getPositions(boardNumber)[i][y].type.equals("pawn"))
             {
-                for (int i = 0; i < 8; i++)
+                game.pause(boardNumber);
+                nukeListeners(boardNumber);
+                pawnOptions[boardNumber].setVisibility(View.VISIBLE);
+                if (game.gameState == GameStateManager.GameState.PLAYING)
                 {
-                    final int x = i;
-                    if (positions[i][7].color.equals("white") && positions[i][7].type.equals("pawn"))
+                    queen[boardNumber].setOnClickListener(new View.OnClickListener()
                     {
-                        game.whiteTurn1 = 3;
-                        nukeListeners(board, boardNumber);
-                        pawnOptions1.setVisibility(View.VISIBLE);
-                        pawnOptions1.setRotation(90);
-                        if (game.gameState == 1)
+                        @Override
+                        public void onClick(View v)
                         {
-                            queen1.setOnClickListener(new View.OnClickListener()
+                            game.promote(x, y, new Queen(color), boardNumber);
+                            board[boardNumber][x][y].setImageResource(color.equals("white") ? R.mipmap.queen : R.mipmap.bqueen);
+                            if (game.gameState == GameStateManager.GameState.PLAYING)
                             {
-                                @Override
-                                public void onClick(View v)
-                                {
-//                                    positions[x][7] = "WQP0";
-                                    positions[x][7] = new Queen("white");
-                                    positions[x][7].wasPawn = true;
-                                    board[x][7].setImageResource(R.mipmap.queen);
-                                    if (game.gameState == 1)
-                                    {
-                                        pawnOptions1.setVisibility(View.INVISIBLE);
-                                        game.whiteTurn1 = 2;
-                                        setInitialSquareListeners(board, boardNumber);
-                                    }
-                                }
-                            });
-                            rook1.setOnClickListener(new View.OnClickListener()
+                                pawnOptions[boardNumber].setVisibility(View.INVISIBLE);
+                                game.resume(boardNumber);
+                                setInitialSquareListeners(boardNumber);
+                            }
+                        }
+                    });
+                    rook[boardNumber].setOnClickListener(new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View v)
+                        {
+                            game.promote(x, y, new Rook(color), boardNumber);
+                            board[boardNumber][x][y].setImageResource(color.equals("white") ? R.mipmap.rook : R.mipmap.brook);
+                            if (game.gameState == GameStateManager.GameState.PLAYING)
                             {
-                                @Override
-                                public void onClick(View v)
-                                {
-                                    positions[x][7] = new Rook("white");
-                                    positions[x][7].wasPawn = true;
-                                    board[x][7].setImageResource(R.mipmap.rook);
-                                    if (game.gameState == 1)
-                                    {
-                                        pawnOptions1.setVisibility(View.INVISIBLE);
-                                        game.whiteTurn1 = 2;
-                                        setInitialSquareListeners(board, boardNumber);
-                                    }
-                                }
-                            });
-                            bishop1.setOnClickListener(new View.OnClickListener()
+                                pawnOptions[boardNumber].setVisibility(View.INVISIBLE);
+                                game.resume(boardNumber);
+                                setInitialSquareListeners(boardNumber);
+                            }
+                        }
+                    });
+                    bishop[boardNumber].setOnClickListener(new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View v)
+                        {
+                            game.promote(x, y, new Bishop(color), boardNumber);
+                            board[boardNumber][x][y].setImageResource(color.equals("white") ? R.mipmap.bishop : R.mipmap.bbishop);
+                            if (game.gameState == GameStateManager.GameState.PLAYING)
                             {
-                                @Override
-                                public void onClick(View v)
-                                {
-                                    positions[x][7] = new Bishop("white");
-                                    positions[x][7].wasPawn = true;
-                                    board[x][7].setImageResource(R.mipmap.bishop);
-                                    if (game.gameState == 1)
-                                    {
-                                        pawnOptions1.setVisibility(View.INVISIBLE);
-                                        game.whiteTurn1 = 2;
-                                        setInitialSquareListeners(board, boardNumber);
-                                    }
-                                }
-                            });
-                            knight1.setOnClickListener(new View.OnClickListener()
+                                pawnOptions[boardNumber].setVisibility(View.INVISIBLE);
+                                game.resume(boardNumber);
+                                setInitialSquareListeners(boardNumber);
+                            }
+                        }
+                    });
+                    knight[boardNumber].setOnClickListener(new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View v)
+                        {
+                            game.promote(x, y, new Knight(color), boardNumber);
+                            board[boardNumber][x][y].setImageResource(color.equals("white") ? R.mipmap.knight : R.mipmap.bknight);
+                            if (game.gameState == GameStateManager.GameState.PLAYING)
                             {
-                                @Override
-                                public void onClick(View v)
-                                {
-                                    positions[x][7] = new Knight("white");
-                                    positions[x][7].wasPawn = true;
-                                    board[x][7].setImageResource(R.mipmap.knight);
-                                    if (game.gameState == 1)
-                                    {
-                                        pawnOptions1.setVisibility(View.INVISIBLE);
-                                        game.whiteTurn1 = 2;
-                                        setInitialSquareListeners(board, boardNumber);
-                                    }
+                                pawnOptions[boardNumber].setVisibility(View.INVISIBLE);
+                                game.resume(boardNumber);
+                                setInitialSquareListeners(boardNumber);
+                            }
 
-                                }
-                            });
-                            if (!game.position1)
-                            {
-                                positions[x][7] = new Queen("white");
-                                positions[x][7].wasPawn = true;
-                                board[x][7].setImageResource(R.mipmap.queen);
-                                if (game.gameState == 1)
-                                {
-                                    pawnOptions1.setVisibility(View.INVISIBLE);
-                                    game.whiteTurn1 = 2;
-                                }
-                            }
                         }
-                    }
-                }
-            }
-            if (game.whiteTurn1 == 1)
-            {
-                for (int i = 0; i < 8; i++)
-                {
-                    final int x = i;
-                    if (positions[i][0].color.equals("black") && positions[i][0].type.equals("pawn"))
+                    });
+                    if (!game.position1)
                     {
-                        game.whiteTurn1 = 3;
-                        nukeListeners(board, boardNumber);
-                        pawnOptions1.setVisibility(View.VISIBLE);
-                        pawnOptions1.setRotation(270);
-
-                        queen1.setOnClickListener(new View.OnClickListener()
+                        game.promote(x, y, new Queen(color), boardNumber);
+                        board[boardNumber][x][y].setImageResource(color.equals("white") ? R.mipmap.queen : R.mipmap.bqueen);
+                        if (game.gameState == GameStateManager.GameState.PLAYING)
                         {
-                            @Override
-                            public void onClick(View v)
-                            {
-//                                positions[x][0] = "BQP0";
-                                positions[x][0] = new Queen("black");
-                                positions[x][0].wasPawn = true;
-                                board[x][0].setImageResource(R.mipmap.bqueen);
-                                if (game.gameState == 1)
-                                {
-                                    pawnOptions1.setVisibility(View.INVISIBLE);
-                                    game.whiteTurn1 = 1;
-                                    setInitialSquareListeners(board, boardNumber);
-                                }
-                            }
-                        });
-                        rook1.setOnClickListener(new View.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(View v)
-                            {
-                                positions[x][0] = new Rook("black");
-                                positions[x][0].wasPawn = true;
-                                board[x][0].setImageResource(R.mipmap.brook);
-                                if (game.gameState == 1)
-                                {
-                                    pawnOptions1.setVisibility(View.INVISIBLE);
-                                    game.whiteTurn1 = 1;
-                                    setInitialSquareListeners(board, boardNumber);
-                                }
-                            }
-                        });
-                        bishop1.setOnClickListener(new View.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(View v)
-                            {
-                                positions[x][0] = new Bishop("black");
-                                positions[x][0].wasPawn = true;
-                                board[x][0].setImageResource(R.mipmap.bbishop);
-                                if (game.gameState == 1)
-                                {
-                                    pawnOptions1.setVisibility(View.INVISIBLE);
-                                    game.whiteTurn1 = 1;
-                                    setInitialSquareListeners(board, boardNumber);
-                                }
-                            }
-                        });
-                        knight1.setOnClickListener(new View.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(View v)
-                            {
-                                positions[x][0] = new Knight("black");
-                                positions[x][0].wasPawn = true;
-                                board[x][0].setImageResource(R.mipmap.bknight);
-                                if (game.gameState == 1)
-                                {
-                                    pawnOptions1.setVisibility(View.INVISIBLE);
-                                    game.whiteTurn1 = 1;
-                                    setInitialSquareListeners(board, boardNumber);
-                                }
-                            }
-                        });
-                        if (!game.position2)
-                        {
-                            positions[x][0] = new Queen("black");
-                            positions[x][0].wasPawn = true;
-                            board[x][0].setImageResource(R.mipmap.bqueen);
-                            if (game.gameState == 1)
-                            {
-                                pawnOptions1.setVisibility(View.INVISIBLE);
-                                game.whiteTurn1 = 1;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        if (boardNumber == 1)
-        {
-            if (game.whiteTurn2 == 2)
-            {
-                for (int i = 0; i < 8; i++)
-                {
-                    final int x = i;
-                    if (positions[i][7].color.equals("white") && positions[i][7].type.equals("pawn"))
-                    {
-                        game.whiteTurn2 = 3;
-                        nukeListeners(board, boardNumber);
-                        pawnOptions2.setVisibility(View.VISIBLE);
-                        pawnOptions2.setRotation(270);
-                        queen2.setOnClickListener(new View.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(View v)
-                            {
-//                                positions[x][7] = "WQP0";
-                                positions[x][7] = new Queen("white");
-                                positions[x][7].wasPawn = true;
-                                board[x][7].setImageResource(R.mipmap.queen);
-                                if (game.gameState == 1)
-                                {
-                                    pawnOptions2.setVisibility(View.INVISIBLE);
-                                    game.whiteTurn2 = 2;
-                                    setInitialSquareListeners(board, boardNumber);
-                                }
-                            }
-                        });
-                        rook2.setOnClickListener(new View.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(View v)
-                            {
-                                positions[x][7] = new Rook("white");
-                                positions[x][7].wasPawn = true;
-                                board[x][7].setImageResource(R.mipmap.rook);
-                                if (game.gameState == 1)
-                                {
-                                    pawnOptions2.setVisibility(View.INVISIBLE);
-                                    game.whiteTurn2 = 2;
-                                    setInitialSquareListeners(board, boardNumber);
-                                }
-                            }
-                        });
-                        bishop2.setOnClickListener(new View.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(View v)
-                            {
-                                positions[x][7] = new Bishop("white");
-                                positions[x][7].wasPawn = true;
-                                board[x][7].setImageResource(R.mipmap.bishop);
-                                if (game.gameState == 1)
-                                {
-                                    pawnOptions2.setVisibility(View.INVISIBLE);
-                                    game.whiteTurn2 = 2;
-                                    setInitialSquareListeners(board, boardNumber);
-                                }
-                            }
-                        });
-                        knight2.setOnClickListener(new View.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(View v)
-                            {
-                                positions[x][7] = new Knight("white");
-                                positions[x][7].wasPawn = true;
-                                board[x][7].setImageResource(R.mipmap.knight);
-                                if (game.gameState == 1)
-                                {
-                                    pawnOptions2.setVisibility(View.INVISIBLE);
-                                    game.whiteTurn2 = 2;
-                                    setInitialSquareListeners(board, boardNumber);
-                                }
-                            }
-                        });
-                        if (!game.position4)
-                        {
-                            positions[x][7] = new Queen("white");
-                            positions[x][7].wasPawn = true;
-                            board[x][7].setImageResource(R.mipmap.queen);
-                            if (game.gameState == 1)
-                            {
-                                pawnOptions2.setVisibility(View.INVISIBLE);
-                                game.whiteTurn2 = 2;
-                            }
-                        }
-                    }
-                }
-            }
-            if (game.whiteTurn2 == 1)
-            {
-                for (int i = 0; i < 8; i++)
-                {
-                    final int x = i;
-                    if (positions[i][0].color.equals("black") && positions[i][0].type.equals("pawn"))
-                    {
-                        game.whiteTurn2 = 3;
-                        nukeListeners(board, boardNumber);
-                        pawnOptions2.setVisibility(View.VISIBLE);
-                        pawnOptions2.setRotation(90);
-                        queen2.setOnClickListener(new View.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(View v)
-                            {
-                                positions[x][0] = new Queen("black");
-                                positions[x][0].wasPawn = true;
-                                board[x][0].setImageResource(R.mipmap.bqueen);
-                                if (game.gameState == 1)
-                                {
-                                    pawnOptions2.setVisibility(View.INVISIBLE);
-                                    game.whiteTurn2 = 1;
-                                    setInitialSquareListeners(board, boardNumber);
-                                }
-                            }
-                        });
-                        rook2.setOnClickListener(new View.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(View v)
-                            {
-                                positions[x][0] = new Rook("black");
-                                positions[x][0].wasPawn = true;
-                                board[x][0].setImageResource(R.mipmap.brook);
-                                if (game.gameState == 1)
-                                {
-                                    pawnOptions2.setVisibility(View.INVISIBLE);
-                                    game.whiteTurn2 = 1;
-                                    setInitialSquareListeners(board, boardNumber);
-                                }
-                            }
-                        });
-                        bishop2.setOnClickListener(new View.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(View v)
-                            {
-                                positions[x][0] = new Bishop("black");
-                                positions[x][0].wasPawn = true;
-                                board[x][0].setImageResource(R.mipmap.bbishop);
-                                if (game.gameState == 1)
-                                {
-                                    pawnOptions2.setVisibility(View.INVISIBLE);
-                                    game.whiteTurn2 = 1;
-                                    setInitialSquareListeners(board, boardNumber);
-                                }
-                            }
-                        });
-                        knight2.setOnClickListener(new View.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(View v)
-                            {
-                                positions[x][0] = new Knight("black");
-                                positions[x][0].wasPawn = true;
-                                board[x][0].setImageResource(R.mipmap.bknight);
-                                if (game.gameState == 1)
-                                {
-                                    pawnOptions2.setVisibility(View.INVISIBLE);
-                                    game.whiteTurn2 = 1;
-                                    setInitialSquareListeners(board, boardNumber);
-                                }
-                            }
-                        });
-                        if (!game.position3)
-                        {
-                            positions[x][0] = new Queen("black");
-                            positions[x][0].wasPawn = true;
-                            board[x][0].setImageResource(R.mipmap.bqueen);
-                            if (game.gameState == 1)
-                            {
-                                pawnOptions2.setVisibility(View.INVISIBLE);
-                                game.whiteTurn2 = 1;
-                            }
+                            pawnOptions[boardNumber].setVisibility(View.INVISIBLE);
+                            game.resume(boardNumber);
                         }
                     }
                 }
@@ -2017,17 +1630,16 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-
     /**
      * Removes all listeners on all squares
      */
-    private void nukeListeners(final ImageView[][] board, int boardNumber)
+    private void nukeListeners(int boardNumber)
     {
         for (int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)
             {
-                board[i][j].setOnClickListener(new View.OnClickListener()
+                board[boardNumber][i][j].setOnClickListener(new View.OnClickListener()
                 {
                     @Override
                     public void onClick(View v)
@@ -2035,7 +1647,7 @@ public class GameActivity extends AppCompatActivity {
 
                     }
                 });
-                board[i][j].setOnTouchListener(new View.OnTouchListener()
+                board[boardNumber][i][j].setOnTouchListener(new View.OnTouchListener()
                 {
                     @Override
                     public boolean onTouch(View v, MotionEvent event)
@@ -2093,7 +1705,6 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-
     private void startAI()
     {
         if (!game.position1)
@@ -2106,7 +1717,7 @@ public class GameActivity extends AppCompatActivity {
                     boolean a = true;
                     while (a)
                     {
-                        if (game.gameState == 0 || game.gameState == 2)
+                        if (game.gameState == GameStateManager.GameState.PREGAME || game.gameState == GameStateManager.GameState.PAUSED)
                         {
                             System.out.println("a false");
                             a = false;
@@ -2120,7 +1731,7 @@ public class GameActivity extends AppCompatActivity {
                         {
                             System.out.println("got interrupted!");
                         }
-                        if (game.whiteTurn1 == 1)
+                        if (game.turn[0] == 1)
                         {
                             try
                             {
@@ -2130,9 +1741,9 @@ public class GameActivity extends AppCompatActivity {
                                 System.out.println("got interrupted!");
                             }
                         }
-                        if (game.whiteTurn1 == 1)
+                        if (game.turn[0] == 1)
                         {
-                            AIMinimax ai = new AIMinimax("white", board[0], getArrayClone(game.positions[0]), roster1, game.roster1p.clone(), roster2, game.roster2p.clone(), 0);
+                            AIMinimax ai = new AIMinimax("white", board[0], getArrayClone(game.getPositions(0)), roster1, game.roster1p.clone(), roster2, game.roster2p.clone(), 0);
                             final Move bestMove = ai.getBestMove();
                             if (bestMove == null)
                             {
@@ -2144,9 +1755,9 @@ public class GameActivity extends AppCompatActivity {
                                 public void run()
                                 {
                                     if (bestMove.type.equals("roster"))
-                                        performRosterMove(board[0],  roster1, bestMove.i, bestMove.x1, bestMove.y1, 0);
+                                        performRosterMove(bestMove.i, bestMove.x1, bestMove.y1, 0);
                                     else
-                                        performMove(bestMove.type, board[0], bestMove.x, bestMove.y, bestMove.x1, bestMove.y1, 0);
+                                        performMove(bestMove.type, bestMove.x, bestMove.y, bestMove.x1, bestMove.y1, 0);
                                 }
                             });
                         }
@@ -2164,7 +1775,7 @@ public class GameActivity extends AppCompatActivity {
                     boolean a = true;
                     while (a)
                     {
-                        if (game.gameState == 0 || game.gameState == 2)
+                        if (game.gameState == GameStateManager.GameState.PLAYING || game.gameState == GameStateManager.GameState.PAUSED)
                         {
                             a = false;
                         }
@@ -2177,7 +1788,7 @@ public class GameActivity extends AppCompatActivity {
                         {
                             System.out.println("got interrupted!");
                         }
-                        if (game.whiteTurn1 == 2)
+                        if (game.turn[0] == 2)
                         {
                             try
                             {
@@ -2187,9 +1798,9 @@ public class GameActivity extends AppCompatActivity {
                                 System.out.println("got interrupted!");
                             }
                         }
-                        if (game.whiteTurn1 == 2)
+                        if (game.turn[0] == 2)
                         {
-                            AIMinimax ai = new AIMinimax("black", board[0], getArrayClone(game.positions[0]), roster2, game.roster2p.clone(), roster1, game.roster1p.clone(), 0);
+                            AIMinimax ai = new AIMinimax("black", board[0], getArrayClone(game.getPositions(0)), roster2, game.roster2p.clone(), roster1, game.roster1p.clone(), 0);
                             final Move bestMove = ai.getBestMove();
                             if (bestMove == null)
                             {
@@ -2201,9 +1812,9 @@ public class GameActivity extends AppCompatActivity {
                                 public void run()
                                 {
                                     if (bestMove.type.equals("roster"))
-                                        performRosterMove(board[0], roster2, bestMove.i, bestMove.x, bestMove.y, 0);
+                                        performRosterMove(bestMove.i, bestMove.x, bestMove.y, 0);
                                     else
-                                        performMove(bestMove.type, board[0], bestMove.x, bestMove.y, bestMove.x1, bestMove.y1, 0);
+                                        performMove(bestMove.type, bestMove.x, bestMove.y, bestMove.x1, bestMove.y1, 0);
                                 }
                             });
                         }
@@ -2224,7 +1835,7 @@ public class GameActivity extends AppCompatActivity {
                     boolean a = true;
                     while (a)
                     {
-                        if (game.gameState == 0 || game.gameState == 2)
+                        if (game.gameState == GameStateManager.GameState.PREGAME || game.gameState == GameStateManager.GameState.PAUSED)
                         {
                             a = false;
                         }
@@ -2237,7 +1848,7 @@ public class GameActivity extends AppCompatActivity {
                         {
                             System.out.println("got interrupted!");
                         }
-                        if (game.whiteTurn2 == 2)
+                        if (game.turn[1] == 2)
                         {
                             try
                             {
@@ -2247,9 +1858,9 @@ public class GameActivity extends AppCompatActivity {
                                 System.out.println("got interrupted!");
                             }
                         }
-                        if (game.whiteTurn2 == 2)
+                        if (game.turn[1] == 2)
                         {
-                            AIMinimax ai = new AIMinimax("black", board[1], getArrayClone(game.positions[1]), roster4, game.roster4p.clone(), roster3, game.roster3p.clone(), 12);
+                            AIMinimax ai = new AIMinimax("black", board[1], getArrayClone(game.getPositions(1)), roster4, game.roster4p.clone(), roster3, game.roster3p.clone(), 12);
                             final Move bestMove = ai.getBestMove();
                             if (bestMove == null)
                             {
@@ -2261,9 +1872,9 @@ public class GameActivity extends AppCompatActivity {
                                 public void run()
                                 {
                                     if (bestMove.type.equals("roster"))
-                                        performRosterMove(board[1], roster4, bestMove.i, bestMove.x, bestMove.y,1);
+                                        performRosterMove(bestMove.i, bestMove.x, bestMove.y,1);
                                     else
-                                        performMove(bestMove.type, board[1], bestMove.x, bestMove.y, bestMove.x1, bestMove.y1,1);
+                                        performMove(bestMove.type, bestMove.x, bestMove.y, bestMove.x1, bestMove.y1,1);
                                 }
                             });
                         }
@@ -2281,7 +1892,7 @@ public class GameActivity extends AppCompatActivity {
                     boolean a = true;
                     while (a)
                     {
-                        if (game.gameState == 0 || game.gameState == 2)
+                        if (game.gameState == GameStateManager.GameState.PREGAME || game.gameState == GameStateManager.GameState.PAUSED)
                         {
                             a = false;
                         }
@@ -2294,7 +1905,7 @@ public class GameActivity extends AppCompatActivity {
                         {
                             System.out.println("got interrupted!");
                         }
-                        if (game.whiteTurn2 == 1)
+                        if (game.turn[1] == 1)
                         {
                             try
                             {
@@ -2304,9 +1915,9 @@ public class GameActivity extends AppCompatActivity {
                                 System.out.println("got interrupted!");
                             }
                         }
-                        if (game.whiteTurn2 == 1)
+                        if (game.turn[1] == 1)
                         {
-                            AIMinimax ai = new AIMinimax("white", board[1], getArrayClone(game.positions[1]), roster3, game.roster3p.clone(), roster4, game.roster4p.clone(), 1);
+                            AIMinimax ai = new AIMinimax("white", board[1], getArrayClone(game.getPositions(1)), roster3, game.roster3p.clone(), roster4, game.roster4p.clone(), 1);
                             final Move bestMove = ai.getBestMove();
                             if (bestMove == null)
                             {
@@ -2318,9 +1929,9 @@ public class GameActivity extends AppCompatActivity {
                                 public void run()
                                 {
                                     if (bestMove.type.equals("roster"))
-                                        performRosterMove(board[1],  roster3, bestMove.i, bestMove.x, bestMove.y, 1);
+                                        performRosterMove(bestMove.i, bestMove.x, bestMove.y, 1);
                                     else
-                                        performMove(bestMove.type, board[1], bestMove.x, bestMove.y, bestMove.x1, bestMove.y1, 1);
+                                        performMove(bestMove.type, bestMove.x, bestMove.y, bestMove.x1, bestMove.y1, 1);
                                 }
                             });
                         }
@@ -2332,17 +1943,13 @@ public class GameActivity extends AppCompatActivity {
 
     private void gameEndProcedures(int side, int type)
     {
-        clean(board[0], 0);
-        clean(board[1], 1);
-        game.whiteTurn1 = 3;
-        game.whiteTurn2 = 3;
-        nukeListeners(board[0], 0);
-        nukeListeners(board[1], 1);
-        final Button start = findViewById(R.id.start);
+        game.gameEndProcedures(side, type);
+        clean(0);
+        clean(1);
+        nukeListeners(0);
+        nukeListeners(1);
         start.setText("Start");
-        game.gameState = 0;
-        TextView timeNotice = findViewById(R.id.timeNotice);
-        timeNotice.setVisibility(View.INVISIBLE);
+
         final LinearLayout finishScreen = findViewById(R.id.finishScreen);
 
         if (side == 0)
@@ -2559,25 +2166,18 @@ public class GameActivity extends AppCompatActivity {
     }
     private void newGame()
     {
-        game.whiteTurn1 = 3;
-        game.whiteTurn2 = 3;
-        nukeListeners(board[0], 0);
-        nukeListeners(board[1], 1);
-        final Button start = findViewById(R.id.start);
+        game = new GameStateManager();
+        getPrefs();
+        nukeListeners(0);
+        nukeListeners(1);
         start.setText("Start");
-        game.gameState = 0;
-        game.clean();
-        clean(board[0], 0);
-        clean(board[1], 1);
+        clean(0);
+        clean(1);
         setStartingPiecesUI();
         TimeZone tz = TimeZone.getTimeZone("UTC");
         SimpleDateFormat df = new SimpleDateFormat("m:ss");
         df.setTimeZone(tz);
         final String time = df.format(new Date(milliseconds));
-        final TextView timer1 = findViewById(R.id.timer1);
-        final TextView timer2 = findViewById(R.id.timer2);
-        final TextView timer3 = findViewById(R.id.timer3);
-        final TextView timer4 = findViewById(R.id.timer4);
         runOnUiThread(new Runnable()
         {
             @Override
@@ -2589,10 +2189,8 @@ public class GameActivity extends AppCompatActivity {
                 timer4.setText(time);
             }
         });
-        LinearLayout pawnOptions1 = findViewById(R.id.pawnOptions1);
-        LinearLayout pawnOptions2 = findViewById(R.id.pawnOptions2);
-        pawnOptions1.setVisibility(View.INVISIBLE);
-        pawnOptions2.setVisibility(View.INVISIBLE);
+        pawnOptions[0].setVisibility(View.INVISIBLE);
+        pawnOptions[1].setVisibility(View.INVISIBLE);
     }
 
     private void startSettings()
@@ -2626,7 +2224,7 @@ public class GameActivity extends AppCompatActivity {
                 SimpleDateFormat df = new SimpleDateFormat("m:ss");
                 df.setTimeZone(tz);
                 final String time = df.format(new Date(milliseconds));
-                if (game.gameState == 0)
+                if (game.gameState == GameStateManager.GameState.PREGAME)
                 {
                     runOnUiThread(new Runnable()
                     {
@@ -2654,5 +2252,38 @@ public class GameActivity extends AppCompatActivity {
                 }
             }
         }).start();
+    }
+
+    private ImageView[] getRosterImageViewArray(int boardNumber, String color)
+    {
+        if (boardNumber == 0 && color.equals("white")) return roster1;
+        if (boardNumber == 0 && color.equals("black")) return roster2;
+        if (boardNumber == 1 && color.equals("white")) return roster4;
+        if (boardNumber == 1 && color.equals("black")) return roster3;
+        return null;
+    }
+    private int getRosterNum(int boardNumber)
+    {
+        if (boardNumber == 0 && game.turn[boardNumber] == 1) return 1;
+        if (boardNumber == 0 && game.turn[boardNumber] == 2) return 2;
+        if (boardNumber == 1 && game.turn[boardNumber] == 1) return 4;
+        if (boardNumber == 1 && game.turn[boardNumber] == 2) return 3;
+        return -1;
+    }
+
+    private void switchRosterImages(int i, int x, int y, int boardNumber)
+    {
+        String color = game.getPositions(boardNumber)[x][y].color;
+        ImageView[] roster = getRosterImageViewArray(boardNumber, color);
+
+        board[boardNumber][x][y].setImageResource(game.getPositions(boardNumber)[x][y].getResID());
+        board[boardNumber][x][y].setRotation(roster[i].getRotation());
+        roster[i].setImageResource(android.R.color.transparent);
+    }
+
+    private void requestNewInterstitial()
+    {
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mInterstitialAd.loadAd(adRequest);
     }
 }

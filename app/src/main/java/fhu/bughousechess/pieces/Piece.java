@@ -12,7 +12,6 @@ public abstract class Piece
     public String color;
     public String type;
     public boolean wasPawn;
-    public String backgroundColor;
     public boolean empty = true;
     public boolean onRoster = false;
 

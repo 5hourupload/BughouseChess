@@ -14,7 +14,6 @@ public class Empty extends Piece
         color = "";
         type = "";
         wasPawn = false;
-        backgroundColor = "";
         empty = true;
     }
 

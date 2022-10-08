@@ -16,7 +16,6 @@ public class Knight extends Piece
         this.color = color;
         type = "knight";
         wasPawn = false;
-        backgroundColor = "";
         empty = false;
     }
 

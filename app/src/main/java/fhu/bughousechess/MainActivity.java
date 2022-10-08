@@ -59,7 +59,6 @@ import fhu.bughousechess.pieces.Rook;
 public class MainActivity extends AppCompatActivity
 {
     public static int currentApiVersion;
-    InterstitialAd mInterstitialAd;
     static int dialog_margin;
     public static int menu_code = 0;
 
@@ -132,20 +131,7 @@ public class MainActivity extends AppCompatActivity
         mAdView.loadAd(request);
 
 
-        mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-9794567752193168/1898888810");
 
-        mInterstitialAd.setAdListener(new AdListener()
-        {
-            @Override
-            public void onAdClosed()
-            {
-                requestNewInterstitial();
-            }
-
-        });
-
-        requestNewInterstitial();
 
 
         final LinearLayout mainmenu = findViewById(R.id.mainmenu);
@@ -229,11 +215,7 @@ public class MainActivity extends AppCompatActivity
         startActivity(intent);
     }
 
-    private void requestNewInterstitial()
-    {
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mInterstitialAd.loadAd(adRequest);
-    }
+
 
     public static Bitmap decodeSampledBitmapFromResource(Resources res, int resId, int reqWidth,
                                                          int reqHeight)

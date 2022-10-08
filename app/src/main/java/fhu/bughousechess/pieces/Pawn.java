@@ -21,7 +21,6 @@ public class Pawn extends Piece
         this.color = color;
         type = "pawn";
         wasPawn = true;
-        backgroundColor = "";
         empty = false;
     }
 

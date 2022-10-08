@@ -15,15 +15,14 @@ import fhu.bughousechess.pieces.Rook;
 
 public class GameStateManager {
 
-    public Piece positions[][][] = new Piece[2][8][8];
+    private Piece positions[][][] = new Piece[2][8][8];
     public Piece roster1p[] = new Piece[30];
     public Piece roster2p[] = new Piece[30];
     public Piece roster3p[] = new Piece[30];
     public Piece roster4p[] = new Piece[30];
 
 
-    int whiteTurn1 = 1;
-    int whiteTurn2 = 1;
+    int[] turn = {1,1};
 
     public static boolean whiteCastleQueen1 = true;
     public static boolean whiteCastleKing1 = true;
@@ -34,12 +33,12 @@ public class GameStateManager {
     public static boolean blackCastleQueen2 = true;
     public static boolean blackCastleKing2 = true;
 
-    static boolean checking = true;
-    static boolean placing = true;
-    static boolean reverting = true;
+    public static boolean checking = true;
+    public static boolean placing = true;
+    public static boolean reverting = true;
     public static boolean firstrank = false;
 
-    static int gameState = 0;
+    static GameState gameState = GameState.PREGAME;
     int turnSave1 = 0;
     int turnSave2 = 0;
 
@@ -47,13 +46,18 @@ public class GameStateManager {
     public static int board1Turn = 0;
     public static int board2Turn = 0;
 
-    boolean checkmate1 = false;
-    boolean checkmate2 = false;
-
     static boolean position1 = true;
     static boolean position2 = true;
     static boolean position3 = true;
     static boolean position4 = true;
+
+    boolean gameOver = false;
+    int gameOverSide = -1;
+    int gameOverType = -1;
+
+    public enum GameState {
+        PREGAME, PLAYING, PAUSED
+    }
 
     public GameStateManager()
     {
@@ -121,62 +125,16 @@ public class GameStateManager {
         }
 
     }
-    public void resetBooleans()
-    {
-        whiteTurn1 = 1;
-        whiteTurn2 = 1;
-
-        whiteCastleQueen1 = true;
-        whiteCastleKing1 = true;
-        blackCastleQueen1 = true;
-        blackCastleKing1 = true;
-        whiteCastleQueen2 = true;
-        whiteCastleKing2 = true;
-        blackCastleQueen2 = true;
-        blackCastleKing2 = true;
-        checkmate1 = false;
-        checkmate2 = false;
-
-        for (int i = 0; i < 6; i++)
-        {
-            for (int j = 0; j < 4; j++)
-            {
-                enP[i][j] = "0000";
-            }
-        }
-    }
-
-    public void clean() {
-        for (int b = 0; b < 2; b++)
-        {
-            for (int i = 0; i < 8; i++)
-            {
-                for (int j = 0; j < 8; j++)
-                {
-                    positions[b][i][j].backgroundColor = "0";
-                }
-            }
-        }
-
-
-        for (int i = 0; i < 30; i++)
-        {
-            roster1p[i].backgroundColor = "0";
-            roster2p[i].backgroundColor = "0";
-            roster3p[i].backgroundColor = "0";
-            roster4p[i].backgroundColor = "0";
-        }
-
-    }
 
     public void performMove(String moveType, int x, int y, final int x1, final int y1, int boardNumber)
     {
+        String color = positions[boardNumber][x][y].color;
         //?? not sur what this is for, possible a fringe case catcher?
         if (positions[boardNumber][x][y].empty)
         {
-            whiteTurn1 = 3;
-            whiteTurn2 = 3;
-            gameState = 2;
+            turn[0] = 3;
+            turn[1] = 3;
+            gameState = GameState.PAUSED;
             return;
         }
         turnChange(positions[boardNumber][x][y].color, boardNumber);
@@ -191,27 +149,32 @@ public class GameStateManager {
             if (boardNumber == 0) enP[x][1] = "1" + Integer.toString(board1Turn);
             if (boardNumber == 1) enP[x][3] = "1" + Integer.toString(board2Turn);
         }
+        if (moveType.equals("take") || moveType.equals("whiteEnP") || moveType.equals("blackEnP")) {
+            addToRoster(x1, y1, boardNumber);
+        }
         switchPositions(moveType, positions[boardNumber], x, y, x1, y1);
+        endOfMoveChecks(color, boardNumber);
     }
 
     public void performRosterMove(int i, int x, int y, int boardNumber)
     {
         Piece[] roster = null;
-        if (boardNumber == 0 && whiteTurn1 == 1) roster = roster1p;
-        if (boardNumber == 0 && whiteTurn1 == 2) roster = roster2p;
-        if (boardNumber == 1 && whiteTurn1 == 1) roster = roster4p;
-        if (boardNumber == 1 && whiteTurn1 == 2) roster = roster3p;
+        if (boardNumber == 0 && turn[boardNumber] == 1) roster = roster1p;
+        if (boardNumber == 0 && turn[boardNumber] == 2) roster = roster2p;
+        if (boardNumber == 1 && turn[boardNumber] == 1) roster = roster4p;
+        if (boardNumber == 1 && turn[boardNumber] == 2) roster = roster3p;
 
         if (roster[i].empty)
         {
-            whiteTurn1 = 3;
-            whiteTurn2 = 3;
-            gameState = 2;
+            turn[0] = 3;
+            turn[1] = 3;
+            gameState = GameState.PAUSED;
             return;
         }
         turnChange(roster[i].color, boardNumber);
         positions[boardNumber][x][y] = roster[i];
         roster[i] = new Empty();
+        endOfMoveChecks(positions[boardNumber][x][y].color, boardNumber);
     }
 
     private void turnChange(String prevColor, int boardNumber)
@@ -220,24 +183,24 @@ public class GameStateManager {
         {
             if (prevColor.equals("white"))
             {
-                if (gameState == 2)
+                if (gameState == GameState.PAUSED)
                 {
                     turnSave1 = 2;
                 }
                 else
                 {
-                    whiteTurn1 = 2;
+                    turn[0] = 2;
                 }
             }
             else
             {
-                if (gameState == 2)
+                if (gameState == GameState.PAUSED)
                 {
                     turnSave1 = 1;
                 }
                 else
                 {
-                    whiteTurn1 = 1;
+                    turn[0] = 1;
                 }
 
             }
@@ -247,24 +210,24 @@ public class GameStateManager {
         {
             if (prevColor.equals("white"))
             {
-                if (gameState == 2)
+                if (gameState == GameState.PAUSED)
                 {
                     turnSave2 = 2;
                 }
                 else
                 {
-                    whiteTurn2 = 2;
+                    turn[1] = 2;
                 }
             }
             else
             {
-                if (gameState == 2)
+                if (gameState == GameState.PAUSED)
                 {
                     turnSave2 = 1;
                 }
                 else
                 {
-                    whiteTurn2 = 1;
+                    turn[1] = 1;
                 }
             }
             board2Turn++;
@@ -339,16 +302,10 @@ public class GameStateManager {
             Piece[] temp8 = positions[boardNumber][7].clone();
             Piece[][] tempPositions = {temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8};
             switchPositions(moveType, tempPositions, x, y, x1, y1);
-            if (boardNumber == 0)
-            {
-                if (whiteTurn1 == 1) if (whiteInCheck(tempPositions, boardNumber)) return true;
-                if (whiteTurn1 == 2) if (blackInCheck(tempPositions, boardNumber)) return true;
-            }
-            else
-            {
-                if (whiteTurn2 == 1) if (whiteInCheck(tempPositions, boardNumber)) return true;
-                if (whiteTurn2 == 2) if (blackInCheck(tempPositions, boardNumber)) return true;
-            }
+
+            if (turn[boardNumber] == 1) if (whiteInCheck(tempPositions, boardNumber)) return true;
+            if (turn[boardNumber] == 2) if (blackInCheck(tempPositions, boardNumber)) return true;
+
         }
 
         return false;
@@ -635,6 +592,10 @@ public class GameStateManager {
                     {
                         if (!checkIfMoveResultsInCheck(m.type,x,y,m.x1,m.y1,boardNumber))
                         {
+                            System.out.println(x);
+                            System.out.println(y);
+                            System.out.println(m.x1);
+                            System.out.println(m.y1);
                             checkmate = false;
                             break;
                         }
@@ -658,7 +619,7 @@ public class GameStateManager {
                 Set<Move> moves = roster[i].getRosterMoves(positions[boardNumber], roster, i);
                 for (Move m : moves)
                 {
-                    if (!rosterMoveIsLegal(roster[i],m.x1,m.y1,boardNumber))
+                    if (rosterMoveIsLegal(roster[i],m.x1,m.y1,boardNumber))
                     {
                         checkmate = false;
                         break;
@@ -672,7 +633,7 @@ public class GameStateManager {
             Set<Move> moves = roster[0].getRosterMoves(positions[boardNumber], roster, 0);
             for (Move m : moves)
             {
-                if (!rosterMoveIsLegal(roster[0],m.x1,m.y1,boardNumber))
+                if (rosterMoveIsLegal(roster[0],m.x1,m.y1,boardNumber))
                 {
                     checkmate = false;
                     break;
@@ -690,26 +651,148 @@ public class GameStateManager {
         }
     }
 
-    private void gameEndProcedures(int x, int y)
+    public void gameEndProcedures(int side, int type)
     {
-
+        gameState = GameState.PREGAME;
+        gameOver = true;
+        gameOverSide = side;
+        gameOverType = type;
     }
 
     public Piece[] getCurrentRosterArray(int boardNumber)
     {
         if (boardNumber == 0)
         {
-            if (whiteTurn1 == 1) return roster1p;
-            if (whiteTurn1 == 2) return roster2p;
+            if (turn[boardNumber] == 1) return roster1p;
+            if (turn[boardNumber] == 2) return roster2p;
         }
         if (boardNumber == 1)
         {
-            if (whiteTurn1 == 1) return roster4p;
-            if (whiteTurn1 == 2) return roster3p;
+            if (turn[boardNumber] == 1) return roster4p;
+            if (turn[boardNumber] == 2) return roster3p;
         }
         return null;
     }
 
+    public void promote(int x, int y, Piece piece, int boardNumber)
+    {
+        positions[boardNumber][x][y] = piece;
+        positions[boardNumber][x][y].wasPawn = true;
+    }
 
+    public void pause(int boardNumber)
+    {
+        if (boardNumber == 0)
+        {
+            turnSave1 = turn[0];
+            turn[0] = 3;
+        }
+        if (boardNumber == 1)
+        {
+            turnSave2 = turn[1];
+            turn[1] = 3;
+        }
+    }
 
+    public void pause()
+    {
+        turnSave1 = turn[0];
+        turn[0] = 3;
+        turnSave2 = turn[1];
+        turn[1] = 3;
+        gameState = GameStateManager.GameState.PAUSED;
+    }
+    public void resume(int boardNumber)
+    {
+        if (boardNumber == 0)
+        {
+            turn[0] = turnSave1;
+        }
+        if (boardNumber == 1)
+        {
+            turn[1] = turnSave2;
+        }
+    }
+
+    public void resume()
+    {
+        gameState = GameState.PLAYING;
+        turn[0] = turnSave1;
+        turn[1] = turnSave2;
+    }
+
+    public void start()
+    {
+        gameState = GameState.PLAYING;
+        turn[0] = 1;
+        turn[1] = 1;
+    }
+
+    public Piece[][] getPositions(int boardNumber)
+    {
+        return positions[boardNumber];
+    }
+
+    private void endOfMoveChecks(String color, int boardNumber)
+    {
+        updateLegalCastlingVariables(boardNumber);
+        checkIfKingsStillStanding(boardNumber);
+        checkForCheckmate(color.equals("white") ? "black" : "white", boardNumber);
+
+    }
+
+    public void addToRoster(int x1, int y1, int boardNumber)
+    {
+        if (boardNumber == 0)
+        {
+            if (positions[boardNumber][x1][y1].color.equals("white"))
+            {
+                addToRosterShit(roster4p, x1, y1, boardNumber);
+            }
+            if (positions[boardNumber][x1][y1].color.equals("black"))
+            {
+                addToRosterShit(roster3p, x1, y1, boardNumber);
+            }
+        }
+        else
+        {
+            if (positions[boardNumber][x1][y1].color.equals("white"))
+            {
+                addToRosterShit(roster1p, x1, y1, boardNumber);
+            }
+            if (positions[boardNumber][x1][y1].color.equals("black"))
+            {
+                addToRosterShit(roster2p, x1, y1, boardNumber);
+            }
+        }
+
+    }
+
+    private void addToRosterShit(Piece[] rosterp, int x1, int y1, int boardNumber)
+    {
+        for (int i = 0; i < 30; i++)
+        {
+            if (rosterp[i].empty)
+            {
+                if (reverting)
+                {
+                    if (positions[boardNumber][x1][y1].wasPawn)
+                    {
+                        if (positions[boardNumber][x1][y1].color.equals("white"))
+                        {
+                            rosterp[i] = new Pawn("white");
+                            break;
+                        }
+                        if (positions[boardNumber][x1][y1].color.equals("black"))
+                        {
+                            rosterp[i] = new Pawn("black");
+                            break;
+                        }
+                    }
+                }
+                rosterp[i] = positions[boardNumber][x1][y1];
+                break;
+            }
+        }
+    }
 }

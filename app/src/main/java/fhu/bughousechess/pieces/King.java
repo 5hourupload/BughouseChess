@@ -22,7 +22,6 @@ public class King extends Piece
         this.color = color;
         type = "king";
         wasPawn = false;
-        backgroundColor = "";
         empty = false;
     }
 

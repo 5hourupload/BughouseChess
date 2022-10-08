@@ -1,6 +1,5 @@
 package fhu.bughousechess.pieces;
 
-import android.widget.ImageView;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,7 +14,6 @@ public class Rook extends Piece
         this.color = color;
         type = "rook";
         wasPawn = false;
-        backgroundColor = "";
         empty = false;
     }
     @Override
