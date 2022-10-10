@@ -38,7 +38,7 @@ public class GameStateManager {
     public static boolean reverting = true;
     public static boolean firstrank = false;
 
-    static GameState gameState = GameState.PREGAME;
+    GameState gameState = GameState.PREGAME;
     int turnSave1 = 0;
     int turnSave2 = 0;
 
@@ -303,8 +303,8 @@ public class GameStateManager {
             Piece[][] tempPositions = {temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8};
             switchPositions(moveType, tempPositions, x, y, x1, y1);
 
-            if (turn[boardNumber] == 1) if (whiteInCheck(tempPositions, boardNumber)) return true;
-            if (turn[boardNumber] == 2) if (blackInCheck(tempPositions, boardNumber)) return true;
+            if (turn[boardNumber] == 1) if (inCheck(tempPositions, "white", boardNumber)) return true;
+            if (turn[boardNumber] == 2) if (inCheck(tempPositions, "black", boardNumber)) return true;
 
         }
 
@@ -319,7 +319,7 @@ public class GameStateManager {
             positions[boardNumber][x][y] = rosterPiece;
             if (rosterPiece.color.equals("white"))
             {
-                if (blackInCheck(positions[boardNumber], boardNumber))
+                if (inCheck(positions[boardNumber],"black", boardNumber))
                 {
                     positions[boardNumber][x][y] = old;
                     return false;
@@ -327,7 +327,7 @@ public class GameStateManager {
             }
             else
             {
-                if (whiteInCheck(positions[boardNumber], boardNumber))
+                if (inCheck(positions[boardNumber], "white", boardNumber))
                 {
                     positions[boardNumber][x][y] = old;
                     return false;
@@ -341,7 +341,7 @@ public class GameStateManager {
             positions[boardNumber][x][y] = rosterPiece;
             if (rosterPiece.color.equals("white"))
             {
-                if (whiteInCheck(positions[boardNumber], boardNumber))
+                if (inCheck(positions[boardNumber],"white", boardNumber))
                 {
                     positions[boardNumber][x][y] = old;
                     return false;
@@ -349,7 +349,7 @@ public class GameStateManager {
             }
             else
             {
-                if (blackInCheck(positions[boardNumber], boardNumber))
+                if (inCheck(positions[boardNumber],"black", boardNumber))
                 {
                     positions[boardNumber][x][y] = old;
                     return false;
@@ -367,13 +367,13 @@ public class GameStateManager {
      * Along with blackInCheck, this requires the positions and boardnumber variable because
      * the positions might be temporary, separate from the class variable
      */
-    public static boolean whiteInCheck(Piece[][] positions, int boardNumber)
+    public static boolean inCheck(Piece[][] positions, String color, int boardNumber)
     {
         for (int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)
             {
-                if (positions[i][j].color.equals("white") &&
+                if (positions[i][j].color.equals(color) &&
                         positions[i][j].type.equals("king") &&
                         checkCheck(positions, i, j, boardNumber))
                 {
@@ -383,23 +383,6 @@ public class GameStateManager {
         }
         return false;
 
-    }
-    public static boolean blackInCheck(Piece[][] positions,int boardNumber)
-    {
-        for (int i = 0; i < 8; i++)
-        {
-            for (int j = 0; j < 8; j++)
-            {
-                if (positions[i][j].color.equals("black") &&
-                        positions[i][j].type.equals("king") &&
-                        checkCheck(positions, i, j, boardNumber))
-                {
-                    return true;
-                }
-
-            }
-        }
-        return false;
     }
 
     public static  boolean checkCheck(Piece[][] positions, int x, int y, int boardNumber)
@@ -592,10 +575,6 @@ public class GameStateManager {
                     {
                         if (!checkIfMoveResultsInCheck(m.type,x,y,m.x1,m.y1,boardNumber))
                         {
-                            System.out.println(x);
-                            System.out.println(y);
-                            System.out.println(m.x1);
-                            System.out.println(m.y1);
                             checkmate = false;
                             break;
                         }

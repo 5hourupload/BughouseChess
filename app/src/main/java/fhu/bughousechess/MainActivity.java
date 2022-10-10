@@ -60,14 +60,6 @@ public class MainActivity extends AppCompatActivity
 {
     public static int currentApiVersion;
     static int dialog_margin;
-    public static int menu_code = 0;
-
-
-    //Old scheme
-    // W = White, B = Black, 0 = Not a piece
-    // Piece first letter, 0 = Not a piece
-    // P = Was a pawn, 0 = Legit
-    // Y = Yellow, R = Red, B = Blue, D = Dot, 0 = No background
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -262,40 +254,16 @@ public class MainActivity extends AppCompatActivity
     private void startSettings()
     {
         Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-        startActivity(intent);
-
-        menu_code = 0;
-        new Thread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                while (menu_code == 0)
-                {
-                    try
-                    {
-                        Thread.sleep(1);
-                    } catch (InterruptedException e)
-                    {
-                        e.printStackTrace();
-                    }
-                }
-
-                if (menu_code == 2)
-                {
-                    runOnUiThread(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            startGame();
-                        }
-                    });
-
-                }
-            }
-        }).start();
+        startActivityForResult(intent, 0);
     }
 
-
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 0) {
+            if (resultCode == 1) {
+                startGame();
+            }
+        }
+    }
 }

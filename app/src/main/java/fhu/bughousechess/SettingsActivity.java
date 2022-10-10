@@ -7,11 +7,6 @@ import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-//import android.support.annotation.LayoutRes;
-//import android.support.annotation.Nullable;
-//import android.support.v7.app.ActionBar;
-//import android.support.v7.app.AppCompatDelegate;
-//import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -41,8 +36,6 @@ public class SettingsActivity extends PreferenceActivity
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        //temp
-        System.out.println(prefs.getString("player1", "0"));
 
         listener = new SharedPreferences.OnSharedPreferenceChangeListener()
         {
@@ -210,15 +203,10 @@ public class SettingsActivity extends PreferenceActivity
         switch (item.getItemId())
         {
             case android.R.id.home:
-                MainActivity.menu_code = 1;
                 this.finish();
                 return true;
             case R.id.new_game:
-                MainActivity.menu_code = 2;
-                this.finish();
-                return true;
-            case R.id.main_menu:
-                MainActivity.menu_code = 3;
+                setResult(1);
                 this.finish();
                 return true;
             default:
@@ -235,11 +223,8 @@ public class SettingsActivity extends PreferenceActivity
     @Override
     public void onBackPressed()
     {
-        MainActivity.menu_code = 1;
         this.finish();
     }
-
-
 
     public static class SettingsFragment extends PreferenceFragment
     {

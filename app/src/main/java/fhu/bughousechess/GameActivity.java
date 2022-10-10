@@ -750,11 +750,6 @@ public class GameActivity extends AppCompatActivity {
 
     private void startTimers()
     {
-        final TextView timer1 = findViewById(R.id.timer1);
-        final TextView timer2 = findViewById(R.id.timer2);
-        final TextView timer3 = findViewById(R.id.timer3);
-        final TextView timer4 = findViewById(R.id.timer4);
-
         new CountDownTimer(milliseconds * 2, 100)
         {
             boolean gameEnded = false;
@@ -762,7 +757,13 @@ public class GameActivity extends AppCompatActivity {
 
             public void onTick(long millisUntilFinished)
             {
-                if (!gameEnded)
+                if (game.gameState == GameStateManager.GameState.PREGAME)
+                {
+                    timer1.setBackgroundColor(0x00FFFFFF);
+                    timer1.setTextColor(0xFF848484);
+                    cancel();
+                }
+                else
                 {
                     int millis = saved;
                     TimeZone tz = TimeZone.getTimeZone("UTC");
@@ -785,12 +786,6 @@ public class GameActivity extends AppCompatActivity {
                         timer1.setBackgroundColor(0x00FFFFFF);
                         timer1.setTextColor(0xFF848484);
                     }
-                    if (game.gameState == GameStateManager.GameState.PREGAME)
-                    {
-                        gameEnded = true;
-                        timer1.setBackgroundColor(0x00FFFFFF);
-                        timer1.setTextColor(0xFF848484);
-                    }
                 }
             }
 
@@ -801,12 +796,17 @@ public class GameActivity extends AppCompatActivity {
         }.start();
         new CountDownTimer(milliseconds * 2, 100)
         {
-            boolean gameEnded = false;
             int saved = milliseconds;
 
             public void onTick(long millisUntilFinished)
             {
-                if (!gameEnded)
+                if (game.gameState == GameStateManager.GameState.PREGAME)
+                {
+                    timer2.setBackgroundColor(0x00FFFFFF);
+                    timer2.setTextColor(0xFF848484);
+                    cancel();
+                }
+                else
                 {
                     int millis = saved;
                     TimeZone tz = TimeZone.getTimeZone("UTC");
@@ -829,12 +829,6 @@ public class GameActivity extends AppCompatActivity {
                         timer2.setBackgroundColor(0x00FFFFFF);
                         timer2.setTextColor(0xFF848484);
                     }
-                    if (game.gameState == GameStateManager.GameState.PREGAME)
-                    {
-                        gameEnded = true;
-                        timer2.setBackgroundColor(0x00FFFFFF);
-                        timer2.setTextColor(0xFF848484);
-                    }
                 }
             }
 
@@ -845,12 +839,17 @@ public class GameActivity extends AppCompatActivity {
         }.start();
         new CountDownTimer(milliseconds * 2, 100)
         {
-            boolean gameEnded = false;
             int saved = milliseconds;
 
             public void onTick(long millisUntilFinished)
             {
-                if (!gameEnded)
+                if (game.gameState == GameStateManager.GameState.PREGAME)
+                {
+                    timer4.setBackgroundColor(0x00FFFFFF);
+                    timer4.setTextColor(0xFF848484);
+                    cancel();
+                }
+                else
                 {
                     int millis = saved;
                     TimeZone tz = TimeZone.getTimeZone("UTC");
@@ -868,14 +867,7 @@ public class GameActivity extends AppCompatActivity {
                             gameEndProcedures(0, 2);
                         }
                     }
-                    else
-                    {
-                        timer4.setBackgroundColor(0x00FFFFFF);
-                        timer4.setTextColor(0xFF848484);
-                    }
-                    if (game.gameState == GameStateManager.GameState.PREGAME)
-                    {
-                        gameEnded = true;
+                    else {
                         timer4.setBackgroundColor(0x00FFFFFF);
                         timer4.setTextColor(0xFF848484);
                     }
@@ -889,12 +881,17 @@ public class GameActivity extends AppCompatActivity {
         }.start();
         new CountDownTimer(milliseconds * 2, 100)
         {
-            boolean gameEnded = false;
             int saved = milliseconds;
 
             public void onTick(long millisUntilFinished)
             {
-                if (!gameEnded)
+                if (game.gameState == GameStateManager.GameState.PREGAME)
+                {
+                    timer3.setBackgroundColor(0x00FFFFFF);
+                    timer3.setTextColor(0xFF848484);
+                    cancel();
+                }
+                else
                 {
                     int millis = saved;
                     TimeZone tz = TimeZone.getTimeZone("UTC");
@@ -917,12 +914,6 @@ public class GameActivity extends AppCompatActivity {
                         timer3.setBackgroundColor(0x00FFFFFF);
                         timer3.setTextColor(0xFF848484);
                     }
-                    if (game.gameState == GameStateManager.GameState.PREGAME)
-                    {
-                        gameEnded = true;
-                        timer3.setBackgroundColor(0x00FFFFFF);
-                        timer3.setTextColor(0xFF848484);
-                    }
                 }
             }
 
@@ -937,8 +928,6 @@ public class GameActivity extends AppCompatActivity {
     private void clean(int boardNumber)
     {
         ImageView[][] board = this.board[boardNumber];
-        BitmapDrawable black = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.drawable.black, 10, 10));
-        BitmapDrawable white = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), R.drawable.white, 10, 10));
 
         for (int i = 0; i < dots[boardNumber].size(); i++)
         {
@@ -1014,13 +1003,10 @@ public class GameActivity extends AppCompatActivity {
     private void setInitialSquareListeners(int boardNumber)
     {
         clean(boardNumber);
-        if (game.checking && game.whiteInCheck(game.getPositions(boardNumber), boardNumber))
+        String color = game.turn[boardNumber] == 1 ? "white" : "black";
+        if (game.checking && game.inCheck(game.getPositions(boardNumber),color,boardNumber))
         {
-            setWhiteCheckConditions(boardNumber);
-        }
-        if (game.checking && game.blackInCheck(game.getPositions(boardNumber), boardNumber))
-        {
-            setBlackCheckConditions(boardNumber);
+            setCheckUIConditions(color,boardNumber);
         }
 
         for (int i = 0; i < 8; i++)
@@ -1221,28 +1207,13 @@ public class GameActivity extends AppCompatActivity {
         return inSampleSize;
     }
 
-    private void setWhiteCheckConditions(int boardNumber)
+    private void setCheckUIConditions(String color, int boardNumber)
     {
         for (int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)
             {
-                if (game.getPositions(boardNumber)[i][j].color.equals("white") && game.getPositions(boardNumber)[i][j].type.equals("king"))
-                {
-                    board[boardNumber][i][j].setBackgroundColor(Color.BLUE);
-                    alteredBackgrounds[boardNumber].add(i*8+j);
-                }
-            }
-        }
-    }
-
-    private void setBlackCheckConditions(int boardNumber)
-    {
-        for (int i = 0; i < 8; i++)
-        {
-            for (int j = 0; j < 8; j++)
-            {
-                if (game.getPositions(boardNumber)[i][j].color.equals("black") && game.getPositions(boardNumber)[i][j].type.equals("king"))
+                if (game.getPositions(boardNumber)[i][j].color.equals(color) && game.getPositions(boardNumber)[i][j].type.equals("king"))
                 {
                     board[boardNumber][i][j].setBackgroundColor(Color.BLUE);
                     alteredBackgrounds[boardNumber].add(i*8+j);
@@ -1719,7 +1690,6 @@ public class GameActivity extends AppCompatActivity {
                     {
                         if (game.gameState == GameStateManager.GameState.PREGAME || game.gameState == GameStateManager.GameState.PAUSED)
                         {
-                            System.out.println("a false");
                             a = false;
                         }
                         Random rand = new Random();
@@ -1775,7 +1745,7 @@ public class GameActivity extends AppCompatActivity {
                     boolean a = true;
                     while (a)
                     {
-                        if (game.gameState == GameStateManager.GameState.PLAYING || game.gameState == GameStateManager.GameState.PAUSED)
+                        if (game.gameState == GameStateManager.GameState.PREGAME || game.gameState == GameStateManager.GameState.PAUSED)
                         {
                             a = false;
                         }
@@ -1821,9 +1791,7 @@ public class GameActivity extends AppCompatActivity {
                     }
 
                 }
-            }).
-
-                    start();
+            }).start();
         }
         if (!game.position3)
         {
@@ -2196,62 +2164,17 @@ public class GameActivity extends AppCompatActivity {
     private void startSettings()
     {
         Intent intent = new Intent(GameActivity.this, SettingsActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, 0);
+    }
 
-        MainActivity.menu_code = 0;
-        new Thread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                while (MainActivity.menu_code == 0)
-                {
-                    try
-                    {
-                        Thread.sleep(1);
-                    } catch (InterruptedException e)
-                    {
-                        e.printStackTrace();
-                    }
-                }
-                final LinearLayout mainmenu = findViewById(R.id.mainmenu);
-                final TextView timer1 = findViewById(R.id.timer1);
-                final TextView timer2 = findViewById(R.id.timer2);
-                final TextView timer3 = findViewById(R.id.timer3);
-                final TextView timer4 = findViewById(R.id.timer4);
-
-                TimeZone tz = TimeZone.getTimeZone("UTC");
-                SimpleDateFormat df = new SimpleDateFormat("m:ss");
-                df.setTimeZone(tz);
-                final String time = df.format(new Date(milliseconds));
-                if (game.gameState == GameStateManager.GameState.PREGAME)
-                {
-                    runOnUiThread(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            timer1.setText(time);
-                            timer2.setText(time);
-                            timer3.setText(time);
-                            timer4.setText(time);
-                        }
-                    });
-                }
-
-                if (MainActivity.menu_code == 2)
-                {
-                    runOnUiThread(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            newGame();
-                        }
-                    });
-                }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 0) {
+            if (resultCode == 1) {
+                newGame();
             }
-        }).start();
+        }
     }
 
     private ImageView[] getRosterImageViewArray(int boardNumber, String color)

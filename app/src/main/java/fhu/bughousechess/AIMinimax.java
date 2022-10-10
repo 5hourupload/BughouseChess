@@ -10,9 +10,8 @@ import java.util.Set;
 import fhu.bughousechess.pieces.Empty;
 import fhu.bughousechess.pieces.Piece;
 
-import static fhu.bughousechess.GameStateManager.blackInCheck;
 import static fhu.bughousechess.GameStateManager.checking;
-import static fhu.bughousechess.GameStateManager.whiteInCheck;
+import static fhu.bughousechess.GameStateManager.inCheck;
 
 public class AIMinimax
 {
@@ -61,14 +60,7 @@ public class AIMinimax
             GameStateManager.switchPositions(moveType, tempPositions, x, y, x1, y1);
             if (checking)
             {
-                if (color.equals("white"))
-                {
-                    if (whiteInCheck(tempPositions, boardNumber)) continue;
-                }
-                if (color.equals("black"))
-                {
-                    if (blackInCheck(tempPositions, boardNumber)) continue;
-                }
+                if (inCheck(tempPositions, color, boardNumber)) continue;
             }
 
             double value = findMin(color, board, tempPositions, roster1, roster1p, roster2, roster2p,boardNumber, 0);
@@ -89,14 +81,7 @@ public class AIMinimax
             tempRoster[i] = new Empty();
             if (checking)
             {
-                if (color.equals("white"))
-                {
-                    if (whiteInCheck(tempPositions, boardNumber)) continue;
-                }
-                if (color.equals("black"))
-                {
-                    if (blackInCheck(tempPositions, boardNumber)) continue;
-                }
+                if (inCheck(tempPositions, "color", boardNumber)) continue;
             }
 
             double value = findMin(color, board, tempPositions, roster1, tempRoster, roster2, roster2p,boardNumber, 0);
@@ -149,14 +134,7 @@ public class AIMinimax
             //do so in the recursive function?
             if (checking)
             {
-                if (color.equals("white"))
-                {
-                    if (whiteInCheck(tempPositions, boardNumber)) continue;
-                }
-                if (color.equals("black"))
-                {
-                    if (blackInCheck(tempPositions, boardNumber)) continue;
-                }
+                if (inCheck(tempPositions,"color", boardNumber)) continue;
             }
             double value = findMin(color, board, tempPositions, roster1, roster1p, roster2, roster2p, boardNumber, depth + 1);
             if (value > highest)
@@ -177,14 +155,7 @@ public class AIMinimax
             //do so in the recursive function?
             if (checking)
             {
-                if (color.equals("white"))
-                {
-                    if (whiteInCheck(tempPositions, boardNumber)) continue;
-                }
-                if (color.equals("black"))
-                {
-                    if (blackInCheck(tempPositions, boardNumber)) continue;
-                }
+                if (inCheck(tempPositions, color, boardNumber)) continue;
             }
             double value = findMin(color, board, tempPositions, roster1, tempRoster, roster2, roster2p, boardNumber,depth + 1);
             if (value > highest)
@@ -236,14 +207,7 @@ public class AIMinimax
             //do so in the recursive function?
             if (checking)
             {
-                if (color.equals("white"))
-                {
-                    if (whiteInCheck(tempPositions, boardNumber)) continue;
-                }
-                if (color.equals("black"))
-                {
-                    if (blackInCheck(tempPositions, boardNumber)) continue;
-                }
+                if (inCheck(tempPositions, color, boardNumber)) continue;
             }
             double value = findMax(color, board, tempPositions,roster1, roster1p, roster2, roster2p, boardNumber,depth + 1);
             if (value < lowest)
@@ -265,14 +229,7 @@ public class AIMinimax
             //do so in the recursive function?
             if (checking)
             {
-                if (color.equals("white"))
-                {
-                    if (whiteInCheck(tempPositions, boardNumber)) continue;
-                }
-                if (color.equals("black"))
-                {
-                    if (blackInCheck(tempPositions, boardNumber)) continue;
-                }
+                if (inCheck(tempPositions, color, boardNumber)) continue;
             }
             double value = findMax(color, board, tempPositions,roster1, roster1p, roster2, tempRoster, boardNumber,depth + 1);
             if (value < lowest)
