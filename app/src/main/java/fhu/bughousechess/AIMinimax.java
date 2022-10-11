@@ -10,9 +10,8 @@ import java.util.Set;
 import fhu.bughousechess.pieces.Empty;
 import fhu.bughousechess.pieces.Piece;
 
-import static fhu.bughousechess.MainActivity.blackInCheck;
-import static fhu.bughousechess.MainActivity.checking;
-import static fhu.bughousechess.MainActivity.whiteInCheck;
+import static fhu.bughousechess.GameStateManager.checking;
+import static fhu.bughousechess.GameStateManager.inCheck;
 
 public class AIMinimax
 {
@@ -22,7 +21,7 @@ public class AIMinimax
     private int count = 0;
 
     public AIMinimax(String color, ImageView[][] board, Piece[][] positions, ImageView[] roster1,
-                     Piece[] roster1p, ImageView[] roster2, Piece[] roster2p)
+                     Piece[] roster1p, ImageView[] roster2, Piece[] roster2p, int boardNumber)
     {
         pieceValues.put("pawn", 1);
         pieceValues.put("rook", 5);
@@ -39,7 +38,7 @@ public class AIMinimax
             {
                 if (positions[i][j].color.equals(color))
                 {
-                    regMoves.addAll(positions[i][j].getMoves(board, positions, i, j));
+                    regMoves.addAll(positions[i][j].getMoves(positions, i, j, boardNumber));
                 }
             }
         }
@@ -47,7 +46,7 @@ public class AIMinimax
         {
             if (!roster1p[i].empty)
             {
-                rosterMoves.addAll(roster1p[i].getRosterMoves(board, positions, roster1, roster1p, i));
+                rosterMoves.addAll(roster1p[i].getRosterMoves(positions, roster1p, i));
             }
         }
         for (Move m : regMoves)
@@ -58,20 +57,13 @@ public class AIMinimax
             int y = m.y;
             int x1 = m.x1;
             int y1 = m.y1;
-            MainActivity.switchPositions(moveType, tempPositions, x, y, x1, y1);
+            GameStateManager.switchPositions(moveType, tempPositions, x, y, x1, y1);
             if (checking)
             {
-                if (color.equals("white"))
-                {
-                    if (whiteInCheck(board, tempPositions)) continue;
-                }
-                if (color.equals("black"))
-                {
-                    if (blackInCheck(board, tempPositions)) continue;
-                }
+                if (inCheck(tempPositions, color, boardNumber)) continue;
             }
 
-            double value = findMin(color, board, tempPositions, roster1, roster1p, roster2, roster2p, 0);
+            double value = findMin(color, board, tempPositions, roster1, roster1p, roster2, roster2p,boardNumber, 0);
             if (value > highestValue)
             {
                 highestValue = value;
@@ -89,17 +81,10 @@ public class AIMinimax
             tempRoster[i] = new Empty();
             if (checking)
             {
-                if (color.equals("white"))
-                {
-                    if (whiteInCheck(board, tempPositions)) continue;
-                }
-                if (color.equals("black"))
-                {
-                    if (blackInCheck(board, tempPositions)) continue;
-                }
+                if (inCheck(tempPositions, "color", boardNumber)) continue;
             }
 
-            double value = findMin(color, board, tempPositions, roster1, tempRoster, roster2, roster2p, 0);
+            double value = findMin(color, board, tempPositions, roster1, tempRoster, roster2, roster2p,boardNumber, 0);
             if (value > highestValue)
             {
                 highestValue = value;
@@ -109,7 +94,7 @@ public class AIMinimax
     }
 
     private double findMax(String color, ImageView[][] board, Piece[][] positions, ImageView[] roster1,
-                           Piece[] roster1p, ImageView[] roster2, Piece[] roster2p, int depth)
+                           Piece[] roster1p, ImageView[] roster2, Piece[] roster2p, int boardNumber, int depth)
     {
         if (depth > 1)
         {
@@ -123,7 +108,7 @@ public class AIMinimax
             {
                 if (positions[i][j].color.equals(color))
                 {
-                    regMoves.addAll(positions[i][j].getMoves(board, positions, i, j));
+                    regMoves.addAll(positions[i][j].getMoves(positions, i, j, boardNumber));
                 }
             }
         }
@@ -132,7 +117,7 @@ public class AIMinimax
         {
             if (!roster1p[i].empty)
             {
-                rosterMoves.addAll(roster1p[i].getRosterMoves(board, positions, roster1, roster1p, i));
+                rosterMoves.addAll(roster1p[i].getRosterMoves(positions, roster1p, i));
             }
         }
         for (Move m : regMoves)
@@ -144,21 +129,14 @@ public class AIMinimax
             int x1 = m.x1;
             int y1 = m.y1;
 
-            MainActivity.switchPositions(moveType, tempPositions, x, y, x1, y1);
+            GameStateManager.switchPositions(moveType, tempPositions, x, y, x1, y1);
             //only gonna check for checking in this first iteration, might be important
             //do so in the recursive function?
             if (checking)
             {
-                if (color.equals("white"))
-                {
-                    if (whiteInCheck(board, tempPositions)) continue;
-                }
-                if (color.equals("black"))
-                {
-                    if (blackInCheck(board, tempPositions)) continue;
-                }
+                if (inCheck(tempPositions,"color", boardNumber)) continue;
             }
-            double value = findMin(color, board, tempPositions, roster1, roster1p, roster2, roster2p, depth + 1);
+            double value = findMin(color, board, tempPositions, roster1, roster1p, roster2, roster2p, boardNumber, depth + 1);
             if (value > highest)
             {
                 highest = value;
@@ -177,16 +155,9 @@ public class AIMinimax
             //do so in the recursive function?
             if (checking)
             {
-                if (color.equals("white"))
-                {
-                    if (whiteInCheck(board, tempPositions)) continue;
-                }
-                if (color.equals("black"))
-                {
-                    if (blackInCheck(board, tempPositions)) continue;
-                }
+                if (inCheck(tempPositions, color, boardNumber)) continue;
             }
-            double value = findMin(color, board, tempPositions, roster1, tempRoster, roster2, roster2p, depth + 1);
+            double value = findMin(color, board, tempPositions, roster1, tempRoster, roster2, roster2p, boardNumber,depth + 1);
             if (value > highest)
             {
                 highest = value;
@@ -196,7 +167,7 @@ public class AIMinimax
     }
 
     private double findMin(String color, ImageView[][] board, Piece[][] positions, ImageView[] roster1,
-                           Piece[] roster1p, ImageView[] roster2, Piece[] roster2p, int depth)
+                           Piece[] roster1p, ImageView[] roster2, Piece[] roster2p, int boardNumber, int depth)
     {
         if (depth > 1)
         {
@@ -210,7 +181,7 @@ public class AIMinimax
             {
                 if (positions[i][j].color.equals(getOppositeColor(color)))
                 {
-                    regMoves.addAll(positions[i][j].getMoves(board, positions, i, j));
+                    regMoves.addAll(positions[i][j].getMoves(positions, i, j, boardNumber));
                 }
             }
         }
@@ -219,7 +190,7 @@ public class AIMinimax
         {
             if (!roster2p[i].empty)
             {
-                rosterMoves.addAll(roster2p[i].getRosterMoves(board, positions, roster2, roster2p, i));
+                rosterMoves.addAll(roster2p[i].getRosterMoves(positions, roster2p, i));
             }
         }
         for (Move m : regMoves)
@@ -231,21 +202,14 @@ public class AIMinimax
             int x1 = m.x1;
             int y1 = m.y1;
 
-            MainActivity.switchPositions(moveType, tempPositions, x, y, x1, y1);
+            GameStateManager.switchPositions(moveType, tempPositions, x, y, x1, y1);
             //only gonna check for checking in this first iteration, might be important
             //do so in the recursive function?
             if (checking)
             {
-                if (color.equals("white"))
-                {
-                    if (whiteInCheck(board, tempPositions)) continue;
-                }
-                if (color.equals("black"))
-                {
-                    if (blackInCheck(board, tempPositions)) continue;
-                }
+                if (inCheck(tempPositions, color, boardNumber)) continue;
             }
-            double value = findMax(color, board, tempPositions,roster1, roster1p, roster2, roster2p, depth + 1);
+            double value = findMax(color, board, tempPositions,roster1, roster1p, roster2, roster2p, boardNumber,depth + 1);
             if (value < lowest)
             {
                 lowest = value;
@@ -265,16 +229,9 @@ public class AIMinimax
             //do so in the recursive function?
             if (checking)
             {
-                if (color.equals("white"))
-                {
-                    if (whiteInCheck(board, tempPositions)) continue;
-                }
-                if (color.equals("black"))
-                {
-                    if (blackInCheck(board, tempPositions)) continue;
-                }
+                if (inCheck(tempPositions, color, boardNumber)) continue;
             }
-            double value = findMax(color, board, tempPositions,roster1, roster1p, roster2, tempRoster, depth + 1);
+            double value = findMax(color, board, tempPositions,roster1, roster1p, roster2, tempRoster, boardNumber,depth + 1);
             if (value < lowest)
             {
                 lowest = value;

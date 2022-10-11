@@ -16,7 +16,6 @@ public class Knight extends Piece
         this.color = color;
         type = "knight";
         wasPawn = false;
-        backgroundColor = "";
         empty = false;
     }
 
@@ -29,7 +28,7 @@ public class Knight extends Piece
     }
 
     @Override
-    public Set<Move> getMoves(ImageView[][] board, Piece[][] positions, int x, int y)
+    public Set<Move> getMoves(Piece[][] positions, int x, int y, int boardNumber)
     {
         Set<Move> moves = new HashSet<>();
         if (x + 1 < 8 && y + 2 < 8)
@@ -38,11 +37,11 @@ public class Knight extends Piece
             {
                 if (positions[x + 1][y + 2].isOpposite(this))
                 {
-                    moves.add(new Move(board, positions, x , y, x+1, y+2, "take"));
+                    moves.add(new Move(positions, x , y, x+1, y+2, "take"));
                 }
                 else
                 {
-                    moves.add(new Move(board,positions,x,y,x+1,y+2,"move"));
+                    moves.add(new Move(positions,x,y,x+1,y+2,"move"));
                 }
             }
         }
@@ -52,11 +51,11 @@ public class Knight extends Piece
             {
                 if (positions[x + 2][y + 1].isOpposite(this))
                 {
-                    moves.add(new Move(board, positions, x , y, x+2, y+1, "take"));
+                    moves.add(new Move(positions, x , y, x+2, y+1, "take"));
                 }
                 else
                 {
-                    moves.add(new Move(board, positions, x , y, x+2, y+1, "move"));
+                    moves.add(new Move(positions, x , y, x+2, y+1, "move"));
                 }
             }
         }
@@ -66,11 +65,11 @@ public class Knight extends Piece
             {
                 if (positions[x - 1][y + 2].isOpposite(this))
                 {
-                    moves.add(new Move(board, positions, x , y, x-1, y+2, "take"));
+                    moves.add(new Move(positions, x , y, x-1, y+2, "take"));
                 }
                 else
                 {
-                    moves.add(new Move(board, positions, x , y, x-1, y+2, "move"));
+                    moves.add(new Move(positions, x , y, x-1, y+2, "move"));
                 }
             }
         }
@@ -80,11 +79,11 @@ public class Knight extends Piece
             {
                 if (positions[x - 2][y + 1].isOpposite(this))
                 {
-                    moves.add(new Move(board, positions, x , y, x-2, y+1, "take"));
+                    moves.add(new Move(positions, x , y, x-2, y+1, "take"));
                 }
                 else
                 {
-                    moves.add(new Move(board, positions, x , y, x-2, y+1, "move"));
+                    moves.add(new Move(positions, x , y, x-2, y+1, "move"));
                 }
             }
         }
@@ -94,11 +93,11 @@ public class Knight extends Piece
             {
                 if (positions[x + 1][y - 2].isOpposite(this))
                 {
-                    moves.add(new Move(board, positions, x , y, x+1, y-2, "take"));
+                    moves.add(new Move(positions, x , y, x+1, y-2, "take"));
                 }
                 else
                 {
-                    moves.add(new Move(board, positions, x , y, x+1, y-2, "move"));
+                    moves.add(new Move(positions, x , y, x+1, y-2, "move"));
                 }
             }
         }
@@ -108,11 +107,11 @@ public class Knight extends Piece
             {
                 if (positions[x + 2][y - 1].isOpposite(this))
                 {
-                    moves.add(new Move(board, positions, x , y, x+2, y-1, "take"));
+                    moves.add(new Move(positions, x , y, x+2, y-1, "take"));
                 }
                 else
                 {
-                    moves.add(new Move(board, positions, x , y, x+2, y-1, "move"));
+                    moves.add(new Move(positions, x , y, x+2, y-1, "move"));
                 }
             }
         }
@@ -122,11 +121,11 @@ public class Knight extends Piece
             {
                 if (positions[x - 1][y - 2].isOpposite(this))
                 {
-                    moves.add(new Move(board, positions, x , y, x-1, y-2, "take"));
+                    moves.add(new Move(positions, x , y, x-1, y-2, "take"));
                 }
                 else
                 {
-                    moves.add(new Move(board, positions, x , y, x-1, y-2, "move"));
+                    moves.add(new Move(positions, x , y, x-1, y-2, "move"));
                 }
             }
         }
@@ -136,11 +135,11 @@ public class Knight extends Piece
             {
                 if (positions[x - 2][y - 1].isOpposite(this))
                 {
-                    moves.add(new Move(board, positions, x , y, x-2, y-1, "take"));
+                    moves.add(new Move(positions, x , y, x-2, y-1, "take"));
                 }
                 else
                 {
-                    moves.add(new Move(board, positions, x , y, x-2, y-1, "move"));
+                    moves.add(new Move(positions, x , y, x-2, y-1, "move"));
                 }
             }
         }

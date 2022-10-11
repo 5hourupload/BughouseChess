@@ -7,11 +7,6 @@ import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-//import android.support.annotation.LayoutRes;
-//import android.support.annotation.Nullable;
-//import android.support.v7.app.ActionBar;
-//import android.support.v7.app.AppCompatDelegate;
-//import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -41,8 +36,6 @@ public class SettingsActivity extends PreferenceActivity
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        //temp
-        System.out.println(prefs.getString("player1", "0"));
 
         listener = new SharedPreferences.OnSharedPreferenceChangeListener()
         {
@@ -52,71 +45,71 @@ public class SettingsActivity extends PreferenceActivity
                 {
                     if (prefs.getString("player1", "0").equals("0"))
                     {
-                        MainActivity.position1 = true;
+                        GameStateManager.position1 = true;
                     }
                     else
                     {
-                        MainActivity.cpuLevel[0] = Integer.parseInt(prefs.getString("player1", "0")) - 1;
-                        MainActivity.position1 = false;
+                        GameActivity.cpuLevel[0] = Integer.parseInt(prefs.getString("player1", "0")) - 1;
+                        GameStateManager.position1 = false;
                     }
                 }
                 if(key.equals("player2"))
                 {
                     if (prefs.getString("player2", "0").equals("0"))
                     {
-                        MainActivity.position2 = true;
+                        GameStateManager.position2 = true;
                     }
                     else
                     {
-                        MainActivity.cpuLevel[1] = Integer.parseInt(prefs.getString("player2", "0")) - 1;
-                        MainActivity.position2 = false;
+                        GameActivity.cpuLevel[1] = Integer.parseInt(prefs.getString("player2", "0")) - 1;
+                        GameStateManager.position2 = false;
                     }
                 }
                 if(key.equals("player3"))
                 {
                     if (prefs.getString("player3", "0").equals("0"))
                     {
-                        MainActivity.position3 = true;
+                        GameStateManager.position3 = true;
                     }
                     else
                     {
-                        MainActivity.cpuLevel[2] = Integer.parseInt(prefs.getString("player3", "0")) - 1;
-                        MainActivity.position3 = false;
+                        GameActivity.cpuLevel[2] = Integer.parseInt(prefs.getString("player3", "0")) - 1;
+                        GameStateManager.position3 = false;
                     }
                 }
                 if(key.equals("player4"))
                 {
                     if (prefs.getString("player4", "0").equals("0"))
                     {
-                        MainActivity.position4 = true;
+                        GameStateManager.position4 = true;
                     }
                     else
                     {
-                        MainActivity.cpuLevel[3] = Integer.parseInt(prefs.getString("player4", "0")) - 1;
-                        MainActivity.position4 = false;
+                        GameActivity.cpuLevel[3] = Integer.parseInt(prefs.getString("player4", "0")) - 1;
+                        GameStateManager.position4 = false;
                     }
                 }
                 if(key.equals("time1") || key.equals("time2"))
                 {
-                    MainActivity.minute = prefs.getInt("time1", MainActivity.minute);
-                    MainActivity.second = prefs.getInt("time2", MainActivity.second);
-                    MainActivity.milliseconds = ((MainActivity.minute * 60) + MainActivity.second) * 1000;
+                    GameActivity.minute = prefs.getInt("time1", GameActivity.minute);
+                    GameActivity.second = prefs.getInt("time2", GameActivity.second);
+                    GameActivity.milliseconds = ((GameActivity.minute * 60) + GameActivity.second) * 1000;
                 }
                 if(key.equals("checking"))
                 {
-                    MainActivity.checking = prefs.getBoolean("checking", MainActivity.checking);
+                    GameStateManager.checking = prefs.getBoolean("checking", GameStateManager.checking);
                 }
                 if(key.equals("placing"))
                 {
-                    MainActivity.placing = prefs.getBoolean("placing", MainActivity.placing);
+                    GameStateManager.placing = prefs.getBoolean("placing", GameStateManager.placing);
                 }
                 if(key.equals("reverting"))
                 {
-                    MainActivity.reverting = prefs.getBoolean("reverting", MainActivity.reverting);
+                    GameStateManager.reverting = prefs.getBoolean("reverting", GameStateManager.reverting);
                 }
                 if(key.equals("firstrank"))
                 {
-                    MainActivity.firstrank = prefs.getBoolean("firstrank", MainActivity.firstrank);
+                    GameStateManager.firstrank = prefs.getBoolean("firstrank", GameStateManager.firstrank);
                 }
             }
         };
@@ -210,15 +203,10 @@ public class SettingsActivity extends PreferenceActivity
         switch (item.getItemId())
         {
             case android.R.id.home:
-                MainActivity.menu_code = 1;
                 this.finish();
                 return true;
             case R.id.new_game:
-                MainActivity.menu_code = 2;
-                this.finish();
-                return true;
-            case R.id.main_menu:
-                MainActivity.menu_code = 3;
+                setResult(1);
                 this.finish();
                 return true;
             default:
@@ -235,11 +223,8 @@ public class SettingsActivity extends PreferenceActivity
     @Override
     public void onBackPressed()
     {
-        MainActivity.menu_code = 1;
         this.finish();
     }
-
-
 
     public static class SettingsFragment extends PreferenceFragment
     {

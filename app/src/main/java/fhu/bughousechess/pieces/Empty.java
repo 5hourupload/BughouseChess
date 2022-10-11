@@ -14,7 +14,6 @@ public class Empty extends Piece
         color = "";
         type = "";
         wasPawn = false;
-        backgroundColor = "";
         empty = true;
     }
 
@@ -25,7 +24,7 @@ public class Empty extends Piece
     }
 
     @Override
-    public Set<Move> getMoves(ImageView[][] board, Piece[][] positions, int x, int y)
+    public Set<Move> getMoves(Piece[][] positions, int x, int y, int boardNumber)
     {
         return null;
     }
