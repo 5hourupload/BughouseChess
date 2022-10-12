@@ -1,7 +1,5 @@
 package fhu.bughousechess;
 
-import android.widget.ImageView;
-
 import java.util.Set;
 
 import fhu.bughousechess.pieces.Bishop;

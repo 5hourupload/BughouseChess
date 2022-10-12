@@ -18,7 +18,6 @@ public class AIMinimax
     private Map<String, Integer> pieceValues = new HashMap<>();
     private double highestValue = -999;
     private Move bestMove = null;
-    private int count = 0;
 
     public AIMinimax(String color, ImageView[][] board, Piece[][] positions, ImageView[] roster1,
                      Piece[] roster1p, ImageView[] roster2, Piece[] roster2p, int boardNumber)
