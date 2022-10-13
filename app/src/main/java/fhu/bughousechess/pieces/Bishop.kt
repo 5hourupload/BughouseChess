@@ -16,7 +16,7 @@ class Bishop(color: String?) : Piece() {
         get() = if (color == "white") R.mipmap.bishop else R.mipmap.bbishop
 
     override fun getMoves(
-        positions: Array<Array<Piece?>?>?,
+        positions: Array<Array<Piece>>,
         x: Int,
         y: Int,
         boardNumber: Int

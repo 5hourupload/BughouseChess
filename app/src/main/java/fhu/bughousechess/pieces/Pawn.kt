@@ -18,7 +18,7 @@ class Pawn(color: String?) : Piece() {
         get() = if (color == "white") R.mipmap.pawn else R.mipmap.bpawn
 
     override fun getMoves(
-        positions: Array<Array<Piece?>?>?,
+        positions: Array<Array<Piece>>,
         x: Int,
         y: Int,
         boardNumber: Int

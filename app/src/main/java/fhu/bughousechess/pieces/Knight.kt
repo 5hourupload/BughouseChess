@@ -16,7 +16,7 @@ class Knight(color: String?) : Piece() {
         get() = if (color == "white") R.mipmap.knight else R.mipmap.bknight
 
     override fun getMoves(
-        positions: Array<Array<Piece?>?>?,
+        positions: Array<Array<Piece>>,
         x: Int,
         y: Int,
         boardNumber: Int

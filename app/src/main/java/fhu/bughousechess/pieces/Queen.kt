@@ -16,7 +16,7 @@ class Queen(color: String?) : Piece() {
         get() = if (color == "white") R.mipmap.queen else R.mipmap.bqueen
 
     override fun getMoves(
-        positions: Array<Array<Piece?>?>?,
+        positions: Array<Array<Piece>>,
         x: Int,
         y: Int,
         boardNumber: Int

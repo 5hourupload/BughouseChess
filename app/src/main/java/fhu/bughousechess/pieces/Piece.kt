@@ -15,7 +15,7 @@ abstract class Piece {
     var onRoster = false
     abstract val resID: Int
     abstract fun getMoves(
-        positions: Array<Array<Piece?>?>?,
+        positions: Array<Array<Piece>>,
         x: Int,
         y: Int,
         boardNumber: Int
@@ -26,7 +26,7 @@ abstract class Piece {
         return if (color == "black") piece.color == "white" else false
     }
 
-    fun getRosterMoves(positions: Array<Array<Piece>>, rosterp: Array<Piece?>?, i: Int): Set<Move> {
+    fun getRosterMoves(positions: Array<Array<Piece>>, rosterp: Array<Piece>, i: Int): Set<Move> {
         val moves: MutableSet<Move> = HashSet()
         for (x in 0..7) {
             for (y in 0..7) {

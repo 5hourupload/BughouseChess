@@ -15,7 +15,7 @@ class Empty : Piece() {
         get() = R.color.transparent
 
     override fun getMoves(
-        positions: Array<Array<Piece?>?>?,
+        positions: Array<Array<Piece>>,
         x: Int,
         y: Int,
         boardNumber: Int

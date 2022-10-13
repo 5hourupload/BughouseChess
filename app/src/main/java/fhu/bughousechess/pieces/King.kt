@@ -17,7 +17,7 @@ class King(color: String?) : Piece() {
         get() = if (color == "white") R.mipmap.king else R.mipmap.bking
 
     override fun getMoves(
-        positions: Array<Array<Piece?>?>?,
+        positions: Array<Array<Piece>>,
         x: Int,
         y: Int,
         boardNumber: Int
