@@ -1,6 +1,5 @@
 package fhu.bughousechess.pieces
 
-import fhu.bughousechess.R
 import fhu.bughousechess.GameStateManager
 import fhu.bughousechess.Move
 import java.util.HashSet
@@ -12,9 +11,6 @@ class King(color: String?) : Piece() {
         wasPawn = false
         empty = false
     }
-
-    override val resID: Int
-        get() = if (color == "white") R.mipmap.king else R.mipmap.bking
 
     override fun getMoves(
         positions: Array<Array<Piece>>,

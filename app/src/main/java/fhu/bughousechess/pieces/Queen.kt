@@ -1,7 +1,6 @@
 package fhu.bughousechess.pieces
 
 import fhu.bughousechess.Move
-import fhu.bughousechess.R
 import java.util.HashSet
 
 class Queen(color: String?) : Piece() {
@@ -11,9 +10,6 @@ class Queen(color: String?) : Piece() {
         wasPawn = false
         empty = false
     }
-
-    override val resID: Int
-        get() = if (color == "white") R.mipmap.queen else R.mipmap.bqueen
 
     override fun getMoves(
         positions: Array<Array<Piece>>,

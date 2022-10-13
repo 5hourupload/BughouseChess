@@ -1,7 +1,5 @@
 package fhu.bughousechess.pieces
 
-import android.widget.ImageView
-import fhu.bughousechess.R
 import fhu.bughousechess.GameStateManager
 import fhu.bughousechess.Move
 import java.util.HashSet
@@ -13,9 +11,6 @@ class Pawn(color: String?) : Piece() {
         wasPawn = true
         empty = false
     }
-
-    override val resID: Int
-        get() = if (color == "white") R.mipmap.pawn else R.mipmap.bpawn
 
     override fun getMoves(
         positions: Array<Array<Piece>>,
@@ -174,10 +169,8 @@ class Pawn(color: String?) : Piece() {
         return moves
     }
 
-    fun getRosterMoves(
-        board: Array<Array<ImageView?>?>?,
+    override fun getRosterMoves(
         positions: Array<Array<Piece>>,
-        roster: Array<ImageView?>?,
         rosterp: Array<Piece>,
         i: Int
     ): Set<Move> {

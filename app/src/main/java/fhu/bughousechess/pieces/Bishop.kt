@@ -1,7 +1,6 @@
 package fhu.bughousechess.pieces
 
 import fhu.bughousechess.Move
-import fhu.bughousechess.R
 import java.util.HashSet
 
 class Bishop(color: String?) : Piece() {
@@ -11,9 +10,6 @@ class Bishop(color: String?) : Piece() {
         wasPawn = false
         empty = false
     }
-
-    override val resID: Int
-        get() = if (color == "white") R.mipmap.bishop else R.mipmap.bbishop
 
     override fun getMoves(
         positions: Array<Array<Piece>>,

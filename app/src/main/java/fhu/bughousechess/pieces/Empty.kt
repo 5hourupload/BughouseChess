@@ -1,6 +1,5 @@
 package fhu.bughousechess.pieces
 
-import android.R
 import fhu.bughousechess.Move
 
 class Empty : Piece() {
@@ -10,9 +9,6 @@ class Empty : Piece() {
         wasPawn = false
         empty = true
     }
-
-    override val resID: Int
-        get() = R.color.transparent
 
     override fun getMoves(
         positions: Array<Array<Piece>>,
