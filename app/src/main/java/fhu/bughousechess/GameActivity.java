@@ -29,7 +29,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.InterstitialAd;
+//import com.google.android.gms.ads.InterstitialAd;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -62,7 +62,7 @@ public class GameActivity extends AppCompatActivity {
 
     private SharedPreferences prefs;
 
-    InterstitialAd mInterstitialAd;
+//    InterstitialAd mInterstitialAd;
 
     static double[] cpuLevel = {0, 0, 0, 0};
 
@@ -130,20 +130,20 @@ public class GameActivity extends AppCompatActivity {
             });
         }
 
-        mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-9794567752193168/1898888810");
-
-        mInterstitialAd.setAdListener(new AdListener()
-        {
-            @Override
-            public void onAdClosed()
-            {
-                requestNewInterstitial();
-            }
-
-        });
-
-        requestNewInterstitial();
+//        mInterstitialAd = new InterstitialAd(this);
+//        mInterstitialAd.setAdUnitId("ca-app-pub-9794567752193168/1898888810");
+//
+//        mInterstitialAd.setAdListener(new AdListener()
+//        {
+//            @Override
+//            public void onAdClosed()
+//            {
+//                requestNewInterstitial();
+//            }
+//
+//        });
+//
+//        requestNewInterstitial();
 
         game = new GameStateManager();
 
@@ -1972,10 +1972,10 @@ public class GameActivity extends AppCompatActivity {
                     public void onClick(View v)
                     {
                         finishScreen.setVisibility(View.INVISIBLE);
-                        if (mInterstitialAd.isLoaded())
-                        {
-                            mInterstitialAd.show();
-                        }
+//                        if (mInterstitialAd.isLoaded())
+//                        {
+//                            mInterstitialAd.show();
+//                        }
                     }
                 });
             }
@@ -2204,9 +2204,9 @@ public class GameActivity extends AppCompatActivity {
         roster[i].setImageResource(android.R.color.transparent);
     }
 
-    private void requestNewInterstitial()
-    {
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mInterstitialAd.loadAd(adRequest);
-    }
+//    private void requestNewInterstitial()
+//    {
+//        AdRequest adRequest = new AdRequest.Builder().build();
+//        mInterstitialAd.loadAd(adRequest);
+//    }
 }
