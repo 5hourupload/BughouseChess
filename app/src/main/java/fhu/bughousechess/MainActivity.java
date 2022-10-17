@@ -1,60 +1,34 @@
 package fhu.bughousechess;
 
-import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Point;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
-import android.os.CountDownTimer;
-import android.preference.PreferenceManager;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.view.DragEvent;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import java.util.TimeZone;
-
-import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.RequestConfiguration;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
-import fhu.bughousechess.pieces.Bishop;
-import fhu.bughousechess.pieces.Empty;
-import fhu.bughousechess.pieces.King;
-import fhu.bughousechess.pieces.Knight;
-import fhu.bughousechess.pieces.Pawn;
-import fhu.bughousechess.pieces.Piece;
-import fhu.bughousechess.pieces.Queen;
-import fhu.bughousechess.pieces.Rook;
+import java.util.Arrays;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
 {

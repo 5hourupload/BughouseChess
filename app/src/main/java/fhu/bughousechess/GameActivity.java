@@ -27,9 +27,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.InterstitialAd;
+//import com.google.android.gms.ads.InterstitialAd;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -62,7 +60,7 @@ public class GameActivity extends AppCompatActivity {
 
     private SharedPreferences prefs;
 
-    InterstitialAd mInterstitialAd;
+//    InterstitialAd mInterstitialAd;
 
     static double[] cpuLevel = {0, 0, 0, 0};
 
@@ -130,20 +128,20 @@ public class GameActivity extends AppCompatActivity {
             });
         }
 
-        mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-9794567752193168/1898888810");
-
-        mInterstitialAd.setAdListener(new AdListener()
-        {
-            @Override
-            public void onAdClosed()
-            {
-                requestNewInterstitial();
-            }
-
-        });
-
-        requestNewInterstitial();
+//        mInterstitialAd = new InterstitialAd(this);
+//        mInterstitialAd.setAdUnitId("ca-app-pub-9794567752193168/1898888810");
+//
+//        mInterstitialAd.setAdListener(new AdListener()
+//        {
+//            @Override
+//            public void onAdClosed()
+//            {
+//                requestNewInterstitial();
+//            }
+//
+//        });
+//
+//        requestNewInterstitial();
 
         game = new GameStateManager();
 
@@ -651,7 +649,7 @@ public class GameActivity extends AppCompatActivity {
             {
                 for (int j = 0; j < 8; j++)
                 {
-                    board[b][i][j].setImageResource(game.getPositions(b)[i][j].getResID());
+                    board[b][i][j].setImageResource(getResID(game.getPositions(b)[i][j]));
                 }
             }
         }
@@ -669,10 +667,10 @@ public class GameActivity extends AppCompatActivity {
 
         for (int i = 0; i < 30; i++)
         {
-            roster1[i].setImageResource(game.roster1p[i].getResID());
-            roster2[i].setImageResource(game.roster2p[i].getResID());
-            roster3[i].setImageResource(game.roster3p[i].getResID());
-            roster4[i].setImageResource(game.roster4p[i].getResID());
+            roster1[i].setImageResource(getResID(game.roster1p[i]));
+            roster2[i].setImageResource(getResID(game.roster2p[i]));
+            roster3[i].setImageResource(getResID(game.roster3p[i]));
+            roster4[i].setImageResource(getResID(game.roster4p[i]));
         }
 
     }
@@ -1444,7 +1442,7 @@ public class GameActivity extends AppCompatActivity {
         {
             board[x1][y].setRotation(0);
             board[x1][y].setImageResource(android.R.color.transparent);
-            board[x1][5].setImageResource(game.getPositions(boardNumber)[x1][5].getResID());
+            board[x1][5].setImageResource(getResID(game.getPositions(boardNumber)[x1][5]));
             board[x1][5].setRotation(board[x][y].getRotation());
             board[x][y].setRotation(0);
             board[x][y].setImageResource(android.R.color.transparent);
@@ -1454,13 +1452,13 @@ public class GameActivity extends AppCompatActivity {
         {
             board[x1][y].setRotation(0);
             board[x1][y].setImageResource(android.R.color.transparent);
-            board[x1][2].setImageResource(game.getPositions(boardNumber)[x1][2].getResID());
+            board[x1][2].setImageResource(getResID(game.getPositions(boardNumber)[x1][2]));
             board[x1][2].setRotation(board[x][y].getRotation());
             board[x][y].setRotation(0);
             board[x][y].setImageResource(android.R.color.transparent);
             return;
         }
-        board[x1][y1].setImageResource(game.getPositions(boardNumber)[x1][y1].getResID());
+        board[x1][y1].setImageResource(getResID(game.getPositions(boardNumber)[x1][y1]));
         board[x1][y1].setRotation(board[x][y].getRotation());
         board[x][y].setRotation(0);
         board[x][y].setImageResource(android.R.color.transparent);
@@ -1489,7 +1487,7 @@ public class GameActivity extends AppCompatActivity {
         {
             if (rosterp[i].empty)
             {
-                roster[i-1].setImageResource(rosterp[i-1].getResID());
+                roster[i-1].setImageResource(getResID(rosterp[i-1]));
                 break;
             }
         }
@@ -1972,10 +1970,10 @@ public class GameActivity extends AppCompatActivity {
                     public void onClick(View v)
                     {
                         finishScreen.setVisibility(View.INVISIBLE);
-                        if (mInterstitialAd.isLoaded())
-                        {
-                            mInterstitialAd.show();
-                        }
+//                        if (mInterstitialAd.isLoaded())
+//                        {
+//                            mInterstitialAd.show();
+//                        }
                     }
                 });
             }
@@ -2199,14 +2197,39 @@ public class GameActivity extends AppCompatActivity {
         String color = game.getPositions(boardNumber)[x][y].color;
         ImageView[] roster = getRosterImageViewArray(boardNumber, color);
 
-        board[boardNumber][x][y].setImageResource(game.getPositions(boardNumber)[x][y].getResID());
+        board[boardNumber][x][y].setImageResource(getResID(game.getPositions(boardNumber)[x][y]));
         board[boardNumber][x][y].setRotation(roster[i].getRotation());
         roster[i].setImageResource(android.R.color.transparent);
     }
 
-    private void requestNewInterstitial()
+//    private void requestNewInterstitial()
+//    {
+//        AdRequest adRequest = new AdRequest.Builder().build();
+//        mInterstitialAd.loadAd(adRequest);
+//    }
+
+    private int getResID(Piece piece)
     {
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mInterstitialAd.loadAd(adRequest);
+        if (piece.color.equals("white"))
+        {
+            if (piece.type.equals("pawn")) return R.mipmap.pawn;
+            if (piece.type.equals("rook")) return R.mipmap.rook;
+            if (piece.type.equals("knight")) return R.mipmap.knight;
+            if (piece.type.equals("bishop")) return R.mipmap.bishop;
+            if (piece.type.equals("queen")) return R.mipmap.queen;
+            if (piece.type.equals("king")) return R.mipmap.king;
+
+        }
+        if (piece.color.equals("black"))
+        {
+            if (piece.type.equals("pawn")) return R.mipmap.bpawn;
+            if (piece.type.equals("rook")) return R.mipmap.brook;
+            if (piece.type.equals("knight")) return R.mipmap.bknight;
+            if (piece.type.equals("bishop")) return R.mipmap.bbishop;
+            if (piece.type.equals("queen")) return R.mipmap.bqueen;
+            if (piece.type.equals("king")) return R.mipmap.bking;
+
+        }
+        return R.mipmap.nothing;
     }
 }
